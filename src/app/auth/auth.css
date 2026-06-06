@@ -1,0 +1,86 @@
+/* Páginas de autenticação (login / cadastro) — Vercel / Geist */
+.auth-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background-color: var(--canvas-soft);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-4);
+}
+
+.auth-brand {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.auth-brand .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.96px;
+  color: var(--ink);
+}
+.auth-brand p {
+  font-size: 13px;
+  margin-top: 4px;
+  color: var(--mute);
+}
+
+.auth-title {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+  letter-spacing: -0.96px;
+  margin-bottom: 4px;
+}
+.auth-sub {
+  font-size: 14px;
+  margin-bottom: 24px;
+  color: var(--body);
+}
+
+.auth-card .btn {
+  width: 100%;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+/* Notificação inline — borda esquerda colorida */
+.auth-alert {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  letter-spacing: -0.28px;
+  margin-bottom: 16px;
+  border-left: 3px solid transparent;
+}
+.auth-alert.error {
+  background: var(--error-soft);
+  color: var(--error-deep);
+  border-left-color: var(--error);
+}
+.auth-alert.success {
+  background: var(--success-soft);
+  color: #0a7a42;
+  border-left-color: var(--success);
+}
+
+.auth-foot {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 24px;
+  color: var(--body);
+}
+.auth-foot a {
+  color: var(--link);
+  font-weight: 500;
+}

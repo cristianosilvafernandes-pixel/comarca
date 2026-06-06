@@ -1,0 +1,99 @@
+/* Shell autenticado — Vercel / Geist */
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#app-body {
+  display: flex;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Sidebar inline em telas largas (globals.css trata sticky >=992). */
+@media (max-width: 991px) {
+  .sidebar {
+    position: static;
+    left: 0;
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--hairline);
+    padding: 8px;
+  }
+  .sidebar-nav {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+  #app-body {
+    flex-direction: column;
+  }
+}
+
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.page-head h1 {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+  letter-spacing: -0.96px;
+}
+
+/* Alerta inline (reuso do estilo das páginas auth) */
+.auth-alert {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  letter-spacing: -0.28px;
+  margin-bottom: 16px;
+  border-left: 3px solid transparent;
+}
+.auth-alert.error {
+  background: var(--error-soft);
+  color: var(--error-deep);
+  border-left-color: var(--error);
+}
+.auth-alert.success {
+  background: var(--success-soft);
+  color: #0a7a42;
+  border-left-color: var(--success);
+}
+
+/* Fieldset de campos condicionais (sem moldura) */
+.tipo-fields {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Tabela de parcelas (DataTable — header mono) */
+.parcelas-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  letter-spacing: -0.28px;
+}
+.parcelas-table th,
+.parcelas-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--hairline);
+}
+.parcelas-table th {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  color: var(--body);
+  font-weight: 400;
+}
+.parcelas-table tr:last-child td {
+  border-bottom: none;
+}

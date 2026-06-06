@@ -1,0 +1,3398 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comarca Honorários — Lembretes Automáticos para Advogados</title>
+  <style>
+    /* DESIGN SYSTEM & CSS VARIABLES */
+    :root {
+      --primary: #2e86c1;
+      --primary-hover: #21618c;
+      --primary-light: #ebf5fb;
+      --success: #1e8449;
+      --success-light: #e8f8f5;
+      --warning: #f39c12;
+      --warning-light: #fef9e7;
+      --danger: #e74c3c;
+      --danger-light: #fdedec;
+      --gray-bg: #f4f6f9;
+      --gray-border: #dde4ec;
+      --text: #1a2332;
+      --text-muted: #7f8c9a;
+      --white: #ffffff;
+      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --shadow: 0 2px 8px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--gray-bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* TYPOGRAPHY */
+    h1, h2, h3, h4 {
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+    }
+    h1 { font-size: 20px; }
+    h2 { font-size: 18px; }
+    h3 { font-size: 15px; }
+    p { font-weight: 400; color: var(--text-muted); }
+    label { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px; display: block; }
+
+    /* LAYOUT STRUCT */
+    #app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* GLOBAL HEADER */
+    header {
+      background-color: var(--white);
+      border-bottom: 1px solid var(--gray-border);
+      position: sticky;
+      top: 0;
+      z-index: 900;
+      height: 60px;
+    }
+
+    .header-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+      padding: 0 16px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .logo svg {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.5;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .user-text {
+      display: none;
+      text-align: right;
+    }
+
+    @media (min-width: 768px) {
+      .user-text {
+        display: block;
+      }
+      .user-text .name {
+        font-weight: 600;
+        font-size: 13px;
+      }
+      .user-text .role {
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+    }
+
+    .hamburger-btn {
+      display: inline-flex;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      color: var(--text);
+    }
+
+    @media (min-width: 992px) {
+      .hamburger-btn {
+        display: none;
+      }
+    }
+
+    /* NAVIGATION DRAWER / SIDEBAR */
+    .sidebar {
+      position: fixed;
+      top: 60px;
+      left: -280px;
+      width: 280px;
+      height: calc(100vh - 60px);
+      background-color: var(--white);
+      border-right: 1px solid var(--gray-border);
+      transition: var(--transition);
+      z-index: 850;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    @media (min-width: 992px) {
+      .sidebar {
+        position: sticky;
+        top: 60px;
+        left: 0 !important;
+        height: calc(100vh - 60px);
+        z-index: 10;
+      }
+      #app-body {
+        display: flex;
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .main-content {
+        flex: 1;
+        padding: 24px;
+        min-width: 0;
+      }
+    }
+
+    @media (max-width: 991px) {
+      .main-content {
+        padding: 16px;
+        width: 100%;
+      }
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .sidebar-link:hover, .sidebar-link.active {
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .sidebar-link svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2;
+    }
+
+    /* SCREEN WRAPPERS */
+    .view-screen {
+      display: none;
+    }
+
+    .view-screen.active {
+      display: block;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: var(--white);
+      border-color: var(--gray-border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--gray-bg);
+    }
+
+    .btn-success {
+      background-color: var(--success);
+      color: var(--white);
+    }
+
+    .btn-success:hover {
+      opacity: 0.9;
+    }
+
+    .btn-danger {
+      background-color: var(--danger);
+      color: var(--white);
+    }
+
+    .btn-danger:hover {
+      opacity: 0.9;
+    }
+
+    .btn-icon {
+      padding: 8px;
+      border-radius: 8px;
+      background: none;
+      border: 1px solid var(--gray-border);
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .btn-icon:hover {
+      background-color: var(--gray-bg);
+      color: var(--text);
+    }
+
+    /* FLOATING ACTION BUTTON (FAB) */
+    .fab {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 800;
+      height: 50px;
+      border-radius: 25px;
+      background-color: var(--primary);
+      color: var(--white);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .fab:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 767px) {
+      .fab {
+        width: 50px;
+        padding: 0;
+        justify-content: center;
+      }
+      .fab span {
+        display: none;
+      }
+    }
+
+    /* FORMS & INPUTS */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-control, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--gray-border);
+      border-radius: 6px;
+      font-family: var(--font-family);
+      font-size: 14px;
+      color: var(--text);
+      background-color: var(--white);
+      transition: var(--transition);
+    }
+
+    .form-control:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(46, 134, 193, 0.15);
+    }
+
+    .form-control.error {
+      border-color: var(--danger);
+    }
+
+    .error-msg {
+      font-size: 11px;
+      color: var(--danger);
+      margin-top: 4px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .checkbox-group input {
+      width: 16px;
+      height: 16px;
+    }
+
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid var(--gray-border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .radio-option:hover {
+      background-color: var(--gray-bg);
+    }
+
+    .radio-option input {
+      width: 18px;
+      height: 18px;
+    }
+
+    .radio-option.selected {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    /* GRID COLS */
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      margin: 0 -8px;
+    }
+
+    .col-6 {
+      flex: 0 0 50%;
+      max-width: 50%;
+      padding: 0 8px;
+    }
+
+    .col-12 {
+      flex: 0 0 100%;
+      max-width: 100%;
+      padding: 0 8px;
+    }
+
+    /* CARDS */
+    .card {
+      background-color: var(--white);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--gray-border);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    /* DASHBOARD CARDS SUMMARY */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .summary-card {
+      background-color: var(--white);
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid var(--gray-border);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .summary-icon {
+      font-size: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .summary-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .summary-info .val {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .summary-info .label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .summary-info .desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* TABS */
+    .tabs-wrapper {
+      margin-bottom: 16px;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      display: flex;
+      border-bottom: 1px solid var(--gray-border);
+    }
+
+    .tab-btn {
+      padding: 12px 18px;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      font-family: var(--font-family);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .tab-badge {
+      font-size: 10px;
+      font-weight: 700;
+      background-color: var(--gray-border);
+      color: var(--text);
+      padding: 2px 6px;
+      border-radius: 10px;
+      line-height: 1;
+    }
+
+    .tab-btn.active .tab-badge {
+      background-color: var(--primary);
+      color: var(--white);
+    }
+
+    /* FEES LIST ITEM CARD */
+    .fee-card {
+      border-left: 5px solid var(--gray-border);
+      transition: var(--transition);
+    }
+
+    .fee-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    .fee-card.atrasado { border-left-color: var(--danger); }
+    .fee-card.vencendo { border-left-color: var(--warning); }
+    .fee-card.pago { border-left-color: var(--success); }
+    .fee-card.pendente { border-left-color: var(--text-muted); }
+
+    .fee-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .fee-card-title {
+      font-weight: 600;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .fee-card-process {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .fee-card-middle {
+      border-top: 1px solid var(--gray-bg);
+      border-bottom: 1px solid var(--gray-bg);
+      padding: 10px 0;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .fee-card-meta {
+      font-size: 13px;
+    }
+
+    .fee-card-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* CLIENTS LIST SCREEN */
+    .client-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .client-profile-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .client-initials-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background-color: var(--gray-border);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .client-details-grid {
+      border-top: 1px solid var(--gray-bg);
+      padding-top: 12px;
+      font-size: 13px;
+    }
+
+    /* MODAL WINDOW SYSTEM */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(26, 35, 50, 0.4);
+      backdrop-filter: blur(2px);
+      z-index: 1100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--transition);
+      padding: 16px;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background-color: var(--white);
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 550px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: scale(0.95);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-overlay.active .modal {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--gray-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .modal-footer {
+      padding: 12px 20px;
+      background-color: var(--gray-bg);
+      border-top: 1px solid var(--gray-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    @media (max-width: 767px) {
+      .modal-fullscreen-mobile {
+        max-width: 100%;
+        height: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+      }
+    }
+
+    /* DOCUMENT UPLOAD ZONE SPECIFICS */
+    .upload-zone {
+      border: 2px dashed var(--primary);
+      background-color: var(--primary-light);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .upload-zone:hover {
+      background-color: #d4e6f1;
+    }
+
+    .upload-zone-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .upload-zone-icon {
+      font-size: 24px;
+    }
+
+    .upload-spinner {
+      border: 3px solid rgba(46, 134, 193, 0.2);
+      border-radius: 50%;
+      border-top: 3px solid var(--primary);
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .upload-loading {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .upload-success {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* TOAST NOTIFIER */
+    #toast-container {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 1500;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toast {
+      background-color: var(--text);
+      color: var(--white);
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: var(--shadow-lg);
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: slideIn 0.25s ease forwards;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(-10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* EMPTY STATES */
+    .empty-state {
+      text-align: center;
+      padding: 40px 16px;
+      background-color: var(--white);
+      border-radius: 12px;
+      border: 1px dashed var(--gray-border);
+    }
+
+    .empty-state-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+
+    /* LOGIN SCREEN SPECIFICS */
+    .login-wrapper {
+      background-color: var(--gray-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    .login-box {
+      background-color: var(--white);
+      border-radius: 12px;
+      padding: 32px 24px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--gray-border);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    /* SUCCESS POPUP CADASTRO */
+    .success-summary-box {
+      background-color: var(--gray-bg);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+      border-left: 4px solid var(--success);
+    }
+
+    /* DETALHES HONORARIO SCREEN */
+    .details-meta-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .details-section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      margin-top: 16px;
+    }
+
+    .parcela-card {
+      border: 1px solid var(--gray-border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .parcela-card.status-pago {
+      background-color: var(--success-light);
+      border-color: #a3e4d7;
+    }
+
+    .parcela-card.status-vencendo {
+      background-color: var(--warning-light);
+      border-color: #f9e79f;
+    }
+
+    .parcela-card.status-atrasado {
+      background-color: var(--danger-light);
+      border-color: #fadbd8;
+    }
+
+    /* PUBLIC PAGE SPECIFICS */
+    .public-page {
+      background-color: var(--gray-bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .public-box {
+      background-color: var(--white);
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--gray-border);
+      width: 100%;
+      max-width: 500px;
+      overflow: hidden;
+    }
+
+    .public-box-header {
+      padding: 20px;
+      background-color: var(--primary);
+      color: var(--white);
+      text-align: center;
+    }
+
+    .public-box-body {
+      padding: 20px;
+    }
+
+    .pix-block {
+      background-color: var(--gray-bg);
+      border: 1px dashed var(--primary);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      margin-top: 16px;
+      margin-bottom: 16px;
+    }
+
+    .pix-key {
+      font-family: monospace;
+      font-size: 16px;
+      font-weight: bold;
+      word-break: break-all;
+      margin: 8px 0;
+      color: var(--text);
+    }
+
+    .fake-qr-code {
+      width: 120px;
+      height: 120px;
+      background-color: #eee;
+      border: 2px solid var(--text);
+      margin: 12px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: bold;
+      background-image: radial-gradient(#333 25%, transparent 25%), radial-gradient(#333 25%, transparent 25%);
+      background-size: 8px 8px;
+      background-position: 0 0, 4px 4px;
+    }
+
+    /* UTILITY CLASSES */
+    .mt-3 { margin-top: 16px; }
+    .mb-3 { margin-bottom: 16px; }
+    .text-center { text-align: center; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .badge-pago { background-color: var(--success); color: var(--white); }
+    .badge-vencendo { background-color: var(--warning); color: var(--white); }
+    .badge-atrasado { background-color: var(--danger); color: var(--white); }
+    .badge-pendente { background-color: var(--text-muted); color: var(--white); }
+
+    /* RELATORIO IR TABLE STYLES */
+    .relatorio-tabela th, .relatorio-tabela td {
+      border-bottom: 1px solid var(--gray-border);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app">
+    <!-- LAYOUT APP LOGADO (HEADER + SIDEBAR + MAIN) -->
+    <div id="layout-app" style="display: none;">
+      <header>
+        <div class="header-container">
+          <a href="#/dashboard" class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Comarca Honorários
+          </a>
+          <div class="user-profile">
+            <div class="user-text">
+              <div class="name">Dr. Yago Caldeira</div>
+              <div class="role">OAB/RS 107.295</div>
+            </div>
+            <div class="avatar">YC</div>
+            <button class="hamburger-btn" onclick="toggleSidebar()">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div id="app-body">
+        <aside class="sidebar" id="sidebar">
+          <div class="sidebar-nav">
+            <a href="#/dashboard" class="sidebar-link active" id="link-dashboard">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+              Dashboard
+            </a>
+            <a href="#/clientes" class="sidebar-link" id="link-clientes">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Clientes
+            </a>
+            <!-- AJUSTE 4: MENU ITEM GERAR CONTRATO -->
+            <a href="#/gerar-contrato" class="sidebar-link" id="link-contratos">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Gerar Contrato
+            </a>
+            <!-- ITEM MENU LATERAL -->
+            <a href="#/relatorio-ir" class="sidebar-link" id="link-relatorio">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Relatório IR
+            </a>
+          </div>
+          <div style="margin-top: auto;">
+            <button class="btn btn-secondary" style="width: 100%;" onclick="logout()">Sair</button>
+          </div>
+        </aside>
+
+        <main class="main-content">
+          <!-- TELA 2: DASHBOARD -->
+          <div id="screen-dashboard" class="view-screen">
+            <div class="summary-grid">
+              <div class="summary-card">
+                <div class="summary-icon" style="background-color: var(--gray-bg); color: var(--text-muted);">⚪</div>
+                <div class="summary-info">
+                  <span class="val" id="summary-pendentes-val">R$ 0,00</span>
+                  <span class="label">Pendentes</span>
+                  <span class="desc" id="summary-pendentes-desc">0 lembretes pendentes</span>
+                </div>
+              </div>
+              <div class="summary-card" style="border-color: var(--danger);">
+                <div class="summary-icon" style="background-color: var(--danger-light); color: var(--danger);">🔴</div>
+                <div class="summary-info">
+                  <span class="val" id="summary-urgentes-val">R$ 0,00</span>
+                  <span class="label">Urgentes</span>
+                  <span class="desc" id="summary-urgentes-desc">0 em atraso ou vencendo</span>
+                </div>
+              </div>
+              <div class="summary-card" style="border-color: var(--success);">
+                <div class="summary-icon" style="background-color: var(--success-light); color: var(--success);">✅</div>
+                <div class="summary-info">
+                  <span class="val" id="summary-pagos-val">R$ 0,00</span>
+                  <span class="label">Confirmados</span>
+                  <span class="desc" id="summary-pagos-desc">0 liquidados</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- AJUSTE 5: FILTROS POR PERÍODO NO DASHBOARD -->
+            <div class="card" style="margin-bottom: 16px; padding: 12px;">
+              <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <label for="filtro-periodo-select" style="margin-bottom: 0; white-space: nowrap;">Período:</label>
+                  <select id="filtro-periodo-select" class="form-control" style="width: auto; padding: 6px 12px;" onchange="changePeriodFilter()">
+                    <option value="este_mes" selected>Este mês</option>
+                    <option value="este_ano">Este ano</option>
+                    <option value="todos">Todos</option>
+                    <option value="customizado">Período customizado</option>
+                  </select>
+                </div>
+                <div id="periodo-customizado-datas" style="display: none; align-items: center; gap: 8px;">
+                  <input type="date" id="filtro-data-de" class="form-control" style="width: auto; padding: 6px 12px;" onchange="renderDashboard()">
+                  <span style="color: var(--text-muted);">até</span>
+                  <input type="date" id="filtro-data-ate" class="form-control" style="width: auto; padding: 6px 12px;" onchange="renderDashboard()">
+                </div>
+              </div>
+            </div>
+
+            <!-- FILTERS -->
+            <div class="tabs-wrapper">
+              <button class="tab-btn active" onclick="filterDashboard('todos')">Todos</button>
+              <button class="tab-btn" onclick="filterDashboard('pendente')">Pendentes</button>
+              <button class="tab-btn" onclick="filterDashboard('vencendo')">
+                Vencendo <span class="tab-badge" id="badge-vencendo">0</span>
+              </button>
+              <button class="tab-btn" onclick="filterDashboard('atrasado')">
+                Atrasados <span class="tab-badge" id="badge-atrasado" style="background-color: var(--danger); color: white;">0</span>
+              </button>
+              <button class="tab-btn" onclick="filterDashboard('pago')">Pagos</button>
+            </div>
+
+            <!-- DYNAMIC LIST CONTAINER -->
+            <div id="dashboard-list"></div>
+
+            <!-- FAB -->
+            <a href="#/clientes" class="fab">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>Novo honorário</span>
+            </a>
+          </div>
+
+          <!-- TELA 3: CLIENTES -->
+          <div id="screen-clientes" class="view-screen">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+              <h1>Clientes</h1>
+              <a href="#/novo-cliente" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg>
+                Novo Cliente
+              </a>
+            </div>
+
+            <!-- DYNAMIC CLIENTS LIST -->
+            <div id="clientes-list"></div>
+          </div>
+
+          <!-- TELA 6: DETALHES DO HONORÁRIO / CLIENTE (AJUSTE 4) -->
+          <div id="screen-honorario-detalhes" class="view-screen">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+              <button onclick="history.back()" class="btn btn-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+              </button>
+              <h1 id="detalhes-cliente-nome">Cliente</h1>
+              <span class="badge" id="detalhes-badge">Pendente</span>
+            </div>
+
+            <div class="row">
+              <div class="col-12" style="margin-bottom: 16px;">
+                <div class="card">
+                  <div class="details-section-title">Dados do Cliente</div>
+                  <div class="details-meta-group">
+                    <div><strong>CPF:</strong> <span id="detalhes-cpf">-</span></div>
+                    <div><strong>WhatsApp:</strong> <span id="detalhes-whatsapp">-</span></div>
+                    <div><strong>Email:</strong> <span id="detalhes-email">-</span></div>
+                  </div>
+                </div>
+
+                <!-- CONTAINER DE PROCESSOS E HONORÁRIOS DO CLIENTE -->
+                <div id="client-honorarios-container"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- AJUSTE 4: TELA GERAR CONTRATO -->
+          <div id="screen-contratos" class="view-screen">
+            <div style="margin-bottom: 24px;">
+              <h1>Geração de Contrato de Honorários</h1>
+              <p>Selecione um cliente para carregar e preencher o modelo do contrato.</p>
+            </div>
+
+            <div class="card" style="margin-bottom: 24px; padding: 16px;">
+              <div class="form-group">
+                <label for="contrato-cliente-select">Selecione o Cliente *</label>
+                <select id="contrato-cliente-select" class="form-control" onchange="loadContratoTemplate()">
+                  <!-- Options populadas dinamicamente -->
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="contrato-objeto">Objeto da Prestação de Serviço</label>
+                <input type="text" id="contrato-objeto" class="form-control" placeholder="Ex: Defesa em Ação Trabalhista contra Manserv" value="Defesa em processo judicial" oninput="loadContratoTemplate()">
+              </div>
+              <div class="form-group">
+                <label for="contrato-valor">Valor dos Honorários</label>
+                <input type="text" id="contrato-valor" class="form-control" placeholder="R$ 0,00" value="R$ 3.600,00" oninput="loadContratoTemplate()">
+              </div>
+            </div>
+
+            <div class="card">
+              <label for="contrato-texto">Texto do Contrato (Editável)</label>
+              <textarea id="contrato-texto" rows="18" class="form-control" style="font-family: monospace; font-size: 13px; line-height: 1.6; resize: vertical;"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 16px;">
+              <button class="btn btn-success" onclick="enviarContratoWhatsApp()">📲 Enviar por WhatsApp</button>
+              <button class="btn btn-secondary" onclick="baixarContratoSimulado()">📥 Baixar (simulado)</button>
+            </div>
+          </div>
+
+          <!-- TELA DO RELATÓRIO DE IMPOSTO DE RENDA -->
+          <div id="screen-relatorio-ir" class="view-screen">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+              <h1>Relatório de Rendimentos (IR)</h1>
+              <button class="btn btn-primary" onclick="exportarRelatorioCSV()">
+                📥 Exportar CSV
+              </button>
+            </div>
+
+            <div class="card" style="margin-bottom: 24px; padding: 16px;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <label for="relatorio-ano-select" style="margin-bottom: 0;">Ano de Apuração:</label>
+                <select id="relatorio-ano-select" class="form-control" style="width: auto;" onchange="renderRelatorioIR()">
+                  <!-- Dinamicamente Populado -->
+                </select>
+              </div>
+            </div>
+
+            <div class="card" style="overflow-x: auto; padding: 0;">
+              <table class="relatorio-tabela" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                <thead>
+                  <tr style="background-color: var(--gray-bg); font-weight: bold;">
+                    <th style="padding: 12px 16px;">Cliente</th>
+                    <th style="padding: 12px 16px;">CPF/CNPJ</th>
+                    <th style="padding: 12px 16px;">Tipo de Honorário</th>
+                    <!-- AJUSTE 1: NOVA COLUNA ORIGEM NO HEADER -->
+                    <th style="padding: 12px 16px;">Origem</th>
+                    <th style="padding: 12px 16px; text-align: right;">Valor Recebido</th>
+                    <th style="padding: 12px 16px;">Data</th>
+                  </tr>
+                </thead>
+                <tbody id="relatorio-tabela-body">
+                  <!-- Linhas populadas dinamicamente -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- TELA 1: LOGIN -->
+    <div id="screen-login" class="view-screen">
+      <div class="login-wrapper">
+        <div class="login-box">
+          <div class="text-center" style="margin-bottom: 24px;">
+            <div class="logo" style="justify-content: center; font-size: 24px;">
+              <svg width="32" height="32" viewBox="0 0 24 24">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              Comarca
+            </div>
+            <p class="tagline">Lembretes automáticos de honorários para advogados</p>
+          </div>
+
+          <form onsubmit="handleLoginSubmit(event)">
+            <div class="form-group">
+              <label for="login-email">E-mail</label>
+              <input type="email" id="login-email" class="form-control" placeholder="yago.caldeira@adv.com.br" required value="yago.caldeira@adv.com.br">
+            </div>
+            <div class="form-group">
+              <label for="login-senha">Senha</label>
+              <input type="password" id="login-senha" class="form-control" required value="123456">
+            </div>
+            <div class="form-group checkbox-group" style="margin-bottom: 24px;">
+              <input type="checkbox" id="login-remember" checked>
+              <label for="login-remember" style="margin-bottom: 0;">Lembrar de mim</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar</button>
+          </form>
+
+          <div class="text-center" style="margin-top: 24px;">
+            <a href="#/dashboard" class="btn btn-secondary" style="width: 100%;">Criar conta grátis</a>
+          </div>
+
+          <div style="text-align: center; margin-top: 32px; font-size: 11px; color: var(--text-muted);">
+            © 2026 Comarca — Feito para advogados
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TELA 8: PÁGINA PÚBLICA DE CONFIRMAÇÃO (SEM LOGIN) -->
+    <div id="screen-public" class="view-screen">
+      <div class="public-page">
+        <div class="public-box">
+          <div class="public-box-header">
+            <div style="font-size: 20px; font-weight: bold; margin-bottom: 4px;">Comarca</div>
+            <div style="font-size: 13px; opacity: 0.9;">Lembrete de Honorários</div>
+          </div>
+          <div class="public-box-body">
+            <div class="text-center" style="margin-bottom: 20px;" id="public-verified-badge-area">
+              <!-- Dynamically populated badge -->
+            </div>
+
+            <div style="background-color: var(--gray-bg); padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+              <div style="margin-bottom: 8px;"><strong>Advogado:</strong> Dr. Yago Caldeira (OAB/RS 107.295)</div>
+              <div style="margin-bottom: 8px;"><strong>Cliente:</strong> <span id="public-cliente">-</span></div>
+              <div style="margin-bottom: 8px;"><strong>Processo:</strong> <span id="public-processo">-</span></div>
+              <div style="margin-bottom: 8px;"><strong>Parcela:</strong> <span id="public-parcela">-</span></div>
+              <div style="margin-bottom: 8px;"><strong>Valor:</strong> <span id="public-valor" style="font-weight: bold; color: var(--primary);">-</span></div>
+              <div><strong>Vencimento:</strong> <span id="public-vencimento">-</span></div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--gray-border); margin: 20px 0;">
+
+            <div class="pix-block">
+              <label style="color: var(--primary); font-weight: bold;">Chave PIX para pagamento:</label>
+              <div class="pix-key" id="public-pix-key">034.994.430-07</div>
+              <button class="btn btn-secondary" onclick="copyPixKey()">📋 Copiar chave</button>
+              <div class="fake-qr-code">QR CODE</div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--gray-border); margin: 20px 0;">
+
+            <div class="text-center" id="public-action-area">
+              <p style="margin-bottom: 12px; font-size: 13px;">Já efetuou o pagamento desta parcela?</p>
+              <button class="btn btn-success" id="btn-public-confirm">✓ Confirmar pagamento</button>
+            </div>
+          </div>
+          <div class="text-center" style="padding: 16px; background-color: var(--gray-bg); font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--gray-border);">
+            Este é um lembrete amigável. Não é cobrança formal.<br>
+            Dúvidas? Fale com seu advogado.<br>
+            <strong>Comarca Honorários © 2026</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATIONS -->
+  <div id="toast-container"></div>
+
+  <!-- MODAL: NOVO CLIENTE -->
+  <div class="modal-overlay" id="modal-novo-cliente">
+    <div class="modal modal-fullscreen-mobile">
+      <div class="modal-header">
+        <h2>Novo Cliente</h2>
+        <button class="btn-icon" onclick="closeModal('modal-novo-cliente')">×</button>
+      </div>
+      <form onsubmit="handleSaveCliente(event)">
+        <div class="modal-body">
+          <!-- ÁREA DE UPLOAD DE DOCUMENTOS -->
+          <input type="file" id="cli-doc-upload" style="display: none;" onchange="handleDocUpload(event)" accept=".pdf,.doc,.docx">
+          <div class="upload-zone" onclick="document.getElementById('cli-doc-upload').click()">
+            <div class="upload-zone-content" id="upload-content-default">
+              <span class="upload-zone-icon">📄</span>
+              <span>Importar dados do documento (procuração, contrato...)</span>
+            </div>
+            <div class="upload-loading" id="upload-content-loading">
+              <div class="upload-spinner"></div>
+              <span style="color: var(--primary); font-weight: 600;">Lendo documento...</span>
+            </div>
+            <div class="upload-success" id="upload-content-success">
+              <span class="badge" style="background-color: var(--success); color: var(--white); font-size: 12px; padding: 6px 12px; text-transform: none;">
+                ✓ Dados extraídos do documento
+              </span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="cli-nome">Nome completo *</label>
+            <input type="text" id="cli-nome" class="form-control" required placeholder="Ex: João da Silva">
+          </div>
+          <div class="form-group">
+            <label for="cli-cpf">CPF *</label>
+            <input type="text" id="cli-cpf" class="form-control" required placeholder="000.000.000-00">
+          </div>
+          <div class="form-group">
+            <label for="cli-whatsapp">WhatsApp *</label>
+            <input type="text" id="cli-whatsapp" class="form-control" required placeholder="(00) 00000-0000">
+          </div>
+          <div class="form-group">
+            <label for="cli-email">Email (opcional)</label>
+            <input type="email" id="cli-email" class="form-control" placeholder="Ex: joao@email.com">
+          </div>
+          <div class="form-group">
+            <label for="cli-endereco">Endereço (opcional)</label>
+            <input type="text" id="cli-endereco" class="form-control" placeholder="Rua, número, cidade/UF">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-novo-cliente')">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btn-salvar-cliente">Salvar cliente</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVO HONORÁRIO -->
+  <div class="modal-overlay" id="modal-novo-honorario">
+    <div class="modal modal-fullscreen-mobile" style="max-width: 600px;">
+      <div class="modal-header">
+        <div>
+          <h2>Novo Honorário</h2>
+          <p style="font-size: 12px;" id="modal-nh-cliente-sub">Cliente: -</p>
+        </div>
+        <button class="btn-icon" onclick="closeModal('modal-novo-honorario')">×</button>
+      </div>
+      <form onsubmit="handleSaveHonorario(event)">
+        <div class="modal-body">
+          <!-- SEÇÃO 1: Dados do Processo -->
+          <div style="font-weight: bold; margin-bottom: 12px; color: var(--primary); border-bottom: 1px solid var(--gray-border); padding-bottom: 4px;">1. Dados do Processo</div>
+          <!-- PROCESSO OPCIONAL -->
+          <div class="form-group">
+            <label for="nh-processo">Número do Processo (opcional)</label>
+            <input type="text" id="nh-processo" class="form-control" placeholder="0000000-00.0000.0.00.0000">
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <div class="form-group">
+                <label for="nh-area">Área *</label>
+                <select id="nh-area" class="form-control" required>
+                  <option value="Trabalhista">Trabalhista</option>
+                  <option value="Cível" selected>Cível</option>
+                  <option value="Família">Família</option>
+                  <option value="Criminal">Criminal</option>
+                  <option value="Previdenciário">Previdenciário</option>
+                  <option value="Tributário">Tributário</option>
+                  <option value="Consumidor">Consumidor</option>
+                  <option value="Outro">Outro</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="form-group">
+                <label for="nh-tribunal">Tribunal *</label>
+                <select id="nh-tribunal" class="form-control" required>
+                  <option value="TJRS" selected>TJRS</option>
+                  <option value="TJSP">TJSP</option>
+                  <option value="TJRJ">TJRJ</option>
+                  <option value="TRF4">TRF4</option>
+                  <option value="TST">TST</option>
+                  <option value="STJ">STJ</option>
+                  <option value="Outro">Outro</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="nh-parte-contraria">Parte Contrária (opcional)</label>
+            <input type="text" id="nh-parte-contraria" class="form-control" placeholder="Ex: Manserv S.A.">
+          </div>
+
+          <!-- SEÇÃO 2: Tipo de Honorário -->
+          <div style="font-weight: bold; margin-top: 24px; margin-bottom: 12px; color: var(--primary); border-bottom: 1px solid var(--gray-border); padding-bottom: 4px;">2. Tipo de Honorário</div>
+          <div class="radio-group">
+            <label class="radio-option selected" id="opt-tipo-fixo" onclick="setNhTipo('fixo_parcelado')">
+              <input type="radio" name="nh-tipo" value="fixo_parcelado" checked>
+              <div>
+                <strong>Valor fixo parcelado</strong>
+                <p style="font-size: 11px;">Contrato fechado dividido em parcelas normais.</p>
+              </div>
+            </label>
+            <label class="radio-option" id="opt-tipo-exitum" onclick="setNhTipo('ad_exitum')">
+              <input type="radio" name="nh-tipo" value="ad_exitum">
+              <div>
+                <strong>Percentual ad exitum</strong>
+                <p style="font-size: 11px;">Recebe apenas no sucesso/sentença final.</p>
+              </div>
+            </label>
+            <label class="radio-option" id="opt-tipo-recorrente" onclick="setNhTipo('recorrente')">
+              <input type="radio" name="nh-tipo" value="recorrente">
+              <div>
+                <strong>Recorrente mensal</strong>
+                <p style="font-size: 11px;">Mensalidade regular (assessoria contínua).</p>
+              </div>
+            </label>
+            <!-- AJUSTE 3: QUARTA OPÇÃO DE HONORÁRIO: FIXO + ÊXITO -->
+            <label class="radio-option" id="opt-tipo-fixo-exitum" onclick="setNhTipo('fixo_exitum')">
+              <input type="radio" name="nh-tipo" value="fixo_exitum">
+              <div>
+                <strong>Fixo + Êxito</strong>
+                <p style="font-size: 11px;">Entrada fixa agora + percentual sobre o resultado final.</p>
+              </div>
+            </label>
+          </div>
+
+          <!-- INPUTS DINÂMICOS TIPO FIXED -->
+          <div id="nh-inputs-fixo">
+            <div class="form-group">
+              <label for="nh-valor-total">Valor Total *</label>
+              <input type="text" id="nh-valor-total" class="form-control" placeholder="R$ 0,00" value="R$ 3.600,00">
+            </div>
+            <div class="row">
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="nh-parcelas">Parcelas *</label>
+                  <select id="nh-parcelas" class="form-control" onchange="calcValParcela()">
+                    <option value="1">1x (À vista)</option>
+                    <option value="2">2x</option>
+                    <option value="3" selected>3x</option>
+                    <option value="4">4x</option>
+                    <option value="5">5x</option>
+                    <option value="6">6x</option>
+                    <option value="8">8x</option>
+                    <option value="10">10x</option>
+                    <option value="12">12x</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="nh-frequencia">Frequência *</label>
+                  <select id="nh-frequencia" class="form-control">
+                    <option value="Mensal" selected>Mensal</option>
+                    <option value="Quinzenal">Quinzenal</option>
+                    <option value="Única">Única</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <!-- AJUSTE 3: CONTAINER PARA PAGAMENTO À VISTA IMEDIATO -->
+            <div id="nh-inputs-a-vista-pago-container" style="display: none; margin-bottom: 16px;">
+              <div class="checkbox-group">
+                <input type="checkbox" id="nh-a-vista-pago">
+                <label for="nh-a-vista-pago" style="margin-bottom: 0; font-weight: bold; color: var(--success);">✓ Marcar como já pago (pagamento realizado hoje)</label>
+              </div>
+            </div>
+            <div style="background-color: var(--gray-bg); padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+              <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: bold;">Valor calculated por parcela:</span>
+              <div style="font-size: 18px; font-weight: bold; color: var(--primary);" id="nh-calc-parcela-visual">R$ 1.200,00</div>
+            </div>
+            <div class="form-group">
+              <label for="nh-data-primeira">Data da 1ª Parcela *</label>
+              <input type="date" id="nh-data-primeira" class="form-control">
+            </div>
+          </div>
+
+          <!-- INPUTS DINÂMICOS TIPO EXITUM -->
+          <div id="nh-inputs-exitum" style="display: none;">
+            <div class="row">
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="nh-percentual">Percentual *</label>
+                  <input type="number" id="nh-percentual" class="form-control" placeholder="Ex: 30" value="30">
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="nh-causa-estimada">Valor Estimado Causa</label>
+                  <input type="text" id="nh-causa-estimada" class="form-control" placeholder="R$ 0,00" value="R$ 36.000,00">
+                </div>
+              </div>
+            </div>
+            <div style="background-color: var(--gray-bg); padding: 12px; border-radius: 8px; margin-bottom: 16px;" id="nh-calc-estimado-box">
+              <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: bold;">Honorário Estimado:</span>
+              <div style="font-size: 18px; font-weight: bold; color: var(--primary);" id="nh-calc-estimado-visual">R$ 10.800,00 (30% de causa)</div>
+            </div>
+            <p style="font-size: 11px; color: var(--text-muted);">Obs: O valor final da parcela de sucesso será atualizado de forma manual após sentença favorável ou acordo.</p>
+          </div>
+
+          <!-- INPUTS DINÂMICOS TIPO RECORRENTE -->
+          <div id="nh-inputs-recorrente" style="display: none;">
+            <div class="form-group">
+              <label for="nh-valor-mensal">Valor Mensal *</label>
+              <input type="text" id="nh-valor-mensal" class="form-control" placeholder="R$ 0,00" value="R$ 500,00">
+            </div>
+            <div class="row">
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="nh-recorrente-inicio">Data Início *</label>
+                  <input type="date" id="nh-recorrente-inicio" class="form-control">
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-group" id="nh-recorrente-fim-group">
+                  <label for="nh-recorrente-fim">Data Fim</label>
+                  <input type="date" id="nh-recorrente-fim" class="form-control">
+                </div>
+              </div>
+            </div>
+            <div class="form-group checkbox-group">
+              <input type="checkbox" id="nh-sem-data-fim" onchange="toggleRecorrenteDataFim()">
+              <label for="nh-sem-data-fim" style="margin-bottom: 0;">Sem data fim (repete mensalmente de forma contínua)</label>
+            </div>
+          </div>
+
+          <!-- INPUTS DINÂMICOS TIPO FIXO + ÊXITO -->
+          <div id="nh-inputs-fixo-exitum" style="display: none;">
+            <div class="row">
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="nh-fixo-exitum-entrada">Valor Fixo de Entrada *</label>
+                  <input type="text" id="nh-fixo-exitum-entrada" class="form-control" placeholder="R$ 0,00" value="R$ 1.500,00">
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="nh-fixo-exitum-percentual">Percentual de Êxito (%) *</label>
+                  <input type="number" id="nh-fixo-exitum-percentual" class="form-control" placeholder="Ex: 20" value="20" min="0" max="100">
+                </div>
+              </div>
+            </div>
+            <p style="font-size: 11px; color: var(--text-muted);">Obs: O valor de entrada será registrado como parcela inicial e o êxito (%) será apurado no encerramento.</p>
+          </div>
+
+          <!-- SEÇÃO 3: Chave PIX -->
+          <div style="font-weight: bold; margin-top: 24px; margin-bottom: 12px; color: var(--primary); border-bottom: 1px solid var(--gray-border); padding-bottom: 4px;">3. Chave PIX Recebimento</div>
+          <div class="form-group">
+            <label for="nh-pix">Chave PIX *</label>
+            <input type="text" id="nh-pix" class="form-control" required value="034.994.430-07">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-novo-honorario')">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btn-salvar-honorario">Salvar honorário</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- POPUP DE CONFIRMAÇÃO DO HONORÁRIO SALVO -->
+  <div class="modal-overlay" id="modal-confirmacao-honorario">
+    <div class="modal" style="max-width: 480px;">
+      <div class="modal-body text-center">
+        <div style="font-size: 48px; color: var(--success); margin-bottom: 12px;">✅</div>
+        <h2>Honorário Cadastrado!</h2>
+        <p style="font-size: 13px;">As parcelas foram registradas com sucesso no sistema.</p>
+
+        <div class="success-summary-box text-center" id="nh-success-details">
+          <!-- Dynamically filled on save -->
+        </div>
+
+        <p style="font-size: 12px; color: var(--text-muted); margin-top: 16px;">
+          Você receberá notificação 2 dias antes de cada vencimento para enviar o lembrete via WhatsApp.
+        </p>
+      </div>
+      <div class="modal-footer" style="justify-content: center;">
+        <button class="btn btn-secondary" onclick="closeModal('modal-confirmacao-honorario'); window.location.hash = '#/dashboard';">Ver dashboard</button>
+        <button class="btn btn-primary" id="btn-conf-novo-hon">Novo honorário</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ENVIAR LEMBRETE VIA WHATSAPP -->
+  <div class="modal-overlay" id="modal-enviar-lembrete">
+    <div class="modal" style="max-width: 500px;">
+      <div class="modal-header">
+        <h2 style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 18px;">📱</span> Enviar Lembrete via WhatsApp
+        </h2>
+        <button class="btn-icon" onclick="closeModal('modal-enviar-lembrete')">×</button>
+      </div>
+      <div class="modal-body">
+        <div style="margin-bottom: 12px;">
+          <strong>Para:</strong> <span id="lembrete-destinatario">-</span><br>
+          <strong>WhatsApp:</strong> <span id="lembrete-whatsapp-num">-</span>
+        </div>
+        <!-- AJUSTE 2: CAMPO DE CÓDIGO DE BARRAS DE BOLETO -->
+        <div class="form-group">
+          <label for="lembrete-boleto-codigo">Código de barras do boleto (opcional)</label>
+          <input type="text" id="lembrete-boleto-codigo" class="form-control" placeholder="Cole aqui o código de barras" oninput="generateLembreteMessageText()">
+        </div>
+        <div class="form-group">
+          <label for="lembrete-mensagem">Mensagem (editável):</label>
+          <textarea id="lembrete-mensagem" rows="12" class="form-control" style="font-family: monospace; font-size: 12px; resize: none;"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-enviar-lembrete')">Cancelar</button>
+        <button class="btn btn-success" id="btn-enviar-whatsapp">Copiar e abrir WhatsApp</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AJUSTE 1: MODAL CONFIRMAR RECEBIMENTO -->
+  <div class="modal-overlay" id="modal-confirmar-recebimento">
+    <div class="modal" style="max-width: 440px;">
+      <div class="modal-header">
+        <h2>Confirmar Recebimento</h2>
+        <button class="btn-icon" onclick="closeModal('modal-confirmar-recebimento')">×</button>
+      </div>
+      <form onsubmit="handleExecuteRecebimento(event)">
+        <div class="modal-body">
+          <div style="background-color: var(--primary-light); padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+            <strong>Cliente:</strong> <span id="cr-cliente-nome">-</span><br>
+            <strong>Parcela:</strong> <span id="cr-parcela-info">-</span> • <strong id="cr-parcela-valor">-</strong>
+          </div>
+
+          <div class="form-group">
+            <label>Quem efetuou o pagamento?</label>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                <input type="radio" name="cr-origem" value="contratual" checked onchange="toggleRecebimentoOrigem()">
+                Cliente (honorário contratual)
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                <input type="radio" name="cr-origem" value="sucumbencial" onchange="toggleRecebimentoOrigem()">
+                Parte contrária (honorário sucumbencial)
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group" id="cr-pagador-doc-group" style="display: none;">
+            <label for="cr-pagador-doc">CPF/CNPJ do pagador</label>
+            <input type="text" id="cr-pagador-doc" class="form-control" placeholder="000.000.000-00">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-confirmar-recebimento')">Cancelar</button>
+          <button type="submit" class="btn btn-success">Confirmar Pagamento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIRMAR PAGAMENTO LINK PUBLICO -->
+  <div class="modal-overlay" id="modal-public-confirm-payment">
+    <div class="modal" style="max-width: 400px;">
+      <div class="modal-body text-center" style="padding: 24px;">
+        <div style="font-size: 40px; margin-bottom: 12px;">❓</div>
+        <h3>Confirmar Pagamento</h3>
+        <p style="margin-top: 8px; font-size: 13px;" id="public-confirm-text">Tem certeza que já efetuou o pagamento?</p>
+      </div>
+      <div class="modal-footer" style="justify-content: center;">
+        <button class="btn btn-secondary" onclick="closeModal('modal-public-confirm-payment')">Cancelar</button>
+        <button class="btn btn-success" onclick="executePublicConfirmPayment()">Sim, confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT & CONTROLLERS -->
+  <script>
+    // DATA LAYER & PERSISTENCE
+    const defaultClientes = [
+      {
+        id: 1,
+        nome: "João Silva",
+        cpf: "321.654.987-11",
+        whatsapp: "(53) 99123-4567",
+        email: "joao@email.com",
+        endereco: "Rua das Flores, 123 - Pelotas/RS"
+      },
+      {
+        id: 2,
+        nome: "Maria Oliveira",
+        cpf: "198.765.432-00",
+        whatsapp: "(51) 98765-4321",
+        email: "maria@email.com",
+        endereco: ""
+      },
+      {
+        id: 3,
+        nome: "Carlos Melo",
+        cpf: "543.210.987-00",
+        whatsapp: "(53) 99888-7766",
+        email: "carlos@email.com",
+        endereco: ""
+      }
+    ];
+
+    // Reference dates based on May 24, 2026 current time
+    const defaultHonorarios = [
+      {
+        id: 1,
+        clienteId: 1,
+        processo: "0032847-21.2024.8.21.0001",
+        area: "Trabalhista",
+        tribunal: "TJRS",
+        parteContraria: "MANSERV S.A.",
+        tipo: "fixo_parcelado",
+        valorTotal: 3600,
+        parcelas: [
+          {
+            numero: 1,
+            valor: 1200,
+            vencimento: "2026-05-15",
+            status: "pago",
+            dataPagamento: "2026-05-14"
+          },
+          {
+            numero: 2,
+            valor: 1200,
+            vencimento: "2026-05-26",
+            status: "vencendo"
+          },
+          {
+            numero: 3,
+            valor: 1200,
+            vencimento: "2026-06-24",
+            status: "pendente"
+          }
+        ],
+        chavePix: "034.994.430-07",
+        linkPublico: "abc123"
+      },
+      {
+        id: 2,
+        clienteId: 2,
+        processo: "1234567-89.2023.8.21.0001",
+        area: "Família",
+        tribunal: "TJRS",
+        parteContraria: "",
+        tipo: "fixo_parcelado",
+        valorTotal: 1800,
+        parcelas: [
+          {
+            numero: 1,
+            valor: 900,
+            vencimento: "2026-04-29",
+            status: "atrasado"
+          },
+          {
+            numero: 2,
+            valor: 900,
+            vencimento: "2026-05-30",
+            status: "pendente"
+          }
+        ],
+        chavePix: "034.994.430-07",
+        linkPublico: "def456"
+      },
+      {
+        id: 3,
+        clienteId: 3,
+        processo: "9876543-21.2025.8.21.0001",
+        area: "Cível",
+        tribunal: "TJRS",
+        parteContraria: "",
+        tipo: "fixo_parcelado",
+        valorTotal: 5000,
+        parcelas: [
+          {
+            numero: 1,
+            valor: 5000,
+            vencimento: "2026-12-01",
+            status: "pendente"
+          }
+        ],
+        chavePix: "034.994.430-07",
+        linkPublico: "ghi789"
+      }
+    ];
+
+    // STATE CONTROLLERS
+    let clientes = JSON.parse(localStorage.getItem('comarca_clientes')) || defaultClientes;
+    let honorarios = JSON.parse(localStorage.getItem('comarca_honorarios')) || defaultHonorarios;
+    let currentFilter = 'todos';
+    let globalActiveHonorarioType = 'fixo_parcelado';
+    let tempActiveLembreteData = null;
+    let selectedClienteIdForHonorario = null;
+    let tempPublicLinkData = null;
+    let editingClienteId = null;
+    let tempPaymentHonorarioId = null;
+    let tempPaymentParcelaNumero = null;
+
+    function saveToStorage() {
+      localStorage.setItem('comarca_clientes', JSON.stringify(clientes));
+      localStorage.setItem('comarca_honorarios', JSON.stringify(honorarios));
+    }
+
+    // CALCULATE STATUSES DYNAMICALLY based on May 24, 2026
+    function resolveStatus(parcela) {
+      if (parcela.status === 'pago') return 'pago';
+      if (parcela.status === 'pago_verificacao') return 'pago_verificacao';
+
+      const today = new Date();
+      today.setHours(0,0,0,0);
+
+      const parts = parcela.vencimento.split('-');
+      const dueDate = new Date(parts[0], parts[1] - 1, parts[2]);
+      dueDate.setHours(0,0,0,0);
+
+      if (dueDate < today) {
+        return 'atrasado';
+      }
+
+      const diffTime = dueDate - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays >= 0 && diffDays <= 2) {
+        return 'vencendo';
+      }
+
+      return 'pendente';
+    }
+
+    // COMPARAÇÃO DE PERÍODO DO DASHBOARD
+    function checkPeriod(dateStr) {
+      const select = document.getElementById('filtro-periodo-select');
+      if (!select) return true;
+
+      const opt = select.value;
+      const dateVal = new Date(dateStr + "T12:00:00");
+      const today = new Date();
+
+      if (opt === 'todos') {
+        return true;
+      }
+      if (opt === 'este_mes') {
+        return dateVal.getMonth() === today.getMonth() && dateVal.getFullYear() === today.getFullYear();
+      }
+      if (opt === 'este_ano') {
+        return dateVal.getFullYear() === today.getFullYear();
+      }
+      if (opt === 'customizado') {
+        const deStr = document.getElementById('filtro-data-de').value;
+        const ateStr = document.getElementById('filtro-data-ate').value;
+        if (!deStr && !ateStr) return true;
+
+        const deDate = deStr ? new Date(deStr + "T00:00:00") : null;
+        const ateDate = ateStr ? new Date(ateStr + "T23:59:59") : null;
+
+        if (deDate && dateVal < deDate) return false;
+        if (ateDate && dateVal > ateDate) return false;
+        return true;
+      }
+      return true;
+    }
+
+    function changePeriodFilter() {
+      const select = document.getElementById('filtro-periodo-select');
+      const customDates = document.getElementById('periodo-customizado-datas');
+      if (select.value === 'customizado') {
+        customDates.style.display = 'flex';
+      } else {
+        customDates.style.display = 'none';
+      }
+      renderDashboard();
+    }
+
+    // SPA HASH ROUTING
+    function router() {
+      const hash = window.location.hash || '#/login';
+      
+      document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+      document.getElementById('sidebar').classList.remove('active');
+
+      const loggedIn = sessionStorage.getItem('comarca_logged') === 'true';
+      let match;
+      
+      if (hash.startsWith('#/h/')) {
+        const publicHash = hash.substring(4);
+        renderPublicView(publicHash);
+        return;
+      }
+
+      if (!loggedIn && hash !== '#/login') {
+        window.location.hash = '#/login';
+        return;
+      }
+
+      if (hash === '#/login') {
+        document.getElementById('layout-app').style.display = 'none';
+        document.getElementById('screen-login').style.display = 'block';
+        document.getElementById('screen-public').style.display = 'none';
+        return;
+      } else {
+        document.getElementById('layout-app').style.display = 'block';
+        document.getElementById('screen-login').style.display = 'none';
+        document.getElementById('screen-public').style.display = 'none';
+      }
+
+      document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
+
+      if (hash === '#/dashboard') {
+        document.getElementById('link-dashboard').classList.add('active');
+        showScreen('screen-dashboard');
+        renderDashboard();
+      } else if (hash === '#/clientes') {
+        document.getElementById('link-clientes').classList.add('active');
+        showScreen('screen-clientes');
+        renderClientes();
+      } else if (hash === '#/novo-cliente') {
+        showScreen('screen-clientes');
+        renderClientes();
+        editingClienteId = null;
+        document.querySelector('#modal-novo-cliente h2').innerText = 'Novo Cliente';
+        document.getElementById('btn-salvar-cliente').innerText = 'Salvar cliente';
+        resetUploadZone();
+        openModal('modal-novo-cliente');
+      } else if ((match = hash.match(/^#\/novo-honorario\/(\d+)$/))) {
+        const cId = parseInt(match[1]);
+        selectedClienteIdForHonorario = cId;
+        showScreen('screen-clientes');
+        renderClientes();
+        openModalNovoHonorario(cId);
+      } else if ((match = hash.match(/^#\/honorario\/(\d+)$/))) {
+        const hId = parseInt(match[1]);
+        showScreen('screen-honorario-detalhes');
+        renderHonorarioDetalhes(hId);
+      } else if (hash === '#/relatorio-ir') {
+        document.getElementById('link-relatorio').classList.add('active');
+        showScreen('screen-relatorio-ir');
+        populateYearSelect();
+        renderRelatorioIR();
+      } else if (hash === '#/gerar-contrato') {
+        // AJUSTE 4: ROTA GERAR CONTRATO
+        document.getElementById('link-contratos').classList.add('active');
+        showScreen('screen-contratos');
+        populateContratosClienteSelect();
+        loadContratoTemplate();
+      } else {
+        window.location.hash = '#/dashboard';
+      }
+    }
+
+    function showScreen(screenId) {
+      document.querySelectorAll('.view-screen').forEach(s => s.style.display = 'none');
+      document.getElementById(screenId).style.display = 'block';
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+    }
+
+    // AUTH SIMULATION
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      sessionStorage.setItem('comarca_logged', 'true');
+      showToast('Acesso realizado com sucesso!', 'success');
+      window.location.hash = '#/dashboard';
+    }
+
+    function logout() {
+      sessionStorage.removeItem('comarca_logged');
+      window.location.hash = '#/login';
+    }
+
+    // MODAL STATE MANAGEMENT
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+      }
+    });
+
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('active');
+        }
+      });
+    });
+
+    // TOAST SYSTEM
+    function showToast(msg, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span> ${msg}`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // RENDER: DASHBOARD
+    function filterDashboard(type) {
+      currentFilter = type;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.innerText.toLowerCase().includes(type) || (type === 'todos' && btn.innerText.includes('Todos'))) {
+          btn.classList.add('active');
+        }
+      });
+      renderDashboard();
+    }
+
+    // SIMULATED DOCUMENT UPLOAD HANDLER
+    function handleDocUpload(e) {
+      if (!e.target.files || e.target.files.length === 0) return;
+
+      const defZone = document.getElementById('upload-content-default');
+      const loadingZone = document.getElementById('upload-content-loading');
+      const successZone = document.getElementById('upload-content-success');
+
+      defZone.style.display = 'none';
+      loadingZone.style.display = 'flex';
+      successZone.style.display = 'none';
+
+      setTimeout(() => {
+        loadingZone.style.display = 'none';
+        successZone.style.display = 'flex';
+
+        document.getElementById('cli-nome').value = "João da Silva Santos";
+        document.getElementById('cli-cpf').value = "034.994.430-07";
+        document.getElementById('cli-whatsapp').value = "(53) 99123-4567";
+        document.getElementById('cli-email').value = "joao.santos@gmail.com";
+        document.getElementById('cli-endereco').value = "Rua XV de Novembro, 842, Pelotas/RS";
+
+        showToast('Dados extraídos do documento!', 'success');
+      }, 1500);
+    }
+
+    function resetUploadZone() {
+      document.getElementById('cli-doc-upload').value = '';
+      document.getElementById('upload-content-default').style.display = 'flex';
+      document.getElementById('upload-content-loading').style.display = 'none';
+      document.getElementById('upload-content-success').style.display = 'none';
+    }
+
+    function renderDashboard() {
+      const listElement = document.getElementById('dashboard-list');
+      listElement.innerHTML = '';
+
+      let sumPendentes = 0;
+      let countPendentes = 0;
+      let sumUrgentes = 0;
+      let countUrgentes = 0;
+      let sumPagos = 0;
+      let countPagos = 0;
+
+      let badgeVencendoCount = 0;
+      let badgeAtrasadoCount = 0;
+
+      const itemsToRender = [];
+
+      honorarios.forEach(hon => {
+        const client = clientes.find(c => c.id === hon.clienteId) || { nome: "Cliente Removido" };
+        
+        hon.parcelas.forEach(par => {
+          if (!checkPeriod(par.vencimento)) return;
+
+          const currentStatus = resolveStatus(par);
+          
+          if (currentStatus === 'pago' || currentStatus === 'pago_verificacao') {
+            sumPagos += par.valor;
+            countPagos++;
+          } else if (currentStatus === 'vencendo' || currentStatus === 'atrasado') {
+            sumUrgentes += par.valor;
+            countUrgentes++;
+            if (currentStatus === 'vencendo') badgeVencendoCount++;
+            if (currentStatus === 'atrasado') badgeAtrasadoCount++;
+          } else {
+            sumPendentes += par.valor;
+            countPendentes++;
+          }
+
+          itemsToRender.push({
+            id: hon.id,
+            clientName: client.nome,
+            clientWhatsapp: client.whatsapp,
+            processo: hon.processo,
+            area: hon.area,
+            tribunal: hon.tribunal,
+            numero: par.numero,
+            totalParcelas: hon.parcelas.length,
+            valor: par.valor,
+            vencimento: par.vencimento,
+            status: currentStatus,
+            dataPagamento: par.dataPagamento,
+            linkPublico: hon.linkPublico,
+            chavePix: hon.chavePix
+          });
+        });
+      });
+
+      document.getElementById('summary-pendentes-val').innerText = formatCurrency(sumPendentes);
+      document.getElementById('summary-pendentes-desc').innerText = `${countPendentes} lembretes pendentes`;
+      
+      document.getElementById('summary-urgentes-val').innerText = formatCurrency(sumUrgentes);
+      document.getElementById('summary-urgentes-desc').innerText = `${countUrgentes} lembretes urgentes`;
+
+      document.getElementById('summary-pagos-val').innerText = formatCurrency(sumPagos);
+      document.getElementById('summary-pagos-desc').innerText = `${countPagos} confirmados`;
+
+      document.getElementById('badge-vencendo').innerText = badgeVencendoCount;
+      document.getElementById('badge-atrasado').innerText = badgeAtrasadoCount;
+
+      let filteredItems = itemsToRender;
+      if (currentFilter !== 'todos') {
+        filteredItems = itemsToRender.filter(item => item.status === currentFilter);
+      }
+
+      filteredItems.sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento));
+
+      if (filteredItems.length === 0) {
+        listElement.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📂</div>
+            <h3>Nenhum honorário nesta categoria</h3>
+            <p>Seus lançamentos aparecerão aqui conforme as datas.</p>
+          </div>
+        `;
+        return;
+      }
+
+      filteredItems.forEach(item => {
+        const card = document.createElement('div');
+        card.className = `card fee-card ${item.status}`;
+        
+        let statusLine = '';
+        let actionButtons = '';
+
+        if (item.status === 'atrasado') {
+          const days = calculateDaysDifference(item.vencimento);
+          statusLine = `<span style="color: var(--danger); font-weight: 600;">⚠️ Venceu há ${days} dias (${formatDate(item.vencimento)})</span>`;
+          actionButtons = `
+            <button class="btn btn-primary" onclick="openModalLembrete(${JSON.stringify(item).replace(/"/g, '&quot;')})">Enviar lembrete</button>
+            <button class="btn btn-success" onclick="marcarComoPago(${item.id}, ${item.numero})">Marcar como pago</button>
+          `;
+        } else if (item.status === 'vencendo') {
+          const days = calculateDaysDifference(item.vencimento);
+          statusLine = `<span style="color: var(--warning); font-weight: 600;">🕒 Vence em ${Math.abs(days)} dias (${formatDate(item.vencimento)})</span>`;
+          actionButtons = `
+            <button class="btn btn-primary" onclick="openModalLembrete(${JSON.stringify(item).replace(/"/g, '&quot;')})">Enviar lembrete</button>
+            <button class="btn btn-success" onclick="marcarComoPago(${item.id}, ${item.numero})">Marcar como pago</button>
+          `;
+        } else if (item.status === 'pago') {
+          statusLine = `<span style="color: var(--success); font-weight: 600;">✓ Pago em ${formatDate(item.dataPagamento || item.vencimento)}</span>`;
+        } else if (item.status === 'pago_verificacao') {
+          statusLine = `<span style="color: var(--warning); font-weight: 600;">⌛ CONFIRMADO PELO CLIENTE (Aguardando Verificação)</span>`;
+          actionButtons = `
+            <button class="btn btn-success" onclick="marcarComoPago(${item.id}, ${item.numero})">Aprovar Pago</button>
+          `;
+        } else {
+          statusLine = `<span style="color: var(--text-muted);">📅 Vence em ${formatDate(item.vencimento)}</span>`;
+          actionButtons = `
+            <button class="btn btn-secondary" onclick="openModalLembrete(${JSON.stringify(item).replace(/"/g, '&quot;')})">Enviar lembrete</button>
+            <a href="#/honorario/${item.id}" class="btn btn-secondary">Ver detalhes</a>
+          `;
+        }
+
+        const statusLabel = {
+          'atrasado': '🔴 ATRASADO',
+          'vencendo': '🟡 VENCENDO',
+          'pago': '✅ PAGO',
+          'pago_verificacao': '⏳ VERIFICAÇÃO',
+          'pendente': '⚪ PENDENTE'
+        }[item.status];
+
+        card.innerHTML = `
+          <div class="fee-card-header">
+            <div>
+              <div class="fee-card-title">${item.clientName}</div>
+              <div class="fee-card-process">Processo: ${item.processo || 'Não informado'} ${item.area ? `(${item.area} • ${item.tribunal})` : ''}</div>
+            </div>
+            <span class="badge" style="background-color: var(--gray-bg); color: var(--text); border: 1px solid var(--gray-border);">${statusLabel}</span>
+          </div>
+          <div class="fee-card-middle">
+            <div class="fee-card-meta">
+              Parcela <strong>${item.numero}/${item.totalParcelas}</strong> • <strong>${formatCurrency(item.valor)}</strong>
+            </div>
+            <div>
+              ${statusLine}
+            </div>
+          </div>
+          ${actionButtons ? `<div class="fee-card-actions">${actionButtons}</div>` : ''}
+        `;
+        listElement.appendChild(card);
+      });
+    }
+
+    // FUNÇÃO EDITAR CLIENTE
+    function editarCliente(id) {
+      const cli = clientes.find(c => c.id === id);
+      if (!cli) return;
+      editingClienteId = id;
+      
+      document.querySelector('#modal-novo-cliente h2').innerText = 'Editar Cliente';
+      document.getElementById('btn-salvar-cliente').innerText = 'Atualizar cliente';
+      
+      document.getElementById('cli-nome').value = cli.nome;
+      document.getElementById('cli-cpf').value = cli.cpf;
+      document.getElementById('cli-whatsapp').value = cli.whatsapp;
+      document.getElementById('cli-email').value = cli.email || '';
+      document.getElementById('cli-endereco').value = cli.endereco || '';
+      
+      resetUploadZone();
+      openModal('modal-novo-cliente');
+    }
+
+    // RENDER: CLIENTS
+    function renderClientes() {
+      const container = document.getElementById('clientes-list');
+      container.innerHTML = '';
+
+      if (clientes.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">👥</div>
+            <h3>Nenhum cliente cadastrado</h3>
+            <p>Cadastre seu primeiro cliente para gerenciar honorários vinculados.</p>
+            <a href="#/novo-cliente" class="btn btn-primary" style="margin-top: 16px;">Cadastrar primeiro cliente</a>
+          </div>
+        `;
+        return;
+      }
+
+      clientes.forEach(cli => {
+        const clientFees = honorarios.filter(h => h.clienteId === cli.id);
+        
+        let sumPendentes = 0;
+        let activeHonorariosCount = 0;
+        let hasAtrasados = false;
+        let lastProcessNum = "Nenhum processo";
+        let lastProcessArea = "";
+
+        clientFees.forEach(hon => {
+          activeHonorariosCount++;
+          if (hon.processo) {
+            lastProcessNum = hon.processo;
+            lastProcessArea = hon.area;
+          }
+          hon.parcelas.forEach(p => {
+            const st = resolveStatus(p);
+            if (st !== 'pago') {
+              sumPendentes += p.valor;
+              if (st === 'atrasado') {
+                hasAtrasados = true;
+              }
+            }
+          });
+        });
+
+        const avatarLetters = cli.nome.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+
+        const card = document.createElement('div');
+        card.className = 'card client-card';
+        card.innerHTML = `
+          <div class="client-profile-row">
+            <div class="client-initials-avatar">${avatarLetters}</div>
+            <div>
+              <h2 style="font-size: 16px;">${cli.nome}</h2>
+              <p style="font-size: 12px; color: var(--text-muted);">CPF: ${cli.cpf} • WhatsApp: ${cli.whatsapp}</p>
+            </div>
+          </div>
+          <div class="client-details-grid">
+            <div style="margin-bottom: 8px;">
+              <strong>${activeHonorariosCount} honorário(s) cadastrado(s)</strong> • 
+              <span style="color: ${hasAtrasados ? 'var(--danger)' : 'var(--text)'}; font-weight: bold;">
+                ${hasAtrasados ? 'Atrasado' : 'Pendente'}: ${formatCurrency(sumPendentes)}
+              </span>
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted);">
+              Processo Ativo: ${lastProcessNum} ${lastProcessArea ? `(${lastProcessArea})` : ''}
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 8px;">
+            ${clientFees.length > 0 ? `<a href="#/honorario/${clientFees[0].id}" class="btn btn-secondary" style="padding: 8px 12px;">Ver honorários</a>` : ''}
+            <a href="#/novo-honorario/${cli.id}" class="btn btn-primary" style="padding: 8px 12px;">Novo honorário</a>
+            <button class="btn btn-secondary" style="padding: 8px 12px;" onclick="editarCliente(${cli.id})">✏️ Editar</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // AJUSTE 2: GERAÇÃO DA MENSAGEM DO LEMBRETE COM CÓDIGO DE BARRAS OPCIONAL
+    function generateLembreteMessageText() {
+      const item = tempActiveLembreteData;
+      if (!item) return;
+
+      const boletoCodigo = document.getElementById('lembrete-boleto-codigo').value.trim();
+      const publicUrl = `${window.location.origin}${window.location.pathname}#/h/${item.linkPublico}`;
+      
+      let boletoLine = '';
+      if (boletoCodigo) {
+        boletoLine = `💳 Boleto: ${boletoCodigo}\n`;
+      }
+
+      const textValue = `Olá ${item.clientName}!
+🔔 Lembrete amigável de honorário advocatício.
+
+Processo: ${item.processo || 'Não informado'}
+${item.area ? `(${item.area} - ${item.tribunal})` : ''}
+Parcela ${item.numero}/${item.totalParcelas}
+
+Valor: ${formatCurrency(item.valor)}
+Vence: ${formatDate(item.vencimento)}
+${boletoLine}Chave PIX para pagamento: ${item.chavePix}
+
+Link para confirmar o pagamento direto:
+${publicUrl}
+
+Quando efetuar o pagamento, confirme no link acima ou envie o comprovante por aqui.
+
+Dr. Yago Caldeira - OAB/RS 107.295`;
+
+      document.getElementById('lembrete-mensagem').value = textValue;
+    }
+
+    // MODAL ENVIAR LEMBRETE COGNITION
+    function openModalLembrete(item) {
+      tempActiveLembreteData = item;
+      document.getElementById('lembrete-destinatario').innerText = item.clientName;
+      document.getElementById('lembrete-whatsapp-num').innerText = item.clientWhatsapp;
+      document.getElementById('lembrete-boleto-codigo').value = '';
+
+      generateLembreteMessageText();
+      openModal('modal-enviar-lembrete');
+    }
+
+    // WHATSAPP TRIGGER
+    document.getElementById('btn-enviar-whatsapp').addEventListener('click', () => {
+      const msgText = document.getElementById('lembrete-mensagem').value;
+      const cleanPhone = tempActiveLembreteData.clientWhatsapp.replace(/\D/g, '');
+      
+      navigator.clipboard.writeText(msgText).then(() => {
+        showToast('Mensagem copiada para a área de transferência!', 'success');
+        closeModal('modal-enviar-lembrete');
+        
+        const waUrl = `https://wa.me/55${cleanPhone}?text=${encodeURIComponent(msgText)}`;
+        window.open(waUrl, '_blank');
+      }).catch(err => {
+        const waUrl = `https://wa.me/55${cleanPhone}?text=${encodeURIComponent(msgText)}`;
+        window.open(waUrl, '_blank');
+      });
+    });
+
+    // AJUSTE 1: CONFIRMAÇÃO DE PAGAMENTO COM ORIGEM
+    function marcarComoPago(honorarioId, numeroParcela) {
+      const targetHon = honorarios.find(h => h.id === honorarioId);
+      if (targetHon) {
+        const targetPar = targetHon.parcelas.find(p => p.numero === numeroParcela);
+        if (targetPar) {
+          const client = clientes.find(c => c.id === targetHon.clienteId) || { nome: "N/A" };
+          tempPaymentHonorarioId = honorarioId;
+          tempPaymentParcelaNumero = numeroParcela;
+          
+          document.getElementById('cr-cliente-nome').innerText = client.nome;
+          document.getElementById('cr-parcela-info').innerText = `Parcela ${targetPar.numero}/${targetHon.parcelas.length}`;
+          document.getElementById('cr-parcela-valor').innerText = formatCurrency(targetPar.valor);
+          
+          document.querySelector('input[name="cr-origem"][value="contratual"]').checked = true;
+          document.getElementById('cr-pagador-doc').value = '';
+          document.getElementById('cr-pagador-doc-group').style.display = 'none';
+          
+          openModal('modal-confirmar-recebimento');
+        }
+      }
+    }
+
+    function toggleRecebimentoOrigem() {
+      const selected = document.querySelector('input[name="cr-origem"]:checked').value;
+      const group = document.getElementById('cr-pagador-doc-group');
+      if (selected === 'sucumbencial') {
+        group.style.display = 'block';
+      } else {
+        group.style.display = 'none';
+      }
+    }
+
+    function handleExecuteRecebimento(e) {
+      e.preventDefault();
+      if (tempPaymentHonorarioId && tempPaymentParcelaNumero) {
+        const targetHon = honorarios.find(h => h.id === tempPaymentHonorarioId);
+        if (targetHon) {
+          const targetPar = targetHon.parcelas.find(p => p.numero === tempPaymentParcelaNumero);
+          if (targetPar) {
+            const origem = document.querySelector('input[name="cr-origem"]:checked').value;
+            const docPagador = document.getElementById('cr-pagador-doc').value.trim();
+
+            targetPar.status = 'pago';
+            targetPar.dataPagamento = new Date().toISOString().split('T')[0];
+            targetPar.origemPagamento = origem;
+            targetPar.docPagador = origem === 'sucumbencial' ? docPagador : '';
+            
+            saveToStorage();
+            closeModal('modal-confirmar-recebimento');
+            showToast('Pagamento confirmado com sucesso!', 'success');
+            
+            renderDashboard();
+            if (window.location.hash.startsWith('#/honorario/')) {
+              renderHonorarioDetalhes(tempPaymentHonorarioId);
+            }
+          }
+        }
+      }
+    }
+
+    // NEW CLIENT CADASTRO & EDIT
+    function handleSaveCliente(e) {
+      e.preventDefault();
+      const nome = document.getElementById('cli-nome').value.trim();
+      const cpf = document.getElementById('cli-cpf').value.trim();
+      const whatsapp = document.getElementById('cli-whatsapp').value.trim();
+      const email = document.getElementById('cli-email').value.trim();
+      const endereco = document.getElementById('cli-endereco').value.trim();
+
+      if (editingClienteId) {
+        const idx = clientes.findIndex(c => c.id === editingClienteId);
+        if (idx !== -1) {
+          clientes[idx].nome = nome;
+          clientes[idx].cpf = cpf;
+          clientes[idx].whatsapp = whatsapp;
+          clientes[idx].email = email;
+          clientes[idx].endereco = endereco;
+        }
+        editingClienteId = null;
+        showToast('Cliente atualizado com sucesso!', 'success');
+      } else {
+        const newClient = {
+          id: Date.now(),
+          nome,
+          cpf,
+          whatsapp,
+          email,
+          endereco
+        };
+        clientes.push(newClient);
+        showToast('Cliente cadastrado com sucesso!', 'success');
+        window.location.hash = `#/novo-honorario/${newClient.id}`;
+      }
+
+      saveToStorage();
+      closeModal('modal-novo-cliente');
+      
+      document.querySelector('#modal-novo-cliente h2').innerText = 'Novo Cliente';
+      document.getElementById('btn-salvar-cliente').innerText = 'Salvar cliente';
+
+      document.getElementById('cli-nome').value = '';
+      document.getElementById('cli-cpf').value = '';
+      document.getElementById('cli-whatsapp').value = '';
+      document.getElementById('cli-email').value = '';
+      document.getElementById('cli-endereco').value = '';
+      resetUploadZone();
+
+      renderClientes();
+      renderDashboard();
+    }
+
+    // FORM MASKS INTEGRATIONS
+    function applyMasks() {
+      document.getElementById('cli-cpf').addEventListener('input', function(e) {
+        let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,3})(\d{0,2})/);
+        e.target.value = !x[2] ? x[1] : x[1] + '.' + x[2] + (x[3] ? '.' + x[3] : '') + (x[4] ? '-' + x[4] : '');
+      });
+
+      // AJUSTE 1: MÁSCARA CPF/CNPJ DINÂMICA DO PAGADOR
+      document.getElementById('cr-pagador-doc').addEventListener('input', function(e) {
+        let val = e.target.value.replace(/\D/g, '');
+        if (val.length <= 11) {
+          let x = val.match(/(\d{0,3})(\d{0,3})(\d{0,3})(\d{0,2})/);
+          e.target.value = !x[2] ? x[1] : x[1] + '.' + x[2] + (x[3] ? '.' + x[3] : '') + (x[4] ? '-' + x[4] : '');
+        } else {
+          let x = val.match(/(\d{0,2})(\d{0,3})(\d{0,3})(\d{0,4})(\d{0,2})/);
+          e.target.value = !x[2] ? x[1] : x[1] + '.' + x[2] + '.' + x[3] + '/' + x[4] + (x[5] ? '-' + x[5] : '');
+        }
+      });
+
+      document.getElementById('cli-whatsapp').addEventListener('input', function(e) {
+        let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+        e.target.value = !x[2] ? (x[1] ? '(' + x[1] : '') : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+      });
+
+      const processInputs = ['nh-processo'];
+      processInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('input', function(e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,7})(\d{0,2})(\d{0,4})(\d{0,1})(\d{0,2})(\d{0,4})/);
+            if (!x) return;
+            e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2] + (x[3] ? '.' + x[3] : '') + (x[4] ? '.' + x[4] : '') + (x[5] ? '.' + x[5] : '') + (x[6] ? '.' + x[6] : '');
+          });
+        }
+      });
+
+      const currencyInputs = ['nh-valor-total', 'nh-causa-estimada', 'nh-valor-mensal', 'nh-fixo-exitum-entrada'];
+      currencyInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (!value) value = '0';
+            const floatVal = parseFloat(value) / 100;
+            e.target.value = formatCurrency(floatVal);
+            calcValParcela();
+            calcValEstExitum();
+          });
+        }
+      });
+    }
+
+    // HONORARIO FORM LOGIC
+    function openModalNovoHonorario(clienteId) {
+      const client = clientes.find(c => c.id === clienteId);
+      if (client) {
+        document.getElementById('modal-nh-cliente-sub').innerText = `Cliente: ${client.nome}`;
+        
+        document.getElementById('nh-processo').value = '';
+        document.getElementById('nh-parte-contraria').value = '';
+        document.getElementById('nh-valor-total').value = 'R$ 3.600,00';
+        document.getElementById('nh-parcelas').value = '3';
+        document.getElementById('nh-frequencia').value = 'Mensal';
+        document.getElementById('nh-data-primeira').value = new Date().toISOString().split('T')[0];
+        document.getElementById('nh-sem-data-fim').checked = false;
+        
+        setNhTipo('fixo_parcelado');
+        calcValParcela();
+        
+        openModal('modal-novo-honorario');
+      }
+    }
+
+    function setNhTipo(tipo) {
+      globalActiveHonorarioType = tipo;
+      document.querySelectorAll('.radio-option').forEach(opt => opt.classList.remove('selected'));
+      
+      document.getElementById('nh-inputs-fixo').style.display = 'none';
+      document.getElementById('nh-inputs-exitum').style.display = 'none';
+      document.getElementById('nh-inputs-recorrente').style.display = 'none';
+      document.getElementById('nh-inputs-fixo-exitum').style.display = 'none';
+
+      if (tipo === 'fixo_parcelado') {
+        document.getElementById('opt-tipo-fixo').classList.add('selected');
+        document.getElementById('nh-inputs-fixo').style.display = 'block';
+      } else if (tipo === 'ad_exitum') {
+        document.getElementById('opt-tipo-exitum').classList.add('selected');
+        document.getElementById('nh-inputs-exitum').style.display = 'block';
+        calcValEstExitum();
+      } else if (tipo === 'recorrente') {
+        document.getElementById('opt-tipo-recorrente').classList.add('selected');
+        document.getElementById('nh-inputs-recorrente').style.display = 'block';
+        document.getElementById('nh-recorrente-inicio').value = new Date().toISOString().split('T')[0];
+        toggleRecorrenteDataFim();
+      } else if (tipo === 'fixo_exitum') {
+        document.getElementById('opt-tipo-fixo-exitum').classList.add('selected');
+        document.getElementById('nh-inputs-fixo-exitum').style.display = 'block';
+      }
+      calcValParcela();
+    }
+
+    function calcValParcela() {
+      const rawVal = document.getElementById('nh-valor-total').value;
+      const total = parseCurrencyToFloat(rawVal);
+      const parts = parseInt(document.getElementById('nh-parcelas').value);
+      if (total > 0 && parts > 0) {
+        const valuePerPart = total / parts;
+        document.getElementById('nh-calc-parcela-visual').innerText = formatCurrency(valuePerPart);
+      }
+
+      // AJUSTE 3: TOGGLE DE VISIBILIDADE DO MARCAR COMO PAGO À VISTA
+      const aVistaContainer = document.getElementById('nh-inputs-a-vista-pago-container');
+      if (parts === 1 && globalActiveHonorarioType === 'fixo_parcelado') {
+        if (aVistaContainer) aVistaContainer.style.display = 'block';
+      } else {
+        if (aVistaContainer) {
+          aVistaContainer.style.display = 'none';
+          document.getElementById('nh-a-vista-pago').checked = false;
+        }
+      }
+    }
+
+    function calcValEstExitum() {
+      const rawCausa = document.getElementById('nh-causa-estimada').value;
+      const causa = parseCurrencyToFloat(rawCausa);
+      const pct = parseFloat(document.getElementById('nh-percentual').value) || 0;
+      if (causa > 0) {
+        const est = causa * (pct / 100);
+        document.getElementById('nh-calc-estimado-visual').innerText = `${formatCurrency(est)} (${pct}% da causa)`;
+      } else {
+        document.getElementById('nh-calc-estimado-visual').innerText = `R$ 0,00 (${pct}% da causa)`;
+      }
+    }
+
+    function toggleRecorrenteDataFim() {
+      const checked = document.getElementById('nh-sem-data-fim').checked;
+      const group = document.getElementById('nh-recorrente-fim-group');
+      if (checked) {
+        group.style.opacity = '0.4';
+        document.getElementById('nh-recorrente-fim').disabled = true;
+        document.getElementById('nh-recorrente-fim').value = '';
+      } else {
+        group.style.opacity = '1';
+        document.getElementById('nh-recorrente-fim').disabled = false;
+      }
+    }
+
+    // SAVE HONORARIO FORM SUBMIT
+    function handleSaveHonorario(e) {
+      e.preventDefault();
+      
+      const client = clientes.find(c => c.id === selectedClienteIdForHonorario);
+      if (!client) return;
+
+      const numProcesso = document.getElementById('nh-processo').value.trim();
+      const area = document.getElementById('nh-area').value;
+      const tribunal = document.getElementById('nh-tribunal').value;
+      const parteContraria = document.getElementById('nh-parte-contraria').value.trim();
+      const chavePix = document.getElementById('nh-pix').value.trim();
+
+      const newHon = {
+        id: Date.now(),
+        clienteId: selectedClienteIdForHonorario,
+        processo: numProcesso,
+        area,
+        tribunal,
+        parteContraria,
+        tipo: globalActiveHonorarioType,
+        chavePix,
+        linkPublico: Math.random().toString(36).substring(2, 8)
+      };
+
+      if (globalActiveHonorarioType === 'fixo_parcelado') {
+        const total = parseCurrencyToFloat(document.getElementById('nh-valor-total').value);
+        const partsCount = parseInt(document.getElementById('nh-parcelas').value);
+        const freq = document.getElementById('nh-frequencia').value;
+        const baseDate = document.getElementById('nh-data-primeira').value;
+
+        newHon.valorTotal = total;
+        newHon.parcelas = [];
+
+        const individualValue = Math.round((total / partsCount) * 100) / 100;
+        let lastAdjustedVal = total - (individualValue * (partsCount - 1));
+
+        let currentDate = new Date(baseDate + "T12:00:00");
+        
+        // AJUSTE 3: DETECÇÃO DE PAGAMENTO À VISTA IMEDIATO
+        const isPaidAVista = (partsCount === 1 && document.getElementById('nh-a-vista-pago') && document.getElementById('nh-a-vista-pago').checked);
+
+        for (let i = 1; i <= partsCount; i++) {
+          const installmentVal = (i === partsCount) ? lastAdjustedVal : individualValue;
+          
+          newHon.parcelas.push({
+            numero: i,
+            valor: installmentVal,
+            vencimento: currentDate.toISOString().split('T')[0],
+            status: isPaidAVista ? 'pago' : 'pendente',
+            dataPagamento: isPaidAVista ? new Date().toISOString().split('T')[0] : undefined,
+            origemPagamento: isPaidAVista ? 'contratual' : undefined
+          });
+
+          if (freq === 'Mensal') {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+          } else if (freq === 'Quinzenal') {
+            currentDate.setDate(currentDate.getDate() + 15);
+          }
+        }
+      } else if (globalActiveHonorarioType === 'ad_exitum') {
+        const pct = parseFloat(document.getElementById('nh-percentual').value);
+        const causa = parseCurrencyToFloat(document.getElementById('nh-causa-estimada').value);
+        const valEst = causa * (pct / 100);
+
+        newHon.valorTotal = valEst;
+        newHon.parcelas = [{
+          numero: 1,
+          valor: valEst,
+          vencimento: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split('T')[0],
+          status: 'pendente'
+        }];
+      } else if (globalActiveHonorarioType === 'recorrente') {
+        const mensal = parseCurrencyToFloat(document.getElementById('nh-valor-mensal').value);
+        const inicio = document.getElementById('nh-recorrente-inicio').value;
+        const semFim = document.getElementById('nh-sem-data-fim').checked;
+        const fim = document.getElementById('nh-recorrente-fim').value;
+
+        newHon.valorTotal = mensal;
+        newHon.parcelas = [];
+
+        let currentRecDate = new Date(inicio + "T12:00:00");
+        let cycleCount = semFim ? 12 : 1;
+
+        if (!semFim && fim) {
+          const start = new Date(inicio);
+          const end = new Date(fim);
+          cycleCount = Math.max(1, (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1);
+        }
+
+        for (let i = 1; i <= cycleCount; i++) {
+          newHon.parcelas.push({
+            numero: i,
+            valor: mensal,
+            vencimento: currentRecDate.toISOString().split('T')[0],
+            status: 'pendente'
+          });
+          currentRecDate.setMonth(currentRecDate.getMonth() + 1);
+        }
+      } else if (globalActiveHonorarioType === 'fixo_exitum') {
+        const entrada = parseCurrencyToFloat(document.getElementById('nh-fixo-exitum-entrada').value);
+        const pctExito = parseFloat(document.getElementById('nh-fixo-exitum-percentual').value) || 0;
+
+        newHon.valorTotal = entrada;
+        newHon.percentualExito = pctExito;
+        newHon.parcelas = [
+          {
+            numero: 1,
+            valor: entrada,
+            vencimento: new Date().toISOString().split('T')[0],
+            status: 'pendente',
+            tipo_parcela: 'entrada'
+          },
+          {
+            numero: 2,
+            valor: 0, 
+            vencimento: new Date(new Date().setMonth(new Date().getMonth() + 6)).toISOString().split('T')[0],
+            status: 'pendente',
+            tipo_parcela: 'exito',
+            descricao: `Êxito estimado (${pctExito}%)`
+          }
+        ];
+      }
+
+      honorarios.push(newHon);
+      saveToStorage();
+      closeModal('modal-novo-honorario');
+
+      const succBox = document.getElementById('nh-success-details');
+      const valDesc = newHon.tipo === 'fixo_parcelado' 
+        ? `${newHon.parcelas.length}x de ${formatCurrency(newHon.parcelas[0].valor)}`
+        : newHon.tipo === 'fixo_exitum'
+        ? `Entrada de ${formatCurrency(newHon.parcelas[0].valor)} + ${newHon.percentualExito}% Êxito`
+        : `${formatCurrency(newHon.valorTotal)}`;
+
+      succBox.innerHTML = `
+        <strong>Cliente:</strong> ${client.nome}<br>
+        <strong>Processo:</strong> ${numProcesso || 'Não informado'} (${area})<br>
+        <strong>Valor:</strong> ${valDesc}<br>
+        <div style="font-size: 11px; margin-top: 10px; text-align: left;">
+          <strong>Vencimentos gerados:</strong>
+          <ul style="padding-left: 16px; margin-top: 4px;">
+            ${newHon.parcelas.slice(0, 3).map(p => `<li>${formatDate(p.vencimento)} - ${p.valor > 0 ? formatCurrency(p.valor) : p.descricao}</li>`).join('')}
+            ${newHon.parcelas.length > 3 ? `<li>...e mais ${newHon.parcelas.length - 3} parcelas.</li>` : ''}
+          </ul>
+        </div>
+      `;
+
+      document.getElementById('btn-conf-novo-hon').onclick = () => {
+        closeModal('modal-confirmacao-honorario');
+        openModalNovoHonorario(client.id);
+      };
+
+      openModal('modal-confirmacao-honorario');
+      showToast('Lançamento de honorário concluído!', 'success');
+    }
+
+    // REMOÇÃO INDIVIDUAL DE UM HONORÁRIO DE CLIENTE
+    function excluirHonorarioIndividual(feeId) {
+      if (confirm('Tem certeza que deseja excluir permanentemente este lançamento de honorário?')) {
+        const honToDelete = honorarios.find(h => h.id === feeId);
+        const currentClientId = honToDelete ? honToDelete.clienteId : null;
+        
+        honorarios = honorarios.filter(h => h.id !== feeId);
+        saveToStorage();
+        showToast('Lançamento removido com sucesso.', 'success');
+        
+        const remaining = honorarios.filter(h => h.clienteId === currentClientId);
+        if (remaining.length > 0) {
+          renderHonorarioDetalhes(remaining[0].id);
+        } else {
+          window.location.hash = '#/dashboard';
+        }
+      }
+    }
+
+    // DETAILS SCREEN FOR SPECIFIC CLIENT AND THEIR FEES (AJUSTE 4)
+    function renderHonorarioDetalhes(id) {
+      const hon = honorarios.find(h => h.id === id);
+      if (!hon) {
+        showToast('Registro não localizado.', 'error');
+        window.location.hash = '#/dashboard';
+        return;
+      }
+
+      const client = clientes.find(c => c.id === hon.clienteId) || { nome: "N/A", cpf: "N/A", whatsapp: "N/A", email: "N/A" };
+
+      document.getElementById('detalhes-cliente-nome').innerText = client.nome;
+      document.getElementById('detalhes-cpf').innerText = client.cpf;
+      document.getElementById('detalhes-whatsapp').innerText = client.whatsapp;
+      document.getElementById('detalhes-email').innerText = client.email || 'Não informado';
+
+      const clientFees = honorarios.filter(h => h.clienteId === client.id);
+
+      const b = document.getElementById('detalhes-badge');
+      b.className = 'badge';
+      
+      let overallStatus = 'pago';
+      let hasAtrasada = false;
+      let hasVencendo = false;
+      let hasPendente = false;
+
+      clientFees.forEach(f => {
+        f.parcelas.forEach(p => {
+          const st = resolveStatus(p);
+          if (st === 'atrasado') hasAtrasada = true;
+          else if (st === 'vencendo') hasVencendo = true;
+          else if (st === 'pendente') hasPendente = true;
+        });
+      });
+
+      if (hasAtrasada) {
+        overallStatus = 'atrasado';
+        b.innerText = '⚠️ Inadimplente / Atrasado';
+        b.classList.add('badge-atrasado');
+      } else if (hasVencendo) {
+        overallStatus = 'vencendo';
+        b.innerText = '🕒 Atenção / Vencendo';
+        b.classList.add('badge-vencendo');
+      } else if (hasPendente) {
+        overallStatus = 'pendente';
+        b.innerText = '⚪ Pendente';
+        b.classList.add('badge-pendente');
+      } else {
+        b.innerText = '✅ Pago';
+        b.classList.add('badge-pago');
+      }
+
+      // RENDERIZAÇÃO DE TODOS OS HONORÁRIOS E PROCESSOS DO CLIENTE
+      const container = document.getElementById('client-honorarios-container');
+      container.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; margin-bottom: 12px;">
+          <h3 style="font-size: 16px;">Honorários Vinculados (${clientFees.length})</h3>
+          <a href="#/novo-honorario/${client.id}" class="btn btn-primary" style="padding: 6px 12px;">+ Novo Honorário</a>
+        </div>
+      `;
+
+      clientFees.forEach(fee => {
+        const feeCard = document.createElement('div');
+        feeCard.className = 'card';
+        feeCard.style.borderLeft = '4px solid var(--primary)';
+        feeCard.style.marginBottom = '20px';
+
+        const typeLabelMap = {
+          'fixo_parcelado': 'Valor fixo parcelado',
+          'ad_exitum': 'Percentual ad exitum',
+          'recorrente': 'Recorrente mensal',
+          'fixo_exitum': 'Fixo + Êxito'
+        };
+
+        let parcelasHtml = '';
+        fee.parcelas.forEach(p => {
+          const pStatus = resolveStatus(p);
+          let actions = '';
+          let statusString = '';
+
+          const itemObj = {
+            id: fee.id,
+            clientName: client.nome,
+            clientWhatsapp: client.whatsapp,
+            processo: fee.processo,
+            area: fee.area,
+            tribunal: fee.tribunal,
+            numero: p.numero,
+            totalParcelas: fee.parcelas.length,
+            valor: p.valor,
+            vencimento: p.vencimento,
+            status: pStatus,
+            linkPublico: fee.linkPublico,
+            chavePix: fee.chavePix
+          };
+
+          if (pStatus === 'pago') {
+            statusString = `<span style="color: var(--success);">✅ Pago em ${formatDate(p.dataPagamento || p.vencimento)}</span>`;
+          } else if (pStatus === 'pago_verificacao') {
+            statusString = `<span style="color: var(--warning);">⏳ CONFIRMADO PELO CLIENTE (Verificar)</span>`;
+            actions = `
+              <button class="btn btn-success" style="padding: 4px 10px; font-size:11px;" onclick="marcarComoPago(${fee.id}, ${p.numero})">Aprovar Pago</button>
+            `;
+          } else if (pStatus === 'vencendo') {
+            statusString = `<span style="color: var(--warning);">🟡 Vence em ${Math.abs(calculateDaysDifference(p.vencimento))} dias (${formatDate(p.vencimento)})</span>`;
+            actions = `
+              <button class="btn btn-primary" style="padding: 4px 10px; font-size:11px;" onclick="openModalLembrete(${JSON.stringify(itemObj).replace(/"/g, '&quot;')})">Enviar lembrete</button>
+              <button class="btn btn-success" style="padding: 4px 10px; font-size:11px;" onclick="marcarComoPago(${fee.id}, ${p.numero})">Marcar como pago</button>
+            `;
+          } else if (pStatus === 'atrasado') {
+            statusString = `<span style="color: var(--danger);">🔴 Venceu há ${calculateDaysDifference(p.vencimento)} dias (${formatDate(p.vencimento)})</span>`;
+            actions = `
+              <button class="btn btn-primary" style="padding: 4px 10px; font-size:11px;" onclick="openModalLembrete(${JSON.stringify(itemObj).replace(/"/g, '&quot;')})">Enviar lembrete</button>
+              <button class="btn btn-success" style="padding: 4px 10px; font-size:11px;" onclick="marcarComoPago(${fee.id}, ${p.numero})">Marcar como pago</button>
+            `;
+          } else {
+            statusString = `<span style="color: var(--text-muted);">⚪ Pendente (${formatDate(p.vencimento)})</span>`;
+            actions = `
+              <button class="btn btn-secondary" style="padding: 4px 10px; font-size:11px;" onclick="openModalLembrete(${JSON.stringify(itemObj).replace(/"/g, '&quot;')})">Enviar lembrete</button>
+            `;
+          }
+
+          parcelasHtml += `
+            <div class="parcela-card status-${pStatus}" style="margin-top: 8px;">
+              <div>
+                <strong>Parcela ${p.numero}/${fee.parcelas.length}</strong><br>
+                <span style="font-size: 13px;">${p.valor > 0 ? formatCurrency(p.valor) : (p.descricao || 'Sob apuração')} • Vence ${formatDate(p.vencimento)}</span><br>
+                <div style="font-size: 11px; margin-top: 4px;">${statusString}</div>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                ${actions}
+              </div>
+            </div>
+          `;
+        });
+
+        feeCard.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1px solid var(--gray-bg); padding-bottom: 8px;">
+            <div>
+              <h4 style="font-size: 14px; color: var(--primary);">${typeLabelMap[fee.tipo] || fee.tipo}</h4>
+              <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+                Processo: ${fee.processo || 'Não informado'} ${fee.area ? `(${fee.area} • ${fee.tribunal})` : ''}
+              </p>
+            </div>
+            <div style="text-align: right;">
+              <strong style="font-size: 15px;">${formatCurrency(fee.valorTotal)}</strong>
+              <div style="font-size: 11px; color: var(--text-muted);">Total</div>
+            </div>
+          </div>
+          <div class="details-meta-group" style="margin-bottom: 12px;">
+            <div><strong>Chave PIX:</strong> ${fee.chavePix}</div>
+            ${fee.parteContraria ? `<div><strong>Parte contrária:</strong> ${fee.parteContraria}</div>` : ''}
+          </div>
+          <div style="font-size: 12px; font-weight: bold; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted);">Parcelas vinculadas</div>
+          ${parcelasHtml}
+          <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
+            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="excluirHonorarioIndividual(${fee.id})">Excluir honorário</button>
+          </div>
+        `;
+
+        container.appendChild(feeCard);
+      });
+    }
+
+    // PROGRAMAÇÃO DO RELATÓRIO DE RENDIMENTOS (IR)
+    function populateYearSelect() {
+      const select = document.getElementById('relatorio-ano-select');
+      if (!select) return;
+      select.innerHTML = '';
+      const currentYear = new Date().getFullYear();
+      for (let y = currentYear + 1; y >= currentYear - 3; y--) {
+        const opt = document.createElement('option');
+        opt.value = y;
+        opt.innerText = y;
+        if (y === currentYear) opt.selected = true;
+        select.appendChild(opt);
+      }
+    }
+
+    // AJUSTE 1: CARREGAMENTO DA TABELA DO IR COM ORIGEM E SUBTOTAIS
+    function renderRelatorioIR() {
+      const select = document.getElementById('relatorio-ano-select');
+      const selectedYear = parseInt(select.value);
+      const tbody = document.getElementById('relatorio-tabela-body');
+      tbody.innerHTML = '';
+
+      const paidInstallments = [];
+      honorarios.forEach(hon => {
+        const client = clientes.find(c => c.id === hon.clienteId) || { nome: "N/A", cpf: "N/A" };
+        hon.parcelas.forEach(p => {
+          const pStatus = resolveStatus(p);
+          if (pStatus === 'pago') {
+            const payDateStr = p.dataPagamento || p.vencimento;
+            const payYear = parseInt(payDateStr.split('-')[0]);
+            if (payYear === selectedYear) {
+              let groupCategory = 'Contratual';
+              if (hon.tipo === 'ad_exitum') {
+                groupCategory = 'Êxito';
+              } else if (hon.tipo === 'recorrente') {
+                groupCategory = 'Recorrente';
+              } else if (hon.tipo === 'fixo_exitum') {
+                groupCategory = p.numero === 1 ? 'Contratual' : 'Êxito';
+              }
+              
+              let orig = p.origemPagamento || 'contratual';
+              let origemLabel = orig === 'sucumbencial' ? 'Sucumbencial' : 'Contratual';
+              let displayDoc = orig === 'sucumbencial' && p.docPagador ? p.docPagador : client.cpf;
+
+              paidInstallments.push({
+                cliente: client.nome,
+                cpf: displayDoc,
+                tipo: groupCategory,
+                origem: origemLabel,
+                valor: p.valor,
+                data: payDateStr
+              });
+            }
+          }
+        });
+      });
+
+      if (paidInstallments.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">
+              Nenhum recebimento de honorário confirmado no ano de ${selectedYear}.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      const categories = ['Contratual', 'Êxito', 'Sucumbencial', 'Recorrente'];
+      let grandTotal = 0;
+      let sumContratual = 0;
+      let sumSucumbencial = 0;
+
+      categories.forEach(cat => {
+        const catItems = paidInstallments.filter(item => item.tipo === cat);
+        if (catItems.length > 0) {
+          const groupHeader = document.createElement('tr');
+          groupHeader.style.backgroundColor = 'var(--gray-bg)';
+          groupHeader.style.fontWeight = 'bold';
+          groupHeader.innerHTML = `
+            <td colspan="6" style="padding: 10px 16px; color: var(--primary); text-transform: uppercase; font-size: 11px; border-bottom: 1px solid var(--gray-border);">
+              📂 Grupo: ${cat}
+            </td>
+          `;
+          tbody.appendChild(groupHeader);
+
+          let groupSum = 0;
+          catItems.forEach(item => {
+            groupSum += item.valor;
+            grandTotal += item.valor;
+            if (item.origem === 'Sucumbencial') {
+              sumSucumbencial += item.valor;
+            } else {
+              sumContratual += item.valor;
+            }
+
+            const row = document.createElement('tr');
+            row.style.borderBottom = '1px solid var(--gray-bg)';
+            row.innerHTML = `
+              <td style="padding: 10px 16px;">${item.cliente}</td>
+              <td style="padding: 10px 16px;">${item.cpf}</td>
+              <td style="padding: 10px 16px;">${item.tipo}</td>
+              <td style="padding: 10px 16px;">${item.origem}</td>
+              <td style="padding: 10px 16px; text-align: right; font-weight: 600;">${formatCurrency(item.valor)}</td>
+              <td style="padding: 10px 16px;">${formatDate(item.data)}</td>
+            `;
+            tbody.appendChild(row);
+          });
+
+          const groupTotalRow = document.createElement('tr');
+          groupTotalRow.style.fontWeight = 'bold';
+          groupTotalRow.style.borderBottom = '2px solid var(--gray-border)';
+          groupTotalRow.innerHTML = `
+            <td colspan="4" style="padding: 10px 16px; text-align: right;">Total ${cat}:</td>
+            <td style="padding: 10px 16px; text-align: right; color: var(--success);">${formatCurrency(groupSum)}</td>
+            <td></td>
+          `;
+          tbody.appendChild(groupTotalRow);
+        }
+      });
+
+      const grandTotalRow = document.createElement('tr');
+      grandTotalRow.style.fontWeight = 'bold';
+      grandTotalRow.style.fontSize = '14px';
+      grandTotalRow.style.backgroundColor = 'var(--primary-light)';
+      grandTotalRow.innerHTML = `
+        <td colspan="4" style="padding: 12px 16px; text-align: right;">TOTAL GERAL APURADO:</td>
+        <td style="padding: 12px 16px; text-align: right; color: var(--primary);">${formatCurrency(grandTotal)}</td>
+        <td></td>
+      `;
+      tbody.appendChild(grandTotalRow);
+
+      // AJUSTE 1: TOTAIS POR ORIGEM EXIBIDOS AO FINAL DA TABELA
+      const contratualTotalRow = document.createElement('tr');
+      contratualTotalRow.style.fontWeight = 'bold';
+      contratualTotalRow.innerHTML = `
+        <td colspan="4" style="padding: 8px 16px; text-align: right;">Total Origem Contratual:</td>
+        <td style="padding: 8px 16px; text-align: right; color: var(--success);">${formatCurrency(sumContratual)}</td>
+        <td></td>
+      `;
+      tbody.appendChild(contratualTotalRow);
+
+      const sucumbencialTotalRow = document.createElement('tr');
+      sucumbencialTotalRow.style.fontWeight = 'bold';
+      sucumbencialTotalRow.innerHTML = `
+        <td colspan="4" style="padding: 8px 16px; text-align: right;">Total Origem Sucumbencial:</td>
+        <td style="padding: 8px 16px; text-align: right; color: var(--warning);">${formatCurrency(sumSucumbencial)}</td>
+        <td></td>
+      `;
+      tbody.appendChild(sucumbencialTotalRow);
+    }
+
+    // AJUSTE 1: EXPORTAÇÃO DE CSV INCLUINDO ORIGEM DO PAGAMENTO
+    function exportarRelatorioCSV() {
+      const select = document.getElementById('relatorio-ano-select');
+      const selectedYear = select ? select.value : new Date().getFullYear();
+      
+      let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+      csvContent += "Cliente;CPF/CNPJ;Tipo de Honorario;Origem;Valor Recebido;Data Recebimento\n";
+
+      const paidInstallments = [];
+      honorarios.forEach(hon => {
+        const client = clientes.find(c => c.id === hon.clienteId) || { nome: "N/A", cpf: "N/A" };
+        hon.parcelas.forEach(p => {
+          const pStatus = resolveStatus(p);
+          if (pStatus === 'pago') {
+            const payDateStr = p.dataPagamento || p.vencimento;
+            const payYear = parseInt(payDateStr.split('-')[0]);
+            if (payYear === parseInt(selectedYear)) {
+              let groupCategory = 'Contratual';
+              if (hon.tipo === 'ad_exitum') {
+                groupCategory = 'Êxito';
+              } else if (hon.tipo === 'recorrente') {
+                groupCategory = 'Recorrente';
+              } else if (hon.tipo === 'fixo_exitum') {
+                groupCategory = p.numero === 1 ? 'Contratual' : 'Êxito';
+              }
+              
+              let orig = p.origemPagamento || 'contratual';
+              let origemLabel = orig === 'sucumbencial' ? 'Sucumbencial' : 'Contratual';
+              let displayDoc = orig === 'sucumbencial' && p.docPagador ? p.docPagador : client.cpf;
+
+              paidInstallments.push({
+                cliente: client.nome,
+                cpf: displayDoc,
+                tipo: groupCategory,
+                origem: origemLabel,
+                valor: p.valor,
+                data: payDateStr
+              });
+            }
+          }
+        });
+      });
+
+      paidInstallments.forEach(item => {
+        const formattedVal = item.valor.toFixed(2).replace('.', ',');
+        csvContent += `"${item.cliente}";"${item.cpf}";"${item.tipo}";"${item.origem}";"${formattedVal}";"${formatDate(item.data)}"\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `Apuraçao_IR_Comarca_${selectedYear}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('CSV exportado com sucesso!', 'success');
+    }
+
+    // AJUSTE 4: COMPONENTES GERAÇÃO DE CONTRATO
+    function populateContratosClienteSelect() {
+      const select = document.getElementById('contrato-cliente-select');
+      if (!select) return;
+      select.innerHTML = '<option value="">-- Selecione o Cliente --</option>';
+      clientes.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.innerText = c.nome;
+        select.appendChild(opt);
+      });
+    }
+
+    function loadContratoTemplate() {
+      const select = document.getElementById('contrato-cliente-select');
+      const textAre = document.getElementById('contrato-texto');
+      if (!select || !textAre) return;
+
+      const cId = select.value;
+      let clientName = "[NOME DO CLIENTE]";
+      let clientCpf = "[CPF DO CLIENTE]";
+      let clientEndereco = "[ENDEREÇO DO CLIENTE]";
+
+      if (cId) {
+        const client = clientes.find(c => c.id == cId);
+        if (client) {
+          clientName = client.nome;
+          clientCpf = client.cpf;
+          clientEndereco = client.endereco || "Não informado";
+        }
+      }
+
+      const objeto = document.getElementById('contrato-objeto').value.trim() || "[descrever]";
+      const valor = document.getElementById('contrato-valor').value.trim() || "[valor]";
+      const dateToday = formatDate(new Date().toISOString().split('T')[0]);
+
+      const template = `CONTRATO DE PRESTAÇÃO DE SERVIÇOS ADVOCATÍCIOS
+
+Pelo presente instrumento, ${clientName}, CPF ${clientCpf}, residente em ${clientEndereco}, doravante denominado CONTRATANTE, e o advogado Dr. Yago Vaz Caldeira, OAB/RS 107.295, doravante denominado CONTRATADO, têm entre si justo e contratado o seguinte:
+
+1. OBJETO: Prestação de serviços advocatícios referentes a ${objeto}.
+2. HONORÁRIOS: O CONTRATANTE pagará ao CONTRATADO o valor de ${valor}, nas condições acordadas.
+3. PRAZO: O contrato vigorará pelo tempo necessário à conclusão dos serviços.
+4. FORO: Fica eleito o foro da comarca de Pelotas/RS.
+
+Pelotas/RS, ${dateToday}.
+
+_______________________________     _______________________________
+CONTRATANTE                          CONTRATADO`;
+
+      textAre.value = template;
+    }
+
+    function enviarContratoWhatsApp() {
+      const text = document.getElementById('contrato-texto').value;
+      const select = document.getElementById('contrato-cliente-select');
+      let cleanPhone = '';
+      if (select && select.value) {
+        const client = clientes.find(c => c.id == select.value);
+        if (client) {
+          cleanPhone = client.whatsapp.replace(/\D/g, '');
+        }
+      }
+      const waUrl = `https://wa.me/${cleanPhone ? '55' + cleanPhone : ''}?text=${encodeURIComponent(text)}`;
+      window.open(waUrl, '_blank');
+    }
+
+    function baixarContratoSimulado() {
+      alert("Em breve: download em PDF com assinatura digital.");
+    }
+
+    // TELA 8: PUBLIC VERIFICATION VIEW CODE (NO-LOGIN EXCLUSIVITY)
+    function renderPublicView(publicHash) {
+      let matchedHon = null;
+      let matchedPar = null;
+
+      honorarios.forEach(hon => {
+        if (hon.linkPublico === publicHash) {
+          matchedHon = hon;
+          const target = hon.parcelas.find(p => resolveStatus(p) !== 'pago' && resolveStatus(p) !== 'pago_verificacao');
+          matchedPar = target || hon.parcelas[hon.parcelas.length - 1];
+        }
+      });
+
+      if (!matchedHon || !matchedPar) {
+        document.body.innerHTML = `
+          <div class="public-page text-center">
+            <div class="public-box" style="padding: 40px 16px;">
+              <div style="font-size: 48px; margin-bottom: 16px;">🔍</div>
+              <h2>Lembrete Não Encontrado</h2>
+              <p>Este link expirou ou é inválido. Consulte seu advogado.</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      tempPublicLinkData = { hon: matchedHon, par: matchedPar };
+
+      const client = clientes.find(c => c.id === matchedHon.clienteId) || { nome: "N/A" };
+
+      document.getElementById('layout-app').style.display = 'none';
+      document.getElementById('screen-login').style.display = 'none';
+      document.getElementById('screen-public').style.display = 'block';
+
+      document.getElementById('public-cliente').innerText = client.nome;
+      document.getElementById('public-processo').innerText = matchedHon.processo || 'Não informado';
+      document.getElementById('public-parcela').innerText = `${matchedPar.numero}/${matchedHon.parcelas.length}`;
+      document.getElementById('public-valor').innerText = formatCurrency(matchedPar.valor);
+      document.getElementById('public-vencimento').innerText = formatDate(matchedPar.vencimento);
+      document.getElementById('public-pix-key').innerText = matchedHon.chavePix;
+
+      const badgeArea = document.getElementById('public-verified-badge-area');
+      const actionArea = document.getElementById('public-action-area');
+      
+      const currentStatus = resolveStatus(matchedPar);
+
+      if (currentStatus === 'pago') {
+        badgeArea.innerHTML = `<span class="badge badge-pago" style="font-size: 14px; padding: 6px 12px;">✅ PAGAMENTO CONFIRMADO</span>`;
+        actionArea.innerHTML = `<p style="color: var(--success); font-weight: bold;">Este pagamento já consta em nosso sistema. Obrigado!</p>`;
+      } else if (currentStatus === 'pago_verificacao') {
+        badgeArea.innerHTML = `<span class="badge badge-vencendo" style="font-size: 14px; padding: 6px 12px; background-color: var(--warning);">⏳ PAGAMENTO EM ANÁLISE</span>`;
+        actionArea.innerHTML = `<p style="color: var(--text-muted);">Você já registrou o pagamento. O Dr. Yago foi notificado para aprovação.</p>`;
+      } else {
+        badgeArea.innerHTML = `<span class="badge badge-atrasado" style="font-size: 14px; padding: 6px 12px; background-color: var(--danger);">⚪ AGUARDANDO PAGAMENTO</span>`;
+        actionArea.innerHTML = `
+          <p style="margin-bottom: 12px; font-size: 13px;">Já efetuou o pagamento desta parcela?</p>
+          <button class="btn btn-success" id="btn-public-confirm" onclick="openModal('modal-public-confirm-payment')">✓ Confirmar pagamento</button>
+        `;
+      }
+    }
+
+    // EXECUTE PUBLIC CONFIRMATION ACTIONS
+    function executePublicConfirmPayment() {
+      if (tempPublicLinkData) {
+        const { hon, par } = tempPublicLinkData;
+        
+        const matchH = honorarios.find(h => h.id === hon.id);
+        if (matchH) {
+          const matchP = matchH.parcelas.find(p => p.numero === par.numero);
+          if (matchP) {
+            matchP.status = 'pago_verificacao';
+            matchP.confirmado_cliente = true;
+            saveToStorage();
+            closeModal('modal-public-confirm-payment');
+            showToast('Confirmação enviada com sucesso!', 'success');
+            
+            renderPublicView(hon.linkPublico);
+          }
+        }
+      }
+    }
+
+    function copyPixKey() {
+      const key = document.getElementById('public-pix-key').innerText;
+      navigator.clipboard.writeText(key).then(() => {
+        showToast('Chave PIX copiada!', 'success');
+      });
+    }
+
+    // HELPER MATH & PARSING UTILS
+    function parseCurrencyToFloat(valStr) {
+      if (!valStr) return 0;
+      const clean = valStr.replace(/[^\d]/g, '');
+      return parseFloat(clean) / 100 || 0;
+    }
+
+    function formatCurrency(val) {
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const parts = dateStr.split('-');
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+    function calculateDaysDifference(targetDateStr) {
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      
+      const parts = targetDateStr.split('-');
+      const targetDate = new Date(parts[0], parts[1] - 1, parts[2]);
+      targetDate.setHours(0,0,0,0);
+      
+      const diffTime = today - targetDate;
+      return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    }
+
+    // BOOTSTRAP INITIALIZATION
+    window.addEventListener('hashchange', router);
+    window.addEventListener('DOMContentLoaded', () => {
+      applyMasks();
+      router();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comarca">
+  <rect width="32" height="32" rx="7" fill="#171717"/>
+  <g stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" transform="translate(3.2 3.2) scale(0.8)">
+    <path d="M13.2 5.6 L15.1 7.5 L18.8 3.6" />
+    <path d="M6 10 H26" />
+    <path d="M16 9 V23" />
+    <path d="M7 10 V13.5" />
+    <path d="M25 10 V13.5" />
+    <path d="M3.5 14 a3.5 3.5 0 0 0 7 0" />
+    <path d="M21.5 14 a3.5 3.5 0 0 0 7 0" />
+    <path d="M11 23 H21" />
+  </g>
+</svg>

@@ -1,0 +1,424 @@
+/* =====================================================================
+   Landing page — Vercel / Geist (DESIGN.md)
+   Escopado sob .landing-page. Pílulas, mesh gradient no hero, ink + cinza.
+   Tokens herdados de globals.css.
+   ===================================================================== */
+
+.landing-page {
+  line-height: 1.5;
+  overflow-x: hidden;
+  color: var(--ink);
+  background-color: var(--canvas-soft);
+  scroll-behavior: smooth;
+}
+
+.landing-page ul { list-style: none; }
+.landing-page a { text-decoration: none; color: inherit; }
+
+.landing-page .container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* BUTTONS (pílula 100px — escala marketing) */
+.landing-page .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 20px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.32px;
+  border-radius: var(--radius-pill);
+  transition: var(--transition);
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-align: center;
+}
+.landing-page .btn-primary { background-color: var(--ink); color: var(--on-primary); }
+.landing-page .btn-primary:hover { background-color: var(--primary-hover); }
+.landing-page .btn-outline { background-color: var(--canvas); border-color: var(--hairline); color: var(--ink); }
+.landing-page .btn-outline:hover { border-color: var(--hairline-strong); background-color: var(--canvas-soft); }
+.landing-page .btn-white { background-color: var(--canvas); color: var(--ink); }
+.landing-page .btn-white:hover { background-color: var(--canvas-soft); }
+.landing-page .btn-block { display: flex; width: 100%; }
+
+/* SECTION TITLES (display, sentence-case, tracking negativo) */
+.landing-page .section-header { text-align: center; margin-bottom: 48px; }
+.landing-page .section-title { font-size: 32px; line-height: 40px; font-weight: 600; letter-spacing: -1.28px; color: var(--ink); margin-bottom: 12px; }
+@media (min-width: 768px) {
+  .landing-page .section-title { font-size: 40px; line-height: 48px; letter-spacing: -1.6px; }
+}
+
+/* 1. HEADER FIXO */
+.landing-page .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid var(--hairline);
+  backdrop-filter: saturate(180%) blur(12px);
+}
+.landing-page .header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+.landing-page .logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.6px;
+  color: var(--ink);
+}
+.landing-page .logo svg { fill: var(--ink); }
+.landing-page .nav-desktop { display: none; }
+.landing-page .header-cta .btn { min-height: 32px; padding: 0 12px; font-size: 14px; border-radius: var(--radius-sm); }
+@media (min-width: 992px) {
+  .landing-page .nav-desktop { display: flex; align-items: center; gap: 8px; }
+  .landing-page .nav-link { font-size: 14px; font-weight: 400; letter-spacing: -0.28px; color: var(--body); padding: 8px 12px; border-radius: var(--radius-full); transition: var(--transition); }
+  .landing-page .nav-link:hover { color: var(--ink); background-color: var(--canvas-soft); }
+}
+
+/* 2. HERO SECTION — mesh gradient atmosférico */
+.landing-page .hero-section {
+  position: relative;
+  padding: 80px 0;
+  background-color: var(--canvas);
+  overflow: hidden;
+}
+.landing-page .hero-section::before {
+  content: "";
+  position: absolute;
+  inset: -20% -10% auto -10%;
+  height: 70%;
+  background: var(--mesh);
+  filter: blur(90px);
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+}
+.landing-page .hero-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr; gap: 40px; align-items: center; }
+.landing-page .hero-content { display: flex; flex-direction: column; }
+.landing-page .hero-headline { font-size: 40px; line-height: 1.05; font-weight: 600; letter-spacing: -2px; color: var(--ink); margin-bottom: 16px; }
+.landing-page .hero-subheadline { font-size: 18px; line-height: 1.55; color: var(--body); margin-bottom: 24px; }
+.landing-page .hero-bullets { margin-bottom: 32px; }
+.landing-page .bullet-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; font-size: 16px; }
+.landing-page .bullet-icon { flex-shrink: 0; color: var(--success); margin-top: 2px; }
+.landing-page .hero-actions { display: flex; flex-direction: column; gap: 12px; }
+.landing-page .hero-cta-info { font-size: 12px; color: var(--mute); text-align: center; }
+
+/* WhatsApp Card Simulator */
+.landing-page .hero-visual { display: flex; justify-content: center; align-items: center; }
+.landing-page .whatsapp-card {
+  background-color: #075e54;
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 360px;
+  padding: 16px;
+  box-shadow: var(--shadow-4);
+  color: var(--on-primary);
+}
+.landing-page .wa-bubble {
+  background-color: #dcf8c6;
+  color: #303030;
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin-top: 8px;
+  font-size: 14px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+.landing-page .wa-bubble-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #054740;
+  margin-bottom: 8px;
+}
+.landing-page .wa-bubble-field { margin-bottom: 6px; }
+.landing-page .wa-bubble-field strong { color: #111; }
+.landing-page .wa-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background-color: var(--canvas);
+  border: 1px solid #d1d5db;
+  border-radius: var(--radius-full);
+  padding: 8px 12px;
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #054740;
+  text-align: center;
+}
+@media (min-width: 992px) {
+  .landing-page .hero-section { padding: 128px 0; }
+  .landing-page .hero-grid { grid-template-columns: 1.1fr 0.9fr; gap: 60px; }
+  .landing-page .hero-headline { font-size: 56px; letter-spacing: -2.8px; }
+  .landing-page .hero-actions { flex-direction: row; align-items: center; }
+  .landing-page .hero-cta-info { text-align: left; padding-left: 12px; }
+}
+
+/* 3. DOR SECTION */
+.landing-page .dor-section { padding: 96px 0; background-color: var(--canvas-soft); }
+.landing-page .dor-grid { display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 40px; }
+.landing-page .dor-card {
+  background-color: var(--canvas);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  box-shadow: var(--shadow-2);
+  display: flex;
+  gap: 16px;
+}
+.landing-page .dor-icon { flex-shrink: 0; color: var(--error); margin-top: 4px; }
+.landing-page .dor-card-title { font-size: 16px; font-weight: 500; letter-spacing: -0.32px; color: var(--ink); }
+.landing-page .dor-highlight-box {
+  background-color: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--ink);
+  padding: 24px;
+  border-radius: var(--radius-md);
+  margin-bottom: 32px;
+  font-size: 16px;
+  color: var(--ink);
+  text-align: left;
+}
+.landing-page .impact-bar {
+  background: var(--ink);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  text-align: center;
+  color: var(--on-primary);
+  font-weight: 500;
+  letter-spacing: -0.4px;
+  font-size: 18px;
+}
+@media (min-width: 768px) {
+  .landing-page .dor-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 992px) {
+  .landing-page .dor-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* 4. COMO FUNCIONA */
+.landing-page .como-funciona-section { padding: 96px 0; background-color: var(--canvas); }
+.landing-page .como-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+.landing-page .como-step { position: relative; background: var(--canvas); padding: 24px; border-radius: var(--radius-md); box-shadow: var(--shadow-2); }
+.landing-page .como-num { font-size: 14px; font-weight: 400; color: var(--mute); line-height: 1; margin-bottom: 16px; font-family: var(--font-mono); }
+.landing-page .como-title { font-size: 18px; font-weight: 600; letter-spacing: -0.4px; margin-bottom: 8px; color: var(--ink); }
+.landing-page .como-desc { font-size: 14px; color: var(--body); }
+@media (min-width: 768px) {
+  .landing-page .como-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 992px) {
+  .landing-page .como-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* CADASTRO RAPIDO */
+.landing-page .cadastro-section { padding: 96px 0; background-color: var(--canvas-soft); }
+.landing-page .cadastro-content { max-width: 800px; margin: 0 auto; }
+.landing-page .cadastro-text { font-size: 18px; color: var(--body); margin-bottom: 24px; text-align: center; }
+.landing-page .cadastro-bullets { margin: 0 auto 32px auto; max-width: 600px; }
+.landing-page .cadastro-highlight {
+  background-color: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  text-align: center;
+  color: var(--ink);
+  font-weight: 500;
+  letter-spacing: -0.4px;
+  font-size: 18px;
+  box-shadow: var(--shadow-2);
+}
+
+/* 5. DIFERENCIAL (DataTable) */
+.landing-page .diferencial-section { padding: 96px 0; background-color: var(--canvas); }
+.landing-page .table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 24px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2);
+}
+.landing-page .diferencial-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+  letter-spacing: -0.28px;
+  min-width: 600px;
+}
+.landing-page .diferencial-table th,
+.landing-page .diferencial-table td { padding: 16px; border-bottom: 1px solid var(--hairline); }
+.landing-page .diferencial-table th { background-color: var(--canvas-soft); font-family: var(--font-mono); font-size: 12px; font-weight: 400; text-transform: uppercase; color: var(--body); }
+.landing-page .diferencial-table .highlight {
+  background-color: var(--canvas-soft);
+  border-left: 2px solid var(--ink);
+  border-right: 2px solid var(--ink);
+}
+.landing-page .diferencial-table tr:last-child td { border-bottom: none; }
+.landing-page .table-sub-text { text-align: center; font-weight: 600; letter-spacing: -0.4px; color: var(--ink); font-size: 18px; margin-top: 32px; margin-bottom: 12px; }
+.landing-page .table-paragraph { text-align: center; color: var(--body); max-width: 720px; margin: 0 auto; font-size: 15px; }
+
+/* 6. PROVA SOCIAL */
+.landing-page .prova-social-section { padding: 96px 0; background-color: var(--canvas-soft); }
+.landing-page .testimonial-card {
+  background-color: var(--canvas);
+  border-radius: var(--radius-lg);
+  padding: 48px 32px;
+  box-shadow: var(--shadow-3);
+  max-width: 768px;
+  margin: 0 auto;
+  text-align: center;
+}
+.landing-page .testimonial-quote-icon { font-size: 48px; color: var(--ink); line-height: 1; margin-bottom: 16px; }
+.landing-page .testimonial-text { font-size: 20px; line-height: 1.5; letter-spacing: -0.4px; color: var(--ink); margin-bottom: 24px; }
+.landing-page .testimonial-author { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.landing-page .avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 9999px;
+  background-color: var(--ink);
+  color: var(--on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 16px;
+}
+.landing-page .author-info { text-align: left; }
+.landing-page .author-name { font-weight: 500; font-size: 15px; color: var(--ink); }
+.landing-page .author-meta { font-size: 13px; color: var(--mute); }
+
+/* CONTROLE */
+.landing-page .controle-section { padding: 96px 0; background-color: var(--canvas); }
+.landing-page .controle-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+.landing-page .controle-card {
+  background-color: var(--canvas);
+  border-radius: var(--radius-md);
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: var(--shadow-2);
+}
+.landing-page .controle-icon { font-size: 32px; margin-bottom: 16px; display: block; }
+.landing-page .controle-card-title { font-size: 18px; font-weight: 600; letter-spacing: -0.4px; margin-bottom: 12px; color: var(--ink); }
+.landing-page .controle-card-text { font-size: 14px; color: var(--body); }
+@media (min-width: 768px) {
+  .landing-page .controle-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* 7. PREÇOS */
+.landing-page .precos-section { padding: 96px 0; background-color: var(--canvas-soft); }
+.landing-page .precos-grid { display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 40px; align-items: stretch; }
+.landing-page .preco-card {
+  background-color: var(--canvas);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: var(--shadow-2);
+}
+.landing-page .preco-card.featured { background: var(--ink); color: var(--on-primary); box-shadow: var(--shadow-4); }
+.landing-page .preco-card.featured .preco-title,
+.landing-page .preco-card.featured .preco-value,
+.landing-page .preco-card.featured .preco-feature-item { color: var(--on-primary); }
+.landing-page .preco-card.featured .preco-period { color: rgba(255, 255, 255, 0.6); }
+.landing-page .preco-card.featured .btn-primary { background-color: var(--canvas); color: var(--ink); }
+.landing-page .preco-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background-color: var(--canvas);
+  color: var(--ink);
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: -0.24px;
+}
+.landing-page .preco-header { text-align: left; margin-bottom: 24px; }
+.landing-page .preco-title { font-size: 24px; font-weight: 600; letter-spacing: -0.96px; margin-bottom: 8px; }
+.landing-page .preco-value { font-size: 48px; line-height: 1; font-weight: 600; letter-spacing: -2.4px; color: var(--ink); }
+.landing-page .preco-period { font-size: 14px; color: var(--mute); font-weight: 400; letter-spacing: -0.28px; }
+.landing-page .preco-features { margin-bottom: 32px; flex-grow: 1; }
+.landing-page .preco-feature-item { display: flex; align-items: center; gap: 10px; font-size: 15px; margin-bottom: 12px; color: var(--ink); }
+.landing-page .preco-feature-item svg { color: var(--success); flex-shrink: 0; }
+.landing-page .preco-card.featured .preco-feature-item svg { color: var(--cyan); }
+.landing-page .precos-footer { text-align: center; max-width: 600px; margin: 0 auto; font-size: 14px; color: var(--body); line-height: 1.6; }
+@media (min-width: 992px) {
+  .landing-page .precos-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* 8. FAQ */
+.landing-page .faq-section { padding: 96px 0; background-color: var(--canvas); }
+.landing-page .faq-container { max-width: 768px; margin: 0 auto; }
+.landing-page .faq-item {
+  background-color: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.landing-page .faq-trigger {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 20px 24px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.32px;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.landing-page .faq-icon { font-size: 20px; color: var(--mute); transition: transform 0.15s ease; font-weight: 400; }
+.landing-page .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.24s ease; }
+.landing-page .faq-answer.open { max-height: 240px; }
+.landing-page .faq-answer-inner { padding: 0 24px 20px 24px; font-size: 15px; color: var(--body); line-height: 1.6; }
+
+/* 9. CTA FINAL (banda escura polarizada) */
+.landing-page .cta-final-section { position: relative; padding: 96px 0; background-color: var(--ink); color: var(--on-primary); text-align: center; overflow: hidden; }
+.landing-page .cta-final-section::before {
+  content: "";
+  position: absolute;
+  inset: auto -10% -40% -10%;
+  height: 80%;
+  background: var(--mesh);
+  filter: blur(100px);
+  opacity: 0.25;
+  pointer-events: none;
+}
+.landing-page .cta-final-section .container { position: relative; z-index: 1; }
+.landing-page .cta-final-title { font-size: 40px; line-height: 1.05; font-weight: 600; letter-spacing: -2px; margin-bottom: 12px; color: var(--on-primary); }
+.landing-page .cta-final-sub { font-size: 18px; opacity: 0.7; max-width: 600px; margin: 0 auto 32px auto; }
+.landing-page .cta-final-section .btn { margin-bottom: 12px; }
+.landing-page .cta-final-info { font-size: 13px; opacity: 0.5; }
+
+/* 10. FOOTER */
+.landing-page .site-footer { background-color: var(--canvas); border-top: 1px solid var(--hairline); padding: 64px 0 24px 0; }
+.landing-page .footer-grid { display: grid; grid-template-columns: 1fr; gap: 32px; margin-bottom: 40px; }
+.landing-page .footer-logo-col { display: flex; flex-direction: column; gap: 12px; }
+.landing-page .footer-tagline { font-size: 14px; color: var(--body); }
+.landing-page .footer-meta-col { display: flex; flex-direction: column; gap: 16px; }
+.landing-page .footer-right-text { font-weight: 500; font-size: 15px; color: var(--ink); }
+.landing-page .footer-contact { display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--body); }
+.landing-page .footer-contact a:hover { color: var(--ink); }
+.landing-page .footer-bottom { border-top: 1px solid var(--hairline); padding-top: 24px; text-align: center; font-size: 13px; color: var(--mute); font-family: var(--font-mono); }
+@media (min-width: 768px) {
+  .landing-page .footer-grid { grid-template-columns: 1.2fr 0.8fr; }
+}

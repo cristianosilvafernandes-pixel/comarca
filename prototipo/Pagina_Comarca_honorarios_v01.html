@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comarca Honorários - Lembretes automáticos para advogados</title>
+  <style>
+    /* DESIGN SYSTEM & VARIABLES */
+    :root {
+      --primary: #2e86c1;
+      --primary-hover: #21618c;
+      --primary-light: #ebf5fb;
+      --success: #1e8449;
+      --warning: #f39c12;
+      --danger: #e74c3c;
+      --gray-bg: #f4f6f9;
+      --gray-border: #dde4ec;
+      --text: #1a2332;
+      --text-muted: #7f8c9a;
+      --white: #ffffff;
+      --shadow: 0 4px 12px rgba(0,0,0,0.06);
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    /* GENERAL RESET */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-family: var(--font);
+      color: var(--text);
+      background-color: var(--white);
+    }
+
+    body {
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: 1px solid transparent;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-outline:hover {
+      background-color: var(--primary-light);
+    }
+
+    .btn-white {
+      background-color: var(--white);
+      color: var(--primary);
+    }
+
+    .btn-white:hover {
+      background-color: var(--primary-light);
+    }
+
+    .btn-block {
+      display: flex;
+      width: 100%;
+    }
+
+    /* SECTION TITLES */
+    .section-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .section-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    @media (min-width: 768px) {
+      .section-title {
+        font-size: 36px;
+      }
+    }
+
+    /* 1. HEADER FIXO */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background-color: rgba(255, 255, 255, 0.95);
+      border-bottom: 1px solid var(--gray-border);
+      backdrop-filter: blur(8px);
+    }
+
+    .header-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .logo svg {
+      fill: var(--primary);
+    }
+
+    .nav-desktop {
+      display: none;
+    }
+
+    .header-cta .btn {
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+
+    @media (min-width: 992px) {
+      .nav-desktop {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+      }
+
+      .nav-link {
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--text-muted);
+        transition: color 0.2s ease;
+      }
+
+      .nav-link:hover {
+        color: var(--primary);
+      }
+    }
+
+    /* 2. HERO SECTION */
+    .hero-section {
+      padding: 60px 0;
+      background-color: var(--white);
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero-headline {
+      font-size: 36px;
+      line-height: 1.2;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .hero-subheadline {
+      font-size: 18px;
+      line-height: 1.5;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .hero-bullets {
+      margin-bottom: 32px;
+    }
+
+    .bullet-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+      font-size: 15px;
+    }
+
+    .bullet-icon {
+      flex-shrink: 0;
+      color: var(--success);
+      margin-top: 2px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .hero-cta-info {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* WhatsApp Card Simulator */
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .whatsapp-card {
+      background-color: #075e54;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 360px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      color: var(--white);
+    }
+
+    .wa-bubble {
+      background-color: #dcf8c6;
+      color: #303030;
+      border-radius: 8px;
+      padding: 14px;
+      margin-top: 8px;
+      font-size: 14px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+
+    .wa-bubble-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: bold;
+      color: var(--success);
+      margin-bottom: 8px;
+    }
+
+    .wa-bubble-field {
+      margin-bottom: 6px;
+    }
+
+    .wa-bubble-field strong {
+      color: #111;
+    }
+
+    .wa-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      background-color: var(--white);
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      padding: 6px 12px;
+      margin-top: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #054740;
+      text-align: center;
+    }
+
+    @media (min-width: 992px) {
+      .hero-section {
+        padding: 80px 0;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 60px;
+      }
+
+      .hero-headline {
+        font-size: 48px;
+      }
+
+      .hero-actions {
+        align-items: flex-start;
+      }
+
+      .hero-cta-info {
+        text-align: left;
+        padding-left: 12px;
+      }
+    }
+
+    /* 3. DOR SECTION */
+    .dor-section {
+      padding: 80px 0;
+      background-color: var(--white);
+      border-top: 1px solid var(--gray-border);
+    }
+
+    .dor-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .dor-card {
+      background-color: var(--white);
+      border: 1px solid var(--gray-border);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      gap: 16px;
+    }
+
+    .dor-icon {
+      flex-shrink: 0;
+      color: var(--danger);
+      margin-top: 4px;
+    }
+
+    .dor-card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .dor-highlight-box {
+      background-color: var(--gray-bg);
+      border-left: 4px solid var(--primary);
+      padding: 20px;
+      border-radius: 4px;
+      margin-bottom: 32px;
+      font-size: 16px;
+      color: var(--text);
+      text-align: left;
+    }
+
+    .impact-bar {
+      background-color: var(--primary-light);
+      border: 1px dashed var(--primary);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    @media (min-width: 768px) {
+      .dor-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 992px) {
+      .dor-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* 4. COMO FUNCIONA */
+    .como-funciona-section {
+      padding: 80px 0;
+      background-color: var(--gray-bg);
+    }
+
+    .como-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .como-step {
+      position: relative;
+      background: var(--white);
+      padding: 32px 24px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .como-num {
+      font-size: 40px;
+      font-weight: 800;
+      color: var(--primary-light);
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .como-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .como-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    @media (min-width: 768px) {
+      .como-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 992px) {
+      .como-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    /* AJUSTE 2 — CADASTRO RAPIDO SECTION */
+    .cadastro-section {
+      padding: 80px 0;
+      background-color: var(--white);
+      border-top: 1px solid var(--gray-border);
+    }
+
+    .cadastro-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .cadastro-text {
+      font-size: 18px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .cadastro-bullets {
+      margin: 0 auto 32px auto;
+      max-width: 600px;
+    }
+
+    .cadastro-highlight {
+      background-color: var(--primary-light);
+      border: 1px dashed var(--primary);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    /* 5. DIFERENCIAL SECTION */
+    .diferencial-section {
+      padding: 80px 0;
+      background-color: var(--white);
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      margin-bottom: 24px;
+      border-radius: 12px;
+      border: 1px solid var(--gray-border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .diferencial-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14px;
+      min-width: 600px;
+    }
+
+    .diferencial-table th, 
+    .diferencial-table td {
+      padding: 16px;
+      border-bottom: 1px solid var(--gray-border);
+    }
+
+    .diferencial-table th {
+      background-color: var(--gray-bg);
+      font-weight: 700;
+    }
+
+    .diferencial-table .highlight {
+      background-color: var(--primary-light);
+      border-left: 2px solid var(--primary);
+      border-right: 2px solid var(--primary);
+    }
+
+    .diferencial-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .table-sub-text {
+      text-align: center;
+      font-weight: 700;
+      color: var(--text);
+      font-size: 18px;
+      margin-top: 32px;
+      margin-bottom: 12px;
+    }
+
+    .table-paragraph {
+      text-align: center;
+      color: var(--text-muted);
+      max-width: 720px;
+      margin: 0 auto;
+      font-size: 15px;
+    }
+
+    /* 6. PROVA SOCIAL */
+    .prova-social-section {
+      padding: 80px 0;
+      background-color: var(--gray-bg);
+    }
+
+    .testimonial-card {
+      background-color: var(--white);
+      border-radius: 12px;
+      padding: 40px 24px;
+      box-shadow: var(--shadow);
+      max-width: 768px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .testimonial-quote-icon {
+      font-size: 48px;
+      color: var(--primary);
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .testimonial-text {
+      font-size: 18px;
+      font-style: italic;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .author-info {
+      text-align: left;
+    }
+
+    .author-name {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    .author-meta {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* AJUSTE 5 — CONTROLE SECTION */
+    .controle-section {
+      padding: 80px 0;
+      background-color: var(--white);
+      border-top: 1px solid var(--gray-border);
+    }
+
+    .controle-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .controle-card {
+      background-color: var(--gray-bg);
+      border: 1px solid var(--gray-border);
+      border-radius: 12px;
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .controle-icon {
+      font-size: 32px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .controle-card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .controle-card-text {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    @media (min-width: 768px) {
+      .controle-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* 7. PREÇOS */
+    .precos-section {
+      padding: 80px 0;
+      background-color: var(--white);
+    }
+
+    .precos-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+      margin-bottom: 40px;
+      align-items: stretch;
+    }
+
+    .preco-card {
+      background-color: var(--white);
+      border: 1px solid var(--gray-border);
+      border-radius: 12px;
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .preco-card.featured {
+      border-color: var(--primary);
+      box-shadow: var(--shadow);
+    }
+
+    .preco-badge {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--primary);
+      color: var(--white);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .preco-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .preco-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .preco-value {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .preco-period {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .preco-features {
+      margin-bottom: 32px;
+      flex-grow: 1;
+    }
+
+    .preco-feature-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .preco-feature-item svg {
+      color: var(--success);
+      flex-shrink: 0;
+    }
+
+    .precos-footer {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    @media (min-width: 992px) {
+      .precos-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* 8. FAQ ACCORDION */
+    .faq-section {
+      padding: 80px 0;
+      background-color: var(--gray-bg);
+    }
+
+    .faq-container {
+      max-width: 768px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      background-color: var(--white);
+      border: 1px solid var(--gray-border);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .faq-trigger {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 20px 24px;
+      text-align: left;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .faq-icon {
+      font-size: 20px;
+      color: var(--primary);
+      transition: transform 0.2s ease;
+      font-weight: 500;
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.2s ease-out;
+    }
+
+    .faq-answer-inner {
+      padding: 0 24px 20px 24px;
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* 9. CTA FINAL */
+    .cta-final-section {
+      padding: 80px 0;
+      background-color: var(--text);
+      color: var(--white);
+      text-align: center;
+    }
+
+    .cta-final-title {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .cta-final-sub {
+      font-size: 18px;
+      opacity: 0.8;
+      max-width: 600px;
+      margin: 0 auto 32px auto;
+    }
+
+    .cta-final-section .btn {
+      margin-bottom: 12px;
+    }
+
+    .cta-final-info {
+      font-size: 13px;
+      opacity: 0.6;
+    }
+
+    /* 10. FOOTER */
+    .site-footer {
+      background-color: var(--white);
+      border-top: 1px solid var(--gray-border);
+      padding: 48px 0 24px 0;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+      margin-bottom: 40px;
+    }
+
+    .footer-logo-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-tagline {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .footer-meta-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .footer-right-text {
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    .footer-contact {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .footer-contact a:hover {
+      color: var(--primary);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--gray-border);
+      padding-top: 24px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    @media (min-width: 768px) {
+      .footer-grid {
+        grid-template-columns: 1.2fr 0.8fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. HEADER FIXO -->
+  <header class="site-header">
+    <div class="container header-container">
+      <a href="#" class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+        </svg>
+        Comarca
+      </a>
+      <nav class="nav-desktop">
+        <a href="#como-funciona" class="nav-link">Como funciona</a>
+        <a href="#precos" class="nav-link">Preços</a>
+        <a href="#faq" class="nav-link">FAQ</a>
+      </nav>
+      <div class="header-cta">
+        <a href="../prototipos/comarca_honorarios_v1.html" class="btn btn-primary">Testar grátis</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. HERO -->
+  <section class="hero-section">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <h1 class="hero-headline">Nunca mais perca um honorário esquecido.</h1>
+        <p class="hero-subheadline">Advogado não perde honorário por falta de cliente. Perde por falta de cobrança. Comarca resolve isso — lembretes automáticos via WhatsApp, sem taxas, você recebe 100% na sua conta.</p>
+        
+        <ul class="hero-bullets">
+          <li class="bullet-item">
+            <svg class="bullet-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+            <span><strong>Lembrete 2 dias antes do vencimento</strong> — você nunca esquece de cobrar</span>
+          </li>
+          <li class="bullet-item">
+            <svg class="bullet-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+            <span><strong>Controle por cliente e processo</strong> — dashboard jurídico, não planilha genérica</span>
+          </li>
+          <li class="bullet-item">
+            <svg class="bullet-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+            <span><strong>Mensagem pré-formatada editável</strong> — tom profissional, sem parecer cobrança agressiva</span>
+          </li>
+        </ul>
+
+        <div class="hero-actions">
+          <a href="../prototipos/comarca_honorarios_v1.html" class="btn btn-primary" style="padding: 16px 32px; font-size: 18px;">Testar 7 dias grátis — sem cartão</a>
+          <span class="hero-cta-info">Cadastre 3 clientes e veja como funciona. Zero risco.</span>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="whatsapp-card">
+          <div style="font-size: 12px; opacity: 0.9; margin-bottom: 4px; display: flex; justify-content: space-between;">
+            <span>WhatsApp</span>
+            <span>Agora</span>
+          </div>
+          <div class="wa-bubble">
+            <div class="wa-bubble-header">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+              </svg>
+              Comarca Honorários
+            </div>
+            <div class="wa-bubble-field">Honorário vence em 2 dias.</div>
+            <div class="wa-bubble-field"><strong>Cliente:</strong> João Silva</div>
+            <div class="wa-bubble-field"><strong>Processo:</strong> 0032847-21 (Trabalhista - TJRS)</div>
+            <div class="wa-bubble-field"><strong>Parcela:</strong> 2/3 — R$ 1.200</div>
+            <div class="wa-bubble-field"><strong>PIX:</strong> 034.994.430-07</div>
+            <div style="margin-top: 8px; font-style: italic; color: #555; font-size: 13px;">
+              Este é um lembrete amigável do Dr. Yago. Não é cobrança formal.
+            </div>
+            <div class="wa-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+              </svg>
+              Já paguei
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. DOR -->
+  <section class="dor-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Por que advogados perdem honorários</h2>
+      </div>
+      
+      <div class="dor-grid">
+        <div class="dor-card">
+          <svg class="dor-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+          <div>
+            <h3 class="dor-card-title">Esqueceu de cobrar a segunda parcela</h3>
+          </div>
+        </div>
+
+        <div class="dor-card">
+          <svg class="dor-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+          <div>
+            <h3 class="dor-card-title">Cliente "esqueceu" e você ficou sem jeito de lembrar</h3>
+          </div>
+        </div>
+
+        <div class="dor-card">
+          <svg class="dor-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+          <div>
+            <h3 class="dor-card-title">Estava focado em audiência e deixou vencer</h3>
+          </div>
+        </div>
+
+        <div class="dor-card">
+          <svg class="dor-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+          <div>
+            <h3 class="dor-card-title">Usa planilha que ninguém olha</h3>
+          </div>
+        </div>
+
+        <div class="dor-card">
+          <svg class="dor-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+          <div>
+            <h3 class="dor-card-title">Honorários parcelados que ninguém acompanha — a parcela 2 e 3 simplesmente somem</h3>
+          </div>
+        </div>
+
+        <div class="dor-card">
+          <svg class="dor-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+          <div>
+            <h3 class="dor-card-title">Honorário de êxito que fica meses sem cobrança — você ganhou a causa mas não recebeu</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- AJUSTE 4 — CAIXA DE DESTAQUE DE GESTÃO FINANCEIRA -->
+      <div class="dor-highlight-box">
+        Mais de 60% dos advogados autônomos no Brasil enfrentam dificuldades sérias com gestão financeira. A maioria perde dinheiro não por falta de cliente — mas por falta de cobrança.
+      </div>
+
+      <div class="impact-bar">
+        "Um honorário perdido de R$1.200 paga 3 anos de Comarca."
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. COMO FUNCIONA -->
+  <section id="como-funciona" class="como-funciona-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Como funciona</h2>
+      </div>
+
+      <div class="como-grid">
+        <div class="como-step">
+          <div class="como-num">01</div>
+          <h3 class="como-title">Cadastre o cliente e o honorário</h3>
+          <p class="como-desc">Cliente, processo, valor, parcelas. Tudo configurado em apenas 30 segundos.</p>
+        </div>
+
+        <div class="como-step">
+          <div class="como-num">02</div>
+          <h3 class="como-title">Receba lembretes automáticos</h3>
+          <p class="como-desc">2 dias antes do vencimento direto no seu WhatsApp com todos os dados do processo cadastrado.</p>
+        </div>
+
+        <div class="como-step">
+          <div class="como-num">03</div>
+          <h3 class="como-title">Envie cobrança ao cliente</h3>
+          <p class="como-desc">Um toque abre a mensagem pré-formatada editável. Tom educado e profissional, sem parecer cobrador.</p>
+        </div>
+
+        <div class="como-step">
+          <div class="como-num">04</div>
+          <h3 class="como-title">Marque como pago</h3>
+          <p class="como-desc">Seu cliente realizou o pagamento? Um único clique e o registro sai da lista de pendentes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AJUSTE 2 — ADICIONAR NOVA SEÇÃO DE CADASTRO RAPIDO -->
+  <section class="cadastro-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Cadastro em segundos, não em minutos.</h2>
+      </div>
+      <div class="cadastro-content">
+        <p class="cadastro-text">
+          Tem procuração, contrato ou declaração do cliente em PDF ou Word? Comarca lê o documento e preenche os dados automaticamente. Sem digitar nome, CPF, endereço, telefone.
+        </p>
+        
+        <ul class="cadastro-bullets hero-bullets">
+          <li class="bullet-item">
+            <svg class="bullet-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+            <span>Importa PDF ou DOC do cliente — sistema extrai os dados</span>
+          </li>
+          <li class="bullet-item">
+            <svg class="bullet-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+            <span>Campos preenchidos automaticamente em segundos</span>
+          </li>
+          <li class="bullet-item">
+            <svg class="bullet-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+            <span>Você só confere e salva</span>
+          </li>
+        </ul>
+
+        <div class="cadastro-highlight">
+          "O cliente já assinou a procuração. Os dados já estão lá. Por que digitar de novo?"
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. DIFERENCIAL -->
+  <section class="diferencial-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Feito para advogados, não para qualquer negócio.</h2>
+      </div>
+
+      <div class="table-container">
+        <table class="diferencial-table">
+          <thead>
+            <tr>
+              <th>Funcionalidade</th>
+              <th>Apps genéricos</th>
+              <th class="highlight" style="color: var(--primary);">Comarca Honorários</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Organização</strong></td>
+              <td>Lista de clientes</td>
+              <td class="highlight">Cliente + processo + área</td>
+            </tr>
+            <tr>
+              <td><strong>Dashboard</strong></td>
+              <td>Cobranças pendentes</td>
+              <td class="highlight">Por cliente, processo e tribunal</td>
+            </tr>
+            <tr>
+              <td><strong>Mensagem</strong></td>
+              <td>"Lembrete de pagamento"</td>
+              <td class="highlight">"Honorário proc. 0032847-21 (Trabalhista - TJRS)"</td>
+            </tr>
+            <tr>
+              <td><strong>Preço</strong></td>
+              <td>A partir de R$15/mês (qualquer negócio)</td>
+              <td class="highlight">A partir de R$19/mês (só advogados)</td>
+            </tr>
+            <tr>
+              <td><strong>Quem usa</strong></td>
+              <td>Personal, dentista, psicólogo</td>
+              <td class="highlight">Só advogados</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- AJUSTE 1 — FRASE SUBSTITUTA ABAIXO DA TABELA COMPARATIVA -->
+      <div class="table-sub-text" style="font-weight: normal; font-size: 16px; max-width: 800px; margin: 32px auto 0 auto; text-align: center; color: var(--text-muted); line-height: 1.6;">
+        "Advogado não tem tempo pra aprender ferramenta genérica. Comarca já fala a sua língua — processo, vara, tribunal, OAB. Você abre e já sabe usar."
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. PROVA SOCIAL -->
+  <section class="prova-social-section">
+    <div class="container">
+      <div class="testimonial-card">
+        <div class="testimonial-quote-icon">“</div>
+        <p class="testimonial-text">
+          "Eu tinha R$3.600 espalhados em 3 clientes que nunca cobravam porque ficava chato. Comarca mandou lembrete, eu só encaminhei. Recebi tudo em 10 dias."
+        </p>
+        <div class="testimonial-author">
+          <div class="avatar">YC</div>
+          <div class="author-info">
+            <h4 class="author-name">Dr. Yago Vaz Caldeira</h4>
+            <span class="author-meta">OAB/RS 107.295 — Pelotas/RS</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AJUSTE 5 — COMARCA CONTROLA O QUE VOCÊ ESQUECE -->
+  <section class="controle-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Comarca controla o que você esquece.</h2>
+      </div>
+
+      <div class="controle-grid">
+        <div class="controle-card">
+          <span class="controle-icon">📋</span>
+          <h3 class="controle-card-title">Parcelas no radar</h3>
+          <p class="controle-card-text">Honorário parcelado? Comarca lembra cada vencimento. Você não precisa abrir planilha.</p>
+        </div>
+
+        <div class="controle-card">
+          <span class="controle-icon">⚖️</span>
+          <h3 class="controle-card-title">Honorário de êxito</h3>
+          <p class="controle-card-text">Cadastre o processo e o percentual combinado. Comarca avisa quando chegar a hora de cobrar.</p>
+        </div>
+
+        <div class="controle-card">
+          <span class="controle-icon">📊</span>
+          <h3 class="controle-card-title">Inadimplência zerada</h3>
+          <p class="controle-card-text">Cliente lembrado 2 dias antes paga no prazo. Sem lembrete, ele esquece. Simples assim.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. PREÇOS -->
+  <section id="precos" class="precos-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Preços simples e transparentes</h2>
+      </div>
+
+      <div class="precos-grid">
+        <!-- CARD 1 -->
+        <div class="preco-card">
+          <div class="preco-header">
+            <h3 class="preco-title">Grátis</h3>
+            <div class="preco-value">R$0<span class="preco-period">/mês</span></div>
+          </div>
+          <ul class="preco-features">
+            <li class="preco-feature-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+              </svg>
+              3 clientes
+            </li>
+            <li class="preco-feature-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+              </svg>
+              5 honorários ativos
+            </li>
+            <li class="preco-feature-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+              </svg>
+              10 lembretes/mês
+            </li>
+          </ul>
+          <a href="../prototipos/comarca_honorarios_v1.html" class="btn btn-outline btn-block">Começar grátis</a>
+        </div>
+
+        <!-- CARD 2 -->
+        <div class="preco-card featured">
+          <div class="preco-badge">Mais popular</div>
+          <div class="preco-header">
+            <h3 class="preco-title">Essencial</h3>
+            <div class="preco-value">R$19<span class="preco-period">/mês</span></div>
+          </div>
+          <ul class="preco-features">
+            <li class="preco-feature-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+              </svg>
+              10 clientes
+            </li>
+            <li class="preco-feature-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+              </svg>
+              20 honorários ativos
+            </li>
+            <li class="preco-feature-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+              </svg>
+              50 lembretes/mês
+            </li>
+          </ul>
+          <a href="../prototipos/comarca_honorarios_v1.html" class="btn btn-primary btn-block">Testar 7 dias grátis</a>
+        </div>
+
+        <!-- CARD 3 -->
+        <div class="preco-card">
+          <div class="preco-header">
+            <h3 class="preco-title">Profissional</h3>
+            <div class="preco-value">R$37<span class="preco-period">/mês</span></div>
+          </div>
+          <ul class="preco-features">
+            <li class="preco-feature-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+              </svg>
+              Clientes ilimitados
+            </li>
+            <li class="preco-feature-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+              </svg>
+              Honorários ilimitados
+            </li>
+            <li class="preco-feature-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+              </svg>
+              Lembretes ilimitados
+            </li>
+          </ul>
+          <a href="../prototipos/comarca_honorarios_v1.html" class="btn btn-outline btn-block">Testar 7 dias grátis</a>
+        </div>
+      </div>
+
+      <div class="precos-footer">
+        Sem taxa de transação. Sem intermediário. Você recebe 100% na sua conta.<br>
+        Cancela quando quiser. Sem fidelidade.
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. FAQ -->
+  <section id="faq" class="faq-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Perguntas Frequentes</h2>
+      </div>
+
+      <div class="faq-container">
+        <!-- ITEM 1 -->
+        <div class="faq-item">
+          <button class="faq-trigger" onclick="toggleFaq(0)">
+            <span>Comarca cobra taxa sobre o PIX que eu recebo?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Não. Zero taxa. Você recebe 100% na sua conta, direto do cliente.
+            </div>
+          </div>
+        </div>
+
+        <!-- ITEM 2 -->
+        <div class="faq-item">
+          <button class="faq-trigger" onclick="toggleFaq(1)">
+            <span>Preciso cadastrar conta bancária ou enviar documentos?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Não. Só nome, email, WhatsApp e sua chave PIX.
+            </div>
+          </div>
+        </div>
+
+        <!-- ITEM 3 -->
+        <div class="faq-item">
+          <button class="faq-trigger" onclick="toggleFaq(2)">
+            <span>E se eu já uso planilha ou agenda?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Planilha não manda WhatsApp sozinha. Comarca lembra você 2 dias antes — e você decide se envia ou não.
+            </div>
+          </div>
+        </div>
+
+        <!-- ITEM 4 -->
+        <div class="faq-item">
+          <button class="faq-trigger" onclick="toggleFaq(3)">
+            <span>O Comarca acessa minha conta bancária?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Não. Comarca não toca no dinheiro. O cliente paga direto na sua chave PIX. O status muda quando você ou o cliente confirma.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. CTA FINAL -->
+  <section class="cta-final-section">
+    <div class="container">
+      <h2 class="cta-final-title">Teste com seus próprios clientes.</h2>
+      <p class="cta-final-sub">Cadastre 3 honorários reais. Receba os lembretes. Veja se funciona pra você.</p>
+      <a href="../prototipos/comarca_honorarios_v1.html" class="btn btn-white" style="padding: 16px 32px; font-size: 18px; font-weight: 700;">Criar conta grátis</a>
+      <p class="cta-final-info">7 dias grátis. Sem cartão. Cancela quando quiser.</p>
+    </div>
+  </section>
+
+  <!-- 10. FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-logo-col">
+          <a href="#" class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+            </svg>
+            Comarca
+          </a>
+          <p class="footer-tagline">Lembretes automáticos de honorários para advogados.</p>
+        </div>
+        
+        <div class="footer-meta-col">
+          <span class="footer-right-text">Feito por advogados, para advogados.</span>
+          <div class="footer-contact">
+            <span>Contato: <a href="mailto:suporte@comarca.com.br">suporte@comarca.com.br</a></span>
+            <span>WhatsApp: (53) 99999-9999</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        &copy; 2026 Comarca Honorários
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // SMOOTH SCROLL PARA TODOS OS BOTÕES CTA RESTANTES QUE APONTAM PARA IDS INTERNOS
+    document.querySelectorAll('.cta-scroll').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        const targetSection = document.querySelector(targetId);
+        
+        if (targetSection) {
+          targetSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // FAQ ACCORDION INTERACTION
+    function toggleFaq(index) {
+      const faqItems = document.querySelectorAll('.faq-item');
+      const item = faqItems[index];
+      const answer = item.querySelector('.faq-answer');
+      const icon = item.querySelector('.faq-icon');
+      
+      // Fecha outros itens abertos (opcional, para comportamento sanfona limpo)
+      faqItems.forEach((otherItem, otherIndex) => {
+        if (otherIndex !== index) {
+          const otherAnswer = otherItem.querySelector('.faq-answer');
+          const otherIcon = otherItem.querySelector('.faq-icon');
+          otherAnswer.style.maxHeight = null;
+          otherIcon.textContent = '+';
+        }
+      });
+
+      // Alterna o estado do item clicado
+      if (answer.style.maxHeight) {
+        answer.style.maxHeight = null;
+        icon.textContent = '+';
+      } else {
+        answer.style.maxHeight = answer.scrollHeight + "px";
+        icon.textContent = '−';
+      }
+    }
+  </script>
+</body>
+</html>

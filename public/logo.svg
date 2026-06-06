@@ -1,0 +1,19 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comarca">
+  <!-- Balança da justiça (advogados / Comarca) coroada por check (honorário em dia) -->
+  <g stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- check / finial: lembrete cumprido, honorário recebido -->
+    <path d="M13.2 5.6 L15.1 7.5 L18.8 3.6" />
+    <!-- viga -->
+    <path d="M6 10 H26" />
+    <!-- haste -->
+    <path d="M16 9 V23" />
+    <!-- correntes -->
+    <path d="M7 10 V13.5" />
+    <path d="M25 10 V13.5" />
+    <!-- pratos -->
+    <path d="M3.5 14 a3.5 3.5 0 0 0 7 0" />
+    <path d="M21.5 14 a3.5 3.5 0 0 0 7 0" />
+    <!-- base -->
+    <path d="M11 23 H21" />
+  </g>
+</svg>
