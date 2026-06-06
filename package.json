@@ -28,5 +28,8 @@
     "eslint-config-next": "16.2.7",
     "typescript": "^5",
     "vitest": "^4.1.8"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": ["sharp", "unrs-resolver"]
   }
 }
