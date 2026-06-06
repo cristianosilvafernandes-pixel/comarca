@@ -39,9 +39,14 @@ export default async function ClientesPage({
     <div>
       <div className="page-head">
         <h1>Clientes</h1>
-        <Link href="/clientes/novo" className="btn btn-primary">
-          + Novo cliente
-        </Link>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Link href="/clientes/importar" className="btn btn-secondary">
+            📄 Importar de documento
+          </Link>
+          <Link href="/clientes/novo" className="btn btn-primary">
+            + Novo cliente
+          </Link>
+        </div>
       </div>
 
       {error && ERROS[error] && <div className="auth-alert error">{ERROS[error]}</div>}
