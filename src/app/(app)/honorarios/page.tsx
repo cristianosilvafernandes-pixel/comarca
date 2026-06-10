@@ -103,7 +103,7 @@ export default async function HonorariosPage({
     user
       ? supabase.from("profiles").select("nome, oab, chave_pix").eq("id", user.id).maybeSingle()
       : Promise.resolve({ data: null }),
-    supabase.from("advogados").select("id, nome").order("nome"),
+    supabase.from("advogados").select("id, nome").eq("ativo", true).order("nome"),
   ]);
 
   const honorarios = (honData ?? []) as unknown as HonorarioRow[];
@@ -200,7 +200,19 @@ export default async function HonorariosPage({
     return q ? `/honorarios?${q}` : "/honorarios";
   };
 
-  const advInitials = initials(advogadoNome);
+  const qsAdv = (id: string) => {
+    const p = new URLSearchParams();
+    if (statusFiltro !== "todos") p.set("status", statusFiltro);
+    if (id !== "todos") p.set("adv", id);
+    const q = p.toString();
+    return q ? `/honorarios?${q}` : "/honorarios";
+  };
+
+  const selectedAdvNome =
+    advId !== "todos"
+      ? (advogados ?? []).find((a) => a.id === advId)?.nome ?? advogadoNome
+      : advogadoNome;
+  const advInitials = initials(selectedAdvNome);
 
   return (
     <div>
@@ -220,7 +232,7 @@ export default async function HonorariosPage({
             <div className="adv-card">
               <div className="adv-initials">{advInitials}</div>
               <div className="adv-info">
-                <span className="adv-nome">{advogadoNome}</span>
+                <span className="adv-nome">{selectedAdvNome}</span>
                 <span className="adv-stat">
                   Pendente:{" "}
                   <strong style={{ color: "var(--ink)" }}>{formatCurrency(somaAberto)}</strong>
@@ -250,7 +262,7 @@ export default async function HonorariosPage({
           {[{ id: "todos", nome: "Todos" }, ...(advogados ?? [])].map((a) => (
             <Link
               key={a.id}
-              href={a.id === "todos" ? "/honorarios" : `/honorarios?adv=${a.id}`}
+              href={qsAdv(a.id)}
               className={`btn btn-secondary${(!advId || advId === "todos") && a.id === "todos" ? " active" : advId === a.id ? " active" : ""}`}
               style={{ fontSize: 13, padding: "4px 12px" }}
             >
