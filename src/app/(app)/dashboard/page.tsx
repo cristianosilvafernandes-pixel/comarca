@@ -222,7 +222,11 @@ export default async function DashboardPage({
     return `/dashboard?${p.toString()}`;
   };
 
-  const advInitials = initials(advogadoNome);
+  const selectedAdvNome =
+    advId !== "todos"
+      ? (advogados ?? []).find((a) => a.id === advId)?.nome ?? advogadoNome
+      : advogadoNome;
+  const advInitials = initials(selectedAdvNome);
 
   return (
     <div>
@@ -281,7 +285,7 @@ export default async function DashboardPage({
             <div className="adv-card">
               <div className="adv-initials">{advInitials}</div>
               <div className="adv-info">
-                <span className="adv-nome">{advogadoNome}</span>
+                <span className="adv-nome">{selectedAdvNome}</span>
                 <span className="adv-stat">
                   Pendente:{" "}
                   <strong style={{ color: "var(--ink)" }}>{formatCurrency(somaAberto)}</strong>
@@ -289,7 +293,7 @@ export default async function DashboardPage({
                 <span className="adv-stat">
                   Recebido:{" "}
                   <strong
-                    style={{ color: somaRecebido > 0 ? "var(--success)" : "var(--error)" }}
+                    style={{ color: somaRecebido > 0 ? "var(--success)" : "var(--body)" }}
                   >
                     {formatCurrency(somaRecebido)}
                   </strong>
