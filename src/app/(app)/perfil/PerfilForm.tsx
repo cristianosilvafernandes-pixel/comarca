@@ -24,11 +24,7 @@ export function PerfilForm({ nome, oab, chavePix, foro, plano }: Props) {
   return (
     <form action={formAction} className="card" style={{ maxWidth: 560 }}>
       {state?.error && <div className="auth-alert error">{state.error}</div>}
-      {state?.success && (
-        <div className="auth-alert" style={{ color: "var(--support-success, #1e8449)" }}>
-          Perfil atualizado.
-        </div>
-      )}
+      {state?.success && <div className="auth-alert success">Perfil atualizado.</div>}
 
       <div className="form-group">
         <label htmlFor="nome">Nome completo *</label>
@@ -60,7 +56,7 @@ export function PerfilForm({ nome, oab, chavePix, foro, plano }: Props) {
         <label>Plano atual</label>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <span style={{ fontWeight: 600 }}>{PLANO_LABEL[plano]}</span>
-          <a href="/planos" style={{ fontSize: 13, color: "var(--primary)" }}>
+          <a href="/planos" style={{ fontSize: 14, color: "var(--link)" }}>
             Gerenciar plano →
           </a>
         </div>

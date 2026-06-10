@@ -33,7 +33,7 @@ export function DashboardFilters({ periodo, de, ate, status, adv, advogados }: P
   return (
     <div className="card" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 16, marginBottom: 24 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <label style={{ marginBottom: 0, color: "var(--body)", fontSize: 13, whiteSpace: "nowrap" }}>
+        <label style={{ marginBottom: 0, color: "var(--body)", fontSize: 14, whiteSpace: "nowrap" }}>
           Advogado:
         </label>
         <select
@@ -50,7 +50,7 @@ export function DashboardFilters({ periodo, de, ate, status, adv, advogados }: P
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <label style={{ marginBottom: 0, color: "var(--body)", fontSize: 13, whiteSpace: "nowrap" }}>
+        <label style={{ marginBottom: 0, color: "var(--body)", fontSize: 14, whiteSpace: "nowrap" }}>
           Período:
         </label>
         <select
@@ -75,7 +75,7 @@ export function DashboardFilters({ periodo, de, ate, status, adv, advogados }: P
             defaultValue={de}
             onChange={(e) => nav({ de: e.target.value })}
           />
-          <span style={{ color: "var(--body)", fontSize: 13 }}>até</span>
+          <span style={{ color: "var(--body)", fontSize: 14 }}>até</span>
           <input
             type="date"
             className="form-control"

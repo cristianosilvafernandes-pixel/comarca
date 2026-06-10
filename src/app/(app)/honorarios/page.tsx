@@ -259,13 +259,13 @@ export default async function HonorariosPage({
 
       {(advogados ?? []).length > 1 && (
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 13, color: "var(--body)" }}>Advogado:</span>
+          <span style={{ fontSize: 14, color: "var(--body)" }}>Advogado:</span>
           {[{ id: "todos", nome: "Todos" }, ...(advogados ?? [])].map((a) => (
             <Link
               key={a.id}
               href={qsAdv(a.id)}
               className={`btn btn-secondary${(!advId || advId === "todos") && a.id === "todos" ? " active" : advId === a.id ? " active" : ""}`}
-              style={{ fontSize: 13, padding: "4px 12px" }}
+              style={{ fontSize: 14, padding: "4px 12px" }}
             >
               {a.nome}
             </Link>

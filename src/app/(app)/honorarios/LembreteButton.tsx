@@ -7,14 +7,15 @@ interface Props {
   parcelaId: string;
   mensagem: string;
   waUrl: string | null;
+  label?: string;
 }
 
-export function LembreteButton({ parcelaId, mensagem, waUrl }: Props) {
+export function LembreteButton({ parcelaId, mensagem, waUrl, label }: Props) {
   const [done, setDone] = useState(false);
 
   if (!waUrl) {
     return (
-      <span style={{ fontSize: 11, color: "var(--text-muted)" }} title="WhatsApp do cliente inválido">
+      <span style={{ fontSize: 12, color: "var(--text-muted)" }} title="WhatsApp do cliente inválido">
         sem WhatsApp
       </span>
     );
@@ -34,7 +35,7 @@ export function LembreteButton({ parcelaId, mensagem, waUrl }: Props) {
 
   return (
     <button type="button" className="btn btn-secondary" onClick={enviar} title="Copia a mensagem e abre o WhatsApp">
-      {done ? "✓ enviado" : "💬 Lembrete"}
+      {done ? "✓ enviado" : (label ?? "💬 Lembrete")}
     </button>
   );
 }

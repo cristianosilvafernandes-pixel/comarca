@@ -73,6 +73,15 @@
   margin: 0;
 }
 
+/* CLIENTE CARD */
+.cliente-card { padding: 20px 24px; }
+.cliente-card .client-profile-row { margin-bottom: 12px; }
+.cliente-nome { font-weight: 600; font-size: 16px; letter-spacing: -0.32px; }
+.cliente-meta { font-size: 13px; color: var(--body); margin-top: 2px; }
+.cliente-stats { font-size: 14px; margin-bottom: 4px; }
+.cliente-processo { font-size: 13px; color: var(--body); margin-bottom: 12px; }
+.cliente-card .fee-card-actions { margin-top: 12px; }
+
 /* Tabela de parcelas (DataTable — header mono) */
 .parcelas-table {
   width: 100%;

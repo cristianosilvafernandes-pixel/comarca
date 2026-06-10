@@ -112,7 +112,7 @@ export function ImportarClienteForm({ userId }: { userId: string }) {
       </div>
 
       {aviso && (
-        <div className="auth-alert" style={{ marginBottom: 16, color: "var(--text-secondary, #525252)" }}>
+        <div className="auth-alert" style={{ marginBottom: 16, color: "var(--body)" }}>
           {aviso}
         </div>
       )}

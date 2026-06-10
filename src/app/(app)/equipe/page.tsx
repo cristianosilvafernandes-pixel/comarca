@@ -59,7 +59,7 @@ export default async function EquipePage({
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600 }}>{adv.nome}</div>
                   {adv.oab && (
-                    <div style={{ fontSize: 13, color: "var(--body)", marginTop: 2 }}>
+                    <div style={{ fontSize: 14, color: "var(--body)", marginTop: 2 }}>
                       {adv.oab}
                     </div>
                   )}

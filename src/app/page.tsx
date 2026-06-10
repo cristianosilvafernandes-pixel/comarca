@@ -108,7 +108,7 @@ export default function LandingPage() {
                 <div className="wa-bubble-field"><strong>Processo:</strong> 0032847-21 (Trabalhista - TJRS)</div>
                 <div className="wa-bubble-field"><strong>Parcela:</strong> 2/3 — R$ 1.200</div>
                 <div className="wa-bubble-field"><strong>PIX:</strong> 034.994.430-07</div>
-                <div style={{ marginTop: 8, fontStyle: "italic", color: "#555", fontSize: 13 }}>
+                <div style={{ marginTop: 8, fontStyle: "italic", color: "#555", fontSize: 14 }}>
                   Este é um lembrete amigável do Dr. Yago. Não é cobrança formal.
                 </div>
                 <div className="wa-btn">

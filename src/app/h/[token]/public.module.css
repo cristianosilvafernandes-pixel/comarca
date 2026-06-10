@@ -1,7 +1,7 @@
-/* Página pública de pagamento — usa tokens do globals.css (herda o tema atual). */
+/* Página pública de pagamento — Vercel / Geist (herda tokens de globals.css). */
 
 .page {
-  background-color: var(--gray-bg, #f4f6f9);
+  background-color: var(--canvas-soft);
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -10,110 +10,125 @@
 }
 
 .box {
-  background-color: var(--white, #fff);
-  border-radius: var(--radius, 12px);
-  box-shadow: var(--shadow-lg, 0 10px 25px rgba(0, 0, 0, 0.12));
-  border: 1px solid var(--gray-border, #dde4ec);
+  background-color: var(--canvas);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-5);
   width: 100%;
   max-width: 500px;
   overflow: hidden;
 }
 
 .header {
-  padding: 20px;
-  background-color: var(--primary, #2e86c1);
-  color: var(--text-on-color, #fff);
+  padding: 24px;
+  background-color: var(--ink);
+  color: var(--on-primary);
   text-align: center;
 }
-.brand { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-.brandSub { font-size: 13px; opacity: 0.9; }
+.brand { font-size: 20px; font-weight: 600; letter-spacing: -0.6px; margin-bottom: 4px; }
+.brandSub { font-size: 14px; opacity: 0.7; }
 
-.body { padding: 20px; }
+.body { padding: 24px; }
 
 .badgeArea { text-align: center; margin-bottom: 20px; }
 .badge {
   display: inline-block;
-  padding: 6px 14px;
-  border-radius: var(--radius, 12px);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
   font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
+  line-height: 16px;
+  font-weight: 500;
 }
-.badgeWaiting { background-color: var(--warning-light, #fef9e7); color: var(--warning, #f39c12); }
-.badgeAnalysis { background-color: var(--primary-light, #ebf5fb); color: var(--primary, #2e86c1); }
-.badgePaid { background-color: var(--success-light, #e8f8f5); color: var(--success, #1e8449); }
+.badgeWaiting { background-color: var(--warning-soft); color: var(--warning-deep); }
+.badgeAnalysis { background-color: var(--link-bg-soft); color: var(--link-deep); }
+.badgePaid { background-color: var(--success-soft); color: #0a7a42; }
 
 .dados {
-  background-color: var(--gray-bg, #f4f6f9);
+  background-color: var(--canvas-soft);
+  border: 1px solid var(--hairline);
   padding: 16px;
-  border-radius: var(--radius, 8px);
+  border-radius: var(--radius-md);
   margin-bottom: 20px;
 }
-.dados > div { margin-bottom: 8px; }
+.dados > div { margin-bottom: 8px; font-size: 14px; letter-spacing: -0.28px; }
 .dados > div:last-child { margin-bottom: 0; }
-.valor { font-weight: 700; color: var(--primary, #2e86c1); }
+.valor { font-weight: 600; color: var(--ink); }
 
-.hr { border: 0; border-top: 1px solid var(--gray-border, #dde4ec); margin: 20px 0; }
+.hr { border: 0; border-top: 1px solid var(--hairline); margin: 20px 0; }
 
 .pixBlock {
-  background-color: var(--gray-bg, #f4f6f9);
-  border: 1px dashed var(--primary, #2e86c1);
-  border-radius: var(--radius, 8px);
+  background-color: var(--canvas-soft);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
   padding: 16px;
   text-align: center;
 }
-.pixLabel { color: var(--primary, #2e86c1); font-weight: 700; display: block; margin-bottom: 6px; }
+.pixLabel {
+  color: var(--mute);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 400;
+  display: block;
+  margin-bottom: 6px;
+}
 .pixKey {
-  font-family: var(--font-mono, monospace);
+  font-family: var(--font-mono);
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 500;
   word-break: break-all;
   margin: 8px 0;
-  color: var(--text, #1a2332);
+  color: var(--ink);
 }
-.qr { width: 180px; height: 180px; margin: 12px auto; display: block; }
+.qr { width: 180px; height: 180px; margin: 12px auto; display: block; border-radius: var(--radius-sm); }
 .copiaCola {
-  font-family: var(--font-mono, monospace);
-  font-size: 11px;
+  font-family: var(--font-mono);
+  font-size: 12px;
   word-break: break-all;
-  background: var(--white, #fff);
-  border: 1px solid var(--gray-border, #dde4ec);
-  border-radius: var(--radius, 6px);
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
   padding: 8px;
   margin: 8px 0;
   max-height: 64px;
   overflow-y: auto;
   text-align: left;
+  color: var(--body);
 }
 
 .actions { text-align: center; }
-.actionText { margin-bottom: 12px; font-size: 13px; color: var(--text-muted, #7f8c9a); }
+.actionText { margin-bottom: 12px; font-size: 14px; letter-spacing: -0.28px; color: var(--body); }
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 10px 16px;
-  border-radius: var(--radius, 8px);
-  font-size: 13px;
-  font-weight: 600;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.28px;
   cursor: pointer;
   border: 1px solid transparent;
+  transition: var(--transition);
 }
-.btnPrimary { background-color: var(--success, #1e8449); color: #fff; }
-.btnSecondary { background-color: var(--white, #fff); border-color: var(--gray-border, #dde4ec); color: var(--text, #1a2332); }
-.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.btnPrimary { background-color: var(--success); color: #fff; }
+.btnPrimary:hover { filter: brightness(0.94); }
+.btnSecondary { background-color: var(--canvas); border-color: var(--hairline); color: var(--ink); }
+.btnSecondary:hover { border-color: var(--hairline-strong); background-color: var(--canvas-soft); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .footer {
   text-align: center;
   padding: 16px;
-  background-color: var(--gray-bg, #f4f6f9);
-  font-size: 11px;
-  color: var(--text-muted, #7f8c9a);
-  border-top: 1px solid var(--gray-border, #dde4ec);
-  line-height: 1.6;
+  background-color: var(--canvas-soft);
+  font-size: 12px;
+  color: var(--mute);
+  border-top: 1px solid var(--hairline);
+  line-height: 1.5;
 }
 
-.errorBox { padding: 40px 16px; text-align: center; }
+.errorBox { padding: 48px 16px; text-align: center; }
 .errorIcon { font-size: 48px; margin-bottom: 16px; }
