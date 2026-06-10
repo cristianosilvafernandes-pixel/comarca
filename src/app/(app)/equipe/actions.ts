@@ -42,7 +42,8 @@ export async function deleteAdvogado(formData: FormData): Promise<void> {
   if (!id) return;
 
   const supabase = await createClient();
-  await supabase.from("advogados").delete().eq("id", id);
+  const { error } = await supabase.from("advogados").delete().eq("id", id);
+  if (error) redirect("/equipe?error=falha_excluir");
   revalidatePath("/equipe");
   redirect("/equipe");
 }

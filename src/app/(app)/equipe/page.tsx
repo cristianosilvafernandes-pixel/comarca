@@ -13,7 +13,12 @@ function initials(nome: string): string {
   return (p.length === 1 ? p[0].slice(0, 2) : p[0][0] + p[p.length - 1][0]).toUpperCase();
 }
 
-export default async function EquipePage() {
+export default async function EquipePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
   const supabase = await createClient();
   const { data } = await supabase
     .from("advogados")
@@ -29,6 +34,10 @@ export default async function EquipePage() {
           + Novo advogado
         </Link>
       </div>
+
+      {error === "falha_excluir" && (
+        <div className="auth-alert error">Não foi possível remover o advogado.</div>
+      )}
 
       {advogados.length === 0 ? (
         <div className="empty-state">

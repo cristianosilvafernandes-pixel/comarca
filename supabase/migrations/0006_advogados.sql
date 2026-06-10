@@ -7,8 +7,7 @@ create table public.advogados (
   nome        text        not null,
   oab         text,
   ativo       boolean     not null default true,
-  created_at  timestamptz not null default now(),
-  unique (user_id)
+  created_at  timestamptz not null default now()
 );
 create index on public.advogados (user_id);
 alter table public.advogados enable row level security;
@@ -34,11 +33,13 @@ alter table public.clientes
   add column membro_id uuid references public.advogados(id) on delete set null;
 create index on public.clientes (membro_id);
 
--- 4. Seed: criar um advogado por profile existente (idempotent)
+-- 4. Seed: criar um advogado por profile existente (idempotent sem unique constraint)
 insert into public.advogados (user_id, nome, oab)
-select id, nome, oab
-from public.profiles
-on conflict (user_id) do nothing;
+select p.id, p.nome, p.oab
+from public.profiles p
+where not exists (
+  select 1 from public.advogados a where a.user_id = p.id
+);
 
 -- 5. Atualizar honorarios existentes → membro_id do seed
 update public.honorarios h
