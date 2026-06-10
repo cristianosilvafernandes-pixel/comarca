@@ -7,14 +7,22 @@ create table public.advogados (
   nome        text        not null,
   oab         text,
   ativo       boolean     not null default true,
-  created_at  timestamptz not null default now()
+  created_at  timestamptz not null default now(),
+  unique (user_id)
 );
 create index on public.advogados (user_id);
 alter table public.advogados enable row level security;
 
--- Dono do escritório acessa todos os membros
-create policy "advogados_all" on public.advogados
-  for all using ((select auth.uid()) = user_id);
+-- Separate policies by operation
+create policy "advogados_select_own" on public.advogados
+  for select using ((select auth.uid()) = user_id);
+create policy "advogados_insert_own" on public.advogados
+  for insert with check ((select auth.uid()) = user_id);
+create policy "advogados_update_own" on public.advogados
+  for update using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
+create policy "advogados_delete_own" on public.advogados
+  for delete using ((select auth.uid()) = user_id);
 
 -- 2. membro_id em honorarios
 alter table public.honorarios
@@ -26,10 +34,11 @@ alter table public.clientes
   add column membro_id uuid references public.advogados(id) on delete set null;
 create index on public.clientes (membro_id);
 
--- 4. Seed: criar um advogado por profile existente
+-- 4. Seed: criar um advogado por profile existente (idempotent)
 insert into public.advogados (user_id, nome, oab)
 select id, nome, oab
-from public.profiles;
+from public.profiles
+on conflict (user_id) do nothing;
 
 -- 5. Atualizar honorarios existentes → membro_id do seed
 update public.honorarios h
