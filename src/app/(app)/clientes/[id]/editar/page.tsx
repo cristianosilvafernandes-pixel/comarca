@@ -15,11 +15,10 @@ export default async function EditarClientePage({
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data: cliente } = await supabase
-    .from("clientes")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
+  const [{ data: cliente }, { data: advogados }] = await Promise.all([
+    supabase.from("clientes").select("*").eq("id", id).maybeSingle(),
+    supabase.from("advogados").select("id, nome").eq("ativo", true).order("nome"),
+  ]);
 
   if (!cliente) notFound();
 
@@ -28,7 +27,7 @@ export default async function EditarClientePage({
       <div className="page-head">
         <h1>Editar cliente</h1>
       </div>
-      <ClienteForm cliente={cliente} />
+      <ClienteForm cliente={cliente} advogados={advogados ?? []} />
     </div>
   );
 }

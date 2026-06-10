@@ -8,7 +8,13 @@ import { maskPhone } from "@/lib/utils/phone";
 import { saveCliente, type ClienteState } from "./actions";
 import type { Cliente } from "@/lib/database.types";
 
-export function ClienteForm({ cliente }: { cliente?: Cliente }) {
+export function ClienteForm({
+  cliente,
+  advogados = [],
+}: {
+  cliente?: Cliente;
+  advogados?: { id: string; nome: string }[];
+}) {
   const router = useRouter();
   const [state, formAction, pending] = useActionState<ClienteState, FormData>(saveCliente, undefined);
 
@@ -67,6 +73,23 @@ export function ClienteForm({ cliente }: { cliente?: Cliente }) {
         <label htmlFor="endereco">Endereço</label>
         <input id="endereco" name="endereco" className="form-control" defaultValue={cliente?.endereco ?? ""} />
       </div>
+
+      {advogados.length > 1 && (
+        <div className="form-group">
+          <label htmlFor="membro_id">Advogado responsável</label>
+          <select
+            id="membro_id"
+            name="membro_id"
+            className="form-control"
+            defaultValue={(cliente as { membro_id?: string | null } | undefined)?.membro_id ?? ""}
+          >
+            <option value="">Selecione…</option>
+            {advogados.map((a) => (
+              <option key={a.id} value={a.id}>{a.nome}</option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div className="fee-card-actions">
         <Button type="submit" variant="primary" disabled={pending}>

@@ -22,6 +22,8 @@ export async function saveCliente(_prev: ClienteState, formData: FormData): Prom
   const whatsapp = normalizeWhatsApp(whatsappRaw);
   if (!whatsapp) return { error: "WhatsApp inválido. Use DDD + número." };
 
+  const membro_id = String(formData.get("membro_id") ?? "").trim() || null;
+
   const supabase = await createClient();
   const payload = {
     nome,
@@ -29,6 +31,7 @@ export async function saveCliente(_prev: ClienteState, formData: FormData): Prom
     whatsapp,
     email: email || null,
     endereco: endereco || null,
+    membro_id,
   };
 
   const { error } = id
