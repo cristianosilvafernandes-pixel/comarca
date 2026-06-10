@@ -8,25 +8,19 @@ export const metadata: Metadata = {
 
 export default async function GerarContratoPage() {
   const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
 
-  const [{ data: clientes }, { data: userData }] = await Promise.all([
+  const [{ data: clientes }, { data: advogados }, { data: profile }] = await Promise.all([
     supabase.from("clientes").select("id, nome, cpf, endereco, whatsapp").order("nome"),
-    supabase.auth.getUser(),
+    supabase.from("advogados").select("id, nome, oab").eq("ativo", true).order("nome"),
+    supabase.from("profiles").select("foro").eq("id", userData.user?.id ?? "").maybeSingle(),
   ]);
 
-  let advogadoNome = "Advogado";
-  let advogadoOab: string | null = null;
-  let foro: string | null = null;
-  if (userData.user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("nome, oab, foro")
-      .eq("id", userData.user.id)
-      .maybeSingle();
-    advogadoNome = profile?.nome ?? advogadoNome;
-    advogadoOab = profile?.oab ?? null;
-    foro = profile?.foro ?? null;
-  }
+  const advsArr = advogados ?? [];
+  const defaultAdv = advsArr[0];
+  const advogadoNome = defaultAdv?.nome ?? "Advogado";
+  const advogadoOab = defaultAdv?.oab ?? null;
+  const foro = profile?.foro ?? null;
 
   const hoje = new Date().toISOString().slice(0, 10);
 
@@ -42,6 +36,7 @@ export default async function GerarContratoPage() {
 
       <ContratoForm
         clientes={clientes ?? []}
+        advogados={advsArr}
         advogadoNome={advogadoNome}
         advogadoOab={advogadoOab}
         foro={foro}

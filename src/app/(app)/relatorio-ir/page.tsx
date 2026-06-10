@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 import { fetchParcelasIR } from "./data";
 import { YearSelect } from "./YearSelect";
 import { agregarRelatorioIR, anoApuracao } from "@/lib/domain/ir";
@@ -11,32 +13,56 @@ export const metadata: Metadata = {
 export default async function RelatorioIRPage({
   searchParams,
 }: {
-  searchParams: Promise<{ ano?: string }>;
+  searchParams: Promise<{ ano?: string; adv?: string }>;
 }) {
-  const { ano: anoParam } = await searchParams;
-  const parcelas = await fetchParcelasIR();
+  const sp = await searchParams;
+  const advId = sp.adv || "todos";
+
+  const supabase = await createClient();
+  const [parcelas, { data: advogados }] = await Promise.all([
+    fetchParcelasIR(advId !== "todos" ? advId : undefined),
+    supabase.from("advogados").select("id, nome").eq("ativo", true).order("nome"),
+  ]);
 
   const anoAtual = new Date().getUTCFullYear();
   const anosDisponiveis = Array.from(
     new Set([anoAtual, ...parcelas.map(anoApuracao)]),
   ).sort((a, b) => b - a);
 
-  const ano = anoParam ? Number(anoParam) : anosDisponiveis[0];
+  const ano = sp.ano ? Number(sp.ano) : anosDisponiveis[0];
   const rel = agregarRelatorioIR(parcelas, ano);
   const temLancamentos = rel.totalGeral > 0;
+
+  const advParam = advId !== "todos" ? `&adv=${advId}` : "";
 
   return (
     <div>
       <div className="page-head">
         <h1>Relatório de Rendimentos (IR)</h1>
-        <a className="btn btn-primary" href={`/relatorio-ir/csv?ano=${ano}`}>
+        <a className="btn btn-primary" href={`/relatorio-ir/csv?ano=${ano}${advParam}`}>
           ⬇ Exportar CSV
         </a>
       </div>
 
+      {(advogados ?? []).length > 1 && (
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 13, color: "var(--body)" }}>Advogado:</span>
+          {[{ id: "todos", nome: "Todos" }, ...(advogados ?? [])].map((a) => (
+            <Link
+              key={a.id}
+              href={a.id === "todos" ? `/relatorio-ir?ano=${ano}` : `/relatorio-ir?ano=${ano}&adv=${a.id}`}
+              className={`btn btn-secondary${advId === a.id || (a.id === "todos" && advId === "todos") ? " active" : ""}`}
+              style={{ fontSize: 13, padding: "4px 12px" }}
+            >
+              {a.nome}
+            </Link>
+          ))}
+        </div>
+      )}
+
       <div className="card" style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <label style={{ marginBottom: 0 }}>Ano de apuração:</label>
-        <YearSelect anos={anosDisponiveis} ano={ano} />
+        <YearSelect anos={anosDisponiveis} ano={ano} adv={advId !== "todos" ? advId : undefined} />
       </div>
 
       {!temLancamentos ? (
@@ -56,7 +82,7 @@ export default async function RelatorioIRPage({
                 <strong>{formatCurrency(g.total)}</strong>
               </div>
               {g.linhas.length === 0 ? (
-                <div style={{ padding: "12px 16px", color: "var(--text-muted)", fontSize: 13 }}>
+                <div style={{ padding: "12px 16px", color: "var(--text-muted)", fontSize: 14 }}>
                   Nenhum lançamento neste grupo.
                 </div>
               ) : (

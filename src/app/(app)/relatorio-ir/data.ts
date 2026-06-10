@@ -11,17 +11,18 @@ type Row = {
   doc_pagador: string | null;
   honorarios: {
     tipo: HonorarioTipo;
+    membro_id: string | null;
     clientes: { nome: string; cpf: string } | null;
   } | null;
 };
 
-/** Busca todas as parcelas PAGAS do advogado (RLS), prontas para o relatório IR. */
-export async function fetchParcelasIR(): Promise<ParcelaIR[]> {
+/** Busca parcelas PAGAS do advogado (RLS). membroId filtra por sub-perfil. */
+export async function fetchParcelasIR(membroId?: string): Promise<ParcelaIR[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("parcelas")
     .select(
-      "numero, valor, vencimento, data_pagamento, origem_pagamento, doc_pagador, honorarios:honorario_id(tipo, clientes:cliente_id(nome, cpf))",
+      "numero, valor, vencimento, data_pagamento, origem_pagamento, doc_pagador, honorarios:honorario_id(tipo, membro_id, clientes:cliente_id(nome, cpf))",
     )
     .eq("status_registrado", "pago");
 
@@ -29,6 +30,7 @@ export async function fetchParcelasIR(): Promise<ParcelaIR[]> {
 
   return rows
     .filter((r) => r.honorarios)
+    .filter((r) => !membroId || r.honorarios!.membro_id === membroId)
     .map((r) => ({
       clienteNome: r.honorarios!.clientes?.nome ?? "—",
       clienteCpf: r.honorarios!.clientes?.cpf ?? "—",
