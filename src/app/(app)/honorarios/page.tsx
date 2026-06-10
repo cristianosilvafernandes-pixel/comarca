@@ -189,6 +189,7 @@ export default async function HonorariosPage({
     if (statusFiltro === "todos") return true;
     if (statusFiltro === "pago") return it.status === "pago" || it.status === "pago_verificacao";
     if (statusFiltro === "ad_exitum") return it.tipo === "ad_exitum" || it.tipo === "fixo_exitum";
+    if (statusFiltro === "pendente") return it.status === "pendente" || it.status === "vencendo";
     return it.status === statusFiltro;
   });
 

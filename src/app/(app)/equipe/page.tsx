@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { deleteAdvogado } from "./actions";
+import { DeleteButton } from "./DeleteButton";
 
 export const metadata: Metadata = {
   title: "Equipe — Comarca Honorários",
@@ -68,21 +68,7 @@ export default async function EquipePage({
                   <Link href={`/equipe/${adv.id}/editar`} className="btn btn-secondary">
                     ✏️ Editar
                   </Link>
-                  <form action={deleteAdvogado}>
-                    <input type="hidden" name="id" value={adv.id} />
-                    <button
-                      type="submit"
-                      className="btn btn-secondary"
-                      style={{ color: "var(--error)" }}
-                      onClick={(e) => {
-                        if (!confirm("Remover este advogado? Honorários vinculados ficam sem responsável.")) {
-                          e.preventDefault();
-                        }
-                      }}
-                    >
-                      🗑 Remover
-                    </button>
-                  </form>
+                  <DeleteButton id={adv.id} />
                 </div>
               </div>
             </div>

@@ -112,7 +112,7 @@ export default async function DashboardPage({
     user
       ? supabase.from("profiles").select("nome, oab, chave_pix").eq("id", user.id).maybeSingle()
       : Promise.resolve({ data: null }),
-    supabase.from("advogados").select("id, nome").order("nome"),
+    supabase.from("advogados").select("id, nome").eq("ativo", true).order("nome"),
   ]);
 
   const honorarios = (honData ?? []) as unknown as HonorarioRow[];
@@ -150,9 +150,6 @@ export default async function DashboardPage({
       });
       const waUrl = h.clientes?.whatsapp ? montarUrlWaMe(h.clientes.whatsapp, mensagem) : null;
 
-      if (p.status_registrado === "em_aberto") somaAberto += p.valor;
-      else somaRecebido += p.valor;
-
       itensTodos.push({
         parcelaId: p.id,
         honorarioId: h.id,
@@ -187,14 +184,17 @@ export default async function DashboardPage({
       resumo.confirmados += it.valor;
       resumo.nConf++;
       contagem.pago++;
+      somaRecebido += it.valor;
     } else if (it.status === "atrasado") {
       resumo.atrasados += it.valor;
       resumo.nAtr++;
       contagem.atrasado++;
+      somaAberto += it.valor;
     } else {
       resumo.pendentes += it.valor;
       resumo.nPend++;
       contagem.pendente++;
+      somaAberto += it.valor;
     }
     if (it.tipo === "ad_exitum" || it.tipo === "fixo_exitum") contagem.ad_exitum++;
   }
