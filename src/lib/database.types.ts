@@ -55,6 +55,34 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["profiles"]["Insert"]>;
         Relationships: [];
       };
+      advogados: {
+        Row: {
+          id: string;
+          user_id: string;
+          nome: string;
+          oab: string | null;
+          ativo: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string;
+          nome: string;
+          oab?: string | null;
+          ativo?: boolean;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["advogados"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "advogados_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       clientes: {
         Row: {
           id: string;
@@ -66,6 +94,7 @@ export interface Database {
           endereco: string | null;
           created_at: string;
           updated_at: string;
+          membro_id: string | null;
         };
         Insert: {
           id?: string;
@@ -77,6 +106,7 @@ export interface Database {
           endereco?: string | null;
           created_at?: string;
           updated_at?: string;
+          membro_id?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["clientes"]["Insert"]>;
         Relationships: [
@@ -111,6 +141,7 @@ export interface Database {
           link_publico_token: string;
           created_at: string;
           updated_at: string;
+          membro_id: string | null;
         };
         Insert: {
           id?: string;
@@ -133,6 +164,7 @@ export interface Database {
           link_publico_token?: string;
           created_at?: string;
           updated_at?: string;
+          membro_id?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["honorarios"]["Insert"]>;
         Relationships: [
@@ -277,6 +309,7 @@ export interface Database {
 
 // Atalhos de conveniência
 export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
+export type Advogado = Database["public"]["Tables"]["advogados"]["Row"];
 export type Cliente = Database["public"]["Tables"]["clientes"]["Row"];
 export type Honorario = Database["public"]["Tables"]["honorarios"]["Row"];
 export type Parcela = Database["public"]["Tables"]["parcelas"]["Row"];
