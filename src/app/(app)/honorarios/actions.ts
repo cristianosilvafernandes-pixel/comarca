@@ -31,6 +31,7 @@ function str(formData: FormData, key: string): string {
 export async function createHonorario(_prev: HonorarioState, formData: FormData): Promise<HonorarioState> {
   const cliente_id = str(formData, "cliente_id");
   const tipo = str(formData, "tipo") as HonorarioTipo;
+  const membro_id = str(formData, "membro_id") || null;
 
   if (!cliente_id) return { error: "Selecione o cliente." };
   if (!TIPOS.includes(tipo)) return { error: "Tipo de honorário inválido." };
@@ -51,6 +52,7 @@ export async function createHonorario(_prev: HonorarioState, formData: FormData)
   const base: HonorarioInsert = {
     cliente_id,
     tipo,
+    membro_id,
     processo: str(formData, "processo") || null,
     area: (str(formData, "area") || null) as Area | null,
     tribunal: (str(formData, "tribunal") || null) as Tribunal | null,

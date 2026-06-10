@@ -15,7 +15,13 @@ const TIPOS: { value: HonorarioTipo; label: string; desc: string }[] = [
   { value: "fixo_exitum", label: "Fixo + êxito", desc: "Entrada + percentual no encerramento" },
 ];
 
-export function HonorarioForm({ clientes }: { clientes: { id: string; nome: string }[] }) {
+export function HonorarioForm({
+  clientes,
+  advogados = [],
+}: {
+  clientes: { id: string; nome: string }[];
+  advogados?: { id: string; nome: string }[];
+}) {
   const router = useRouter();
   const [state, formAction, pending] = useActionState<HonorarioState, FormData>(createHonorario, undefined);
   const [tipo, setTipo] = useState<HonorarioTipo>("fixo_parcelado");
@@ -38,6 +44,18 @@ export function HonorarioForm({ clientes }: { clientes: { id: string; nome: stri
           ))}
         </select>
       </div>
+
+      {advogados.length > 1 && (
+        <div className="form-group">
+          <label htmlFor="membro_id">Advogado responsável</label>
+          <select id="membro_id" name="membro_id" className="form-control" defaultValue="">
+            <option value="">Selecione…</option>
+            {advogados.map((a) => (
+              <option key={a.id} value={a.id}>{a.nome}</option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div className="form-group">
         <label htmlFor="tipo">Tipo de honorário *</label>

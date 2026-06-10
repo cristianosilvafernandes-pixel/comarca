@@ -9,7 +9,10 @@ export const metadata: Metadata = {
 
 export default async function NovoHonorarioPage() {
   const supabase = await createClient();
-  const { data: clientes } = await supabase.from("clientes").select("id, nome").order("nome");
+  const [{ data: clientes }, { data: advogados }] = await Promise.all([
+    supabase.from("clientes").select("id, nome").order("nome"),
+    supabase.from("advogados").select("id, nome").eq("ativo", true).order("nome"),
+  ]);
 
   return (
     <div>
@@ -27,7 +30,7 @@ export default async function NovoHonorarioPage() {
           </Link>
         </div>
       ) : (
-        <HonorarioForm clientes={clientes} />
+        <HonorarioForm clientes={clientes ?? []} advogados={advogados ?? []} />
       )}
     </div>
   );
