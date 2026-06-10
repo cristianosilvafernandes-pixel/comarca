@@ -121,6 +121,9 @@ export default async function ClientesPage({
           </svg>
           Novo Cliente
         </Link>
+        <Link href="/clientes/importar" className="btn btn-secondary">
+          📎 Importar de documento
+        </Link>
       </div>
 
       {error && ERROS[error] && <div className="auth-alert error">{ERROS[error]}</div>}

@@ -81,7 +81,7 @@ export function ClienteForm({
             id="membro_id"
             name="membro_id"
             className="form-control"
-            defaultValue={(cliente as { membro_id?: string | null } | undefined)?.membro_id ?? ""}
+            defaultValue={cliente?.membro_id ?? ""}
           >
             <option value="">Selecione…</option>
             {advogados.map((a) => (
