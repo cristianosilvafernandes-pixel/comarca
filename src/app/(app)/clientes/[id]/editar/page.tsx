@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ClienteForm } from "../../ClienteForm";
+import { DeleteClienteButton } from "./DeleteClienteButton";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 export const metadata: Metadata = {
   title: "Editar cliente — Comarca Honorários",
@@ -24,10 +26,11 @@ export default async function EditarClientePage({
 
   return (
     <div>
-      <div className="page-head">
-        <h1>Editar cliente</h1>
-      </div>
+      <PageHeader title="Editar cliente" />
       <ClienteForm cliente={cliente} advogados={advogados ?? []} />
+      <div style={{ maxWidth: 560, marginTop: 16 }}>
+        <DeleteClienteButton id={cliente.id} />
+      </div>
     </div>
   );
 }

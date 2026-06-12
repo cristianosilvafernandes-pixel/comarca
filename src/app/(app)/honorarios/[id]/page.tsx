@@ -3,20 +3,21 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { formatCurrency, formatDate } from "@/lib/utils/format";
-import { resolveStatus, statusLabel } from "@/lib/utils/status";
-import { montarMensagemLembrete, montarUrlWaMe } from "@/lib/domain/lembrete";
+import { resolveStatus } from "@/lib/utils/status";
+import { montarLinkPublico } from "@/lib/domain/lembrete";
+import { lembreteDeParcela } from "@/lib/domain/lembrete-itens";
+import { resolveBaseUrl } from "@/lib/utils/base-url";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Badge } from "@/components/ui/Badge";
+import { Card } from "@/components/ui/Card";
+import { tipoLabel } from "@/lib/domain/honorario-constants";
 import { ParcelaActions } from "../ParcelaActions";
 import { LembreteButton } from "../LembreteButton";
+import { DeleteHonorarioButton } from "./DeleteHonorarioButton";
 
 export const metadata: Metadata = {
   title: "Honorário — Comarca Honorários",
-};
-
-const TIPO_LABEL: Record<string, string> = {
-  fixo_parcelado: "Fixo parcelado",
-  recorrente: "Recorrente",
-  ad_exitum: "Ad êxitum",
-  fixo_exitum: "Fixo + êxito",
 };
 
 export default async function HonorarioDetailPage({
@@ -43,53 +44,56 @@ export default async function HonorarioDetailPage({
   const clienteObj = hon.clientes as { nome: string; whatsapp: string } | null;
   const cliente = clienteObj?.nome ?? "—";
   const parcelas = [...(hon.parcelas ?? [])].sort((a, b) => a.numero - b.numero);
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-  const linkPublico = `${siteUrl}/h/${hon.link_publico_token}`;
+  const baseUrl = await resolveBaseUrl();
+  const linkPublico = montarLinkPublico(baseUrl, hon.link_publico_token);
 
-  // Dados do advogado p/ a assinatura do lembrete (spec F6).
+  // Dados do advogado p/ a assinatura do lembrete + fallback de PIX (spec F6).
+  // OAB vive em `advogados` (por membro), não em `profiles` — fica null aqui,
+  // consistente com a lista e o dashboard.
   let advogadoNome = "Advogado";
-  let advogadoOab: string | null = null;
+  const advogadoOab: string | null = null;
+  let pixPadrao: string | null = null;
   if (userData.user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("nome, oab")
+      .select("nome, chave_pix")
       .eq("id", userData.user.id)
       .maybeSingle();
     advogadoNome = profile?.nome ?? advogadoNome;
-    advogadoOab = profile?.oab ?? null;
+    pixPadrao = profile?.chave_pix ?? null;
   }
 
   const totalParcelas = parcelas.length;
+  const honBase = {
+    processo: hon.processo,
+    area: hon.area,
+    tribunal: hon.tribunal,
+    chave_pix: hon.chave_pix,
+    link_publico_token: hon.link_publico_token,
+    clientes: clienteObj,
+  };
   function lembreteDe(p: (typeof parcelas)[number]): { mensagem: string; waUrl: string | null } {
-    const mensagem = montarMensagemLembrete({
-      clienteNome: cliente,
-      processo: hon!.processo,
-      area: hon!.area,
-      tribunal: hon!.tribunal,
-      numero: p.numero,
-      totalParcelas,
-      valor: p.valor,
-      vencimento: p.vencimento,
-      chavePix: hon!.chave_pix ?? "",
-      linkPublico,
+    return lembreteDeParcela(honBase, p, totalParcelas, {
+      baseUrl,
+      pixPadrao,
       advogadoNome,
       advogadoOab,
     });
-    const waUrl = clienteObj?.whatsapp ? montarUrlWaMe(clienteObj.whatsapp, mensagem) : null;
-    return { mensagem, waUrl };
   }
 
   return (
     <div>
-      <div className="page-head">
-        <h1>{cliente}</h1>
-        <Link href="/honorarios" className="btn btn-secondary">
-          ← Voltar
-        </Link>
-      </div>
+      <PageHeader
+        title={cliente}
+        action={
+          <Link href="/honorarios" className="btn btn-secondary">
+            ← Voltar
+          </Link>
+        }
+      />
 
-      <div className="card">
-        <div className="fee-card-title">{TIPO_LABEL[hon.tipo] ?? hon.tipo}</div>
+      <Card>
+        <div className="fee-card-title">{tipoLabel(hon.tipo)}</div>
         <div className="fee-card-process">
           {[hon.processo, hon.area, hon.tribunal].filter(Boolean).join(" · ") || "Sem processo"}
         </div>
@@ -102,20 +106,18 @@ export default async function HonorarioDetailPage({
           {hon.parte_contraria && <div>Parte contrária: {hon.parte_contraria}</div>}
           {hon.chave_pix && <div>PIX: {hon.chave_pix}</div>}
         </div>
-      </div>
+      </Card>
 
-      <div className="card">
+      <Card>
         <h3 style={{ marginBottom: 8 }}>Link público de pagamento</h3>
         <code style={{ fontSize: 12, wordBreak: "break-all" }}>{linkPublico}</code>
-      </div>
+      </Card>
 
       <h3 style={{ margin: "8px 0 12px" }}>Parcelas ({parcelas.length})</h3>
       {parcelas.length === 0 ? (
-        <div className="empty-state">
-          <p>Este tipo não gera parcelas por data — a cobrança de êxito é lançada manualmente.</p>
-        </div>
+        <EmptyState description="Este tipo não gera parcelas por data — a cobrança de êxito é lançada manualmente." />
       ) : (
-        <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+        <Card style={{ padding: 0, overflow: "hidden" }}>
           <table className="parcelas-table">
             <thead>
               <tr>
@@ -135,7 +137,7 @@ export default async function HonorarioDetailPage({
                     <td>{formatCurrency(p.valor)}</td>
                     <td>{formatDate(p.vencimento)}</td>
                     <td>
-                      <span className={`badge badge-${st}`}>{statusLabel(st)}</span>
+                      <Badge status={st} />
                     </td>
                     <td>
                       <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
@@ -157,8 +159,15 @@ export default async function HonorarioDetailPage({
               })}
             </tbody>
           </table>
-        </div>
+        </Card>
       )}
+
+      <div style={{ display: "flex", gap: 12, marginTop: 24, flexWrap: "wrap" }}>
+        <a href={`/honorarios/${hon.id}/editar`} className="btn btn-secondary">
+          ✏️ Editar
+        </a>
+        <DeleteHonorarioButton id={hon.id} />
+      </div>
     </div>
   );
 }

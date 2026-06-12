@@ -2,6 +2,8 @@
 
 import { useActionState } from "react";
 import { Button } from "@/components/ui/Button";
+import { Alert } from "@/components/ui/Alert";
+import { FormField } from "@/components/ui/FormField";
 import { saveAdvogado, type AdvogadoState } from "./actions";
 import type { Advogado } from "@/lib/database.types";
 
@@ -15,10 +17,9 @@ export function AdvogadoForm({ advogado }: { advogado?: Advogado }) {
     <form action={formAction} className="card" style={{ maxWidth: 480 }}>
       {advogado?.id && <input type="hidden" name="id" value={advogado.id} />}
 
-      {state?.error && <div className="auth-alert error">{state.error}</div>}
+      {state?.error && <Alert>{state.error}</Alert>}
 
-      <div className="form-group">
-        <label htmlFor="adv-nome">Nome completo *</label>
+      <FormField label="Nome completo *" htmlFor="adv-nome">
         <input
           id="adv-nome"
           name="nome"
@@ -26,10 +27,9 @@ export function AdvogadoForm({ advogado }: { advogado?: Advogado }) {
           defaultValue={advogado?.nome ?? ""}
           required
         />
-      </div>
+      </FormField>
 
-      <div className="form-group">
-        <label htmlFor="adv-oab">OAB</label>
+      <FormField label="OAB" htmlFor="adv-oab">
         <input
           id="adv-oab"
           name="oab"
@@ -37,7 +37,7 @@ export function AdvogadoForm({ advogado }: { advogado?: Advogado }) {
           defaultValue={advogado?.oab ?? ""}
           placeholder="Ex: OAB/RS 123.456"
         />
-      </div>
+      </FormField>
 
       <Button type="submit" disabled={pending} style={{ marginTop: 8 }}>
         {pending ? "Salvando…" : advogado?.id ? "Salvar alterações" : "Cadastrar advogado"}

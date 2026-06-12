@@ -1,17 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { initials } from "@/lib/utils/initials";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Alert } from "@/components/ui/Alert";
 import { DeleteButton } from "./DeleteButton";
 
 export const metadata: Metadata = {
   title: "Equipe — Comarca Honorários",
 };
-
-function initials(nome: string): string {
-  const p = nome.trim().split(/\s+/).filter(Boolean);
-  if (!p.length) return "?";
-  return (p.length === 1 ? p[0].slice(0, 2) : p[0][0] + p[p.length - 1][0]).toUpperCase();
-}
 
 export default async function EquipePage({
   searchParams,
@@ -28,28 +26,30 @@ export default async function EquipePage({
 
   return (
     <div>
-      <div className="page-head">
-        <h1>Equipe</h1>
-        <Link href="/equipe/novo" className="btn btn-blue">
-          + Novo advogado
-        </Link>
-      </div>
+      <PageHeader
+        title="Equipe"
+        action={
+          <Link href="/equipe/novo" className="btn btn-blue">
+            + Novo advogado
+          </Link>
+        }
+      />
 
       {error === "falha_excluir" && (
-        <div className="auth-alert error">Não foi possível remover o advogado.</div>
+        <Alert>Não foi possível remover o advogado.</Alert>
       )}
 
       {advogados.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-state-icon">👤</div>
-          <h3>Nenhum advogado cadastrado</h3>
-          <p style={{ margin: "8px 0 16px" }}>
-            Cadastre os advogados do escritório para vincular honorários a cada um.
-          </p>
-          <Link href="/equipe/novo" className="btn btn-blue">
-            Cadastrar advogado
-          </Link>
-        </div>
+        <EmptyState
+          icon="👤"
+          title="Nenhum advogado cadastrado"
+          description="Cadastre os advogados do escritório para vincular honorários a cada um."
+          action={
+            <Link href="/equipe/novo" className="btn btn-blue">
+              Cadastrar advogado
+            </Link>
+          }
+        />
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {advogados.map((adv) => (

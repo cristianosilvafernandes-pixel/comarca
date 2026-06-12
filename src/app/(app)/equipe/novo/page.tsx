@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AdvogadoForm } from "../AdvogadoForm";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 export const metadata: Metadata = {
   title: "Novo advogado — Comarca Honorários",
@@ -8,9 +9,7 @@ export const metadata: Metadata = {
 export default function NovoAdvogadoPage() {
   return (
     <div>
-      <div className="page-head">
-        <h1>Novo advogado</h1>
-      </div>
+      <PageHeader title="Novo advogado" />
       <AdvogadoForm />
     </div>
   );

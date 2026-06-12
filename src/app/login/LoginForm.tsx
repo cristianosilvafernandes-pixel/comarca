@@ -2,6 +2,8 @@
 
 import { useActionState } from "react";
 import { Button } from "@/components/ui/Button";
+import { Alert } from "@/components/ui/Alert";
+import { FormField } from "@/components/ui/FormField";
 import { signIn, type AuthState } from "@/app/auth/actions";
 
 export function LoginForm({ initialError }: { initialError?: string }) {
@@ -10,10 +12,9 @@ export function LoginForm({ initialError }: { initialError?: string }) {
 
   return (
     <form action={formAction} noValidate>
-      {error && <div className="auth-alert error">{error}</div>}
+      {error && <Alert>{error}</Alert>}
 
-      <div className="form-group">
-        <label htmlFor="email">E-mail</label>
+      <FormField label="E-mail" htmlFor="email">
         <input
           id="email"
           name="email"
@@ -23,10 +24,9 @@ export function LoginForm({ initialError }: { initialError?: string }) {
           placeholder="voce@exemplo.com"
           required
         />
-      </div>
+      </FormField>
 
-      <div className="form-group">
-        <label htmlFor="password">Senha</label>
+      <FormField label="Senha" htmlFor="password">
         <input
           id="password"
           name="password"
@@ -36,7 +36,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
           placeholder="••••••••"
           required
         />
-      </div>
+      </FormField>
 
       <Button type="submit" variant="primary" disabled={pending}>
         {pending ? "Entrando…" : "Entrar"}

@@ -1,6 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { FormField } from "@/components/ui/FormField";
 import { montarContrato } from "@/lib/domain/contrato";
 import { montarUrlWaMe } from "@/lib/domain/lembrete";
 
@@ -25,9 +28,10 @@ interface Props {
   advogadoOab: string | null;
   foro: string | null;
   hoje: string;
+  escritorioNome?: string | null;
 }
 
-export function ContratoForm({ clientes, advogados = [], advogadoNome, advogadoOab, foro, hoje }: Props) {
+export function ContratoForm({ clientes, advogados = [], advogadoNome, advogadoOab, foro, hoje, escritorioNome }: Props) {
   const [clienteId, setClienteId] = useState("");
   const [objeto, setObjeto] = useState("Defesa em processo judicial");
   const [valor, setValor] = useState("R$ 3.600,00");
@@ -58,20 +62,7 @@ export function ContratoForm({ clientes, advogados = [], advogadoNome, advogadoO
 
   const texto = editado ?? gerado;
 
-  function enviarWhatsApp() {
-    if (!cliente) {
-      setMsg("Selecione um cliente para enviar.");
-      return;
-    }
-    const url = montarUrlWaMe(cliente.whatsapp, texto);
-    if (!url) {
-      setMsg("WhatsApp do cliente inválido.");
-      return;
-    }
-    window.open(url, "_blank");
-  }
-
-  async function baixar() {
+  async function gerarPdf() {
     const { jsPDF } = await import("jspdf");
     const nome = (cliente?.nome ?? "contrato").replace(/\s+/g, "_");
     const doc = new jsPDF({ unit: "mm", format: "a4" });
@@ -80,6 +71,16 @@ export function ContratoForm({ clientes, advogados = [], advogadoNome, advogadoO
     const pageHeight = doc.internal.pageSize.getHeight();
     const lineH = 5;
     let y = margin;
+
+    if (escritorioNome) {
+      doc.setFont("Helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text(escritorioNome, doc.internal.pageSize.getWidth() / 2, y, { align: "center" });
+      y += 8;
+      doc.setDrawColor(180, 180, 180);
+      doc.line(margin, y, doc.internal.pageSize.getWidth() - margin, y);
+      y += 8;
+    }
 
     doc.setFont("Courier");
     doc.setFontSize(10);
@@ -93,15 +94,50 @@ export function ContratoForm({ clientes, advogados = [], advogadoNome, advogadoO
       y += lineH;
     }
 
+    return { doc, nome };
+  }
+
+  async function enviarWhatsApp() {
+    if (!cliente) {
+      setMsg("Selecione um cliente para enviar.");
+      return;
+    }
+    const whatsappUrl = montarUrlWaMe(cliente.whatsapp, "");
+    if (!whatsappUrl) {
+      setMsg("WhatsApp do cliente inválido.");
+      return;
+    }
+
+    const { doc, nome } = await gerarPdf();
+    const pdfBlob = doc.output("blob");
+    const pdfFile = new File([pdfBlob], `Contrato_${nome}.pdf`, { type: "application/pdf" });
+
+    if (navigator.canShare?.({ files: [pdfFile] })) {
+      try {
+        await navigator.share({ files: [pdfFile], title: `Contrato - ${cliente.nome}` });
+        return;
+      } catch {
+        // cancelado pelo usuário ou não suportado — segue fallback
+      }
+    }
+
+    // Fallback: baixa o PDF e abre WhatsApp com aviso
+    doc.save(`Contrato_${nome}.pdf`);
+    const msgFallback = "Segue o contrato de prestação de serviços advocatícios (PDF baixado automaticamente).";
+    const urlFallback = montarUrlWaMe(cliente.whatsapp, msgFallback);
+    if (urlFallback) window.open(urlFallback, "_blank");
+  }
+
+  async function baixar() {
+    const { doc, nome } = await gerarPdf();
     doc.save(`Contrato_${nome}.pdf`);
   }
 
   return (
     <>
-      <div className="card" style={{ maxWidth: 720 }}>
+      <Card style={{ maxWidth: 720 }}>
         {advogados.length > 1 && (
-          <div className="form-group">
-            <label htmlFor="contrato-advogado">Advogado *</label>
+          <FormField label="Advogado *" htmlFor="contrato-advogado">
             <select
               id="contrato-advogado"
               className="form-control"
@@ -117,11 +153,10 @@ export function ContratoForm({ clientes, advogados = [], advogadoNome, advogadoO
                 </option>
               ))}
             </select>
-          </div>
+          </FormField>
         )}
 
-        <div className="form-group">
-          <label htmlFor="contrato-cliente">Cliente *</label>
+        <FormField label="Cliente *" htmlFor="contrato-cliente">
           <select
             id="contrato-cliente"
             className="form-control"
@@ -138,10 +173,9 @@ export function ContratoForm({ clientes, advogados = [], advogadoNome, advogadoO
               </option>
             ))}
           </select>
-        </div>
+        </FormField>
 
-        <div className="form-group">
-          <label htmlFor="contrato-objeto">Objeto da prestação de serviço</label>
+        <FormField label="Objeto da prestação de serviço" htmlFor="contrato-objeto">
           <input
             id="contrato-objeto"
             className="form-control"
@@ -152,10 +186,9 @@ export function ContratoForm({ clientes, advogados = [], advogadoNome, advogadoO
             }}
             placeholder="Ex: Defesa em ação trabalhista"
           />
-        </div>
+        </FormField>
 
-        <div className="form-group">
-          <label htmlFor="contrato-valor">Valor dos honorários</label>
+        <FormField label="Valor dos honorários" htmlFor="contrato-valor">
           <input
             id="contrato-valor"
             className="form-control"
@@ -166,29 +199,30 @@ export function ContratoForm({ clientes, advogados = [], advogadoNome, advogadoO
             }}
             placeholder="R$ 0,00"
           />
-        </div>
-      </div>
+        </FormField>
+      </Card>
 
-      <div className="card" style={{ maxWidth: 720 }}>
-        <label htmlFor="contrato-texto">Texto do contrato (editável)</label>
-        <textarea
-          id="contrato-texto"
-          className="form-control"
-          rows={18}
-          style={{ fontFamily: "var(--font-mono, monospace)", fontSize: 14, lineHeight: 1.6, resize: "vertical" }}
-          value={texto}
-          onChange={(e) => setEditado(e.target.value)}
-        />
+      <Card style={{ maxWidth: 720 }}>
+        <FormField label="Texto do contrato (editável)" htmlFor="contrato-texto">
+          <textarea
+            id="contrato-texto"
+            className="form-control"
+            rows={18}
+            style={{ fontFamily: "var(--font-mono, monospace)", fontSize: 14, lineHeight: 1.6, resize: "vertical" }}
+            value={texto}
+            onChange={(e) => setEditado(e.target.value)}
+          />
+        </FormField>
         <div style={{ display: "flex", gap: 12, marginTop: 16, flexWrap: "wrap" }}>
-          <button type="button" className="btn btn-success" onClick={enviarWhatsApp}>
+          <Button type="button" variant="success" onClick={enviarWhatsApp}>
             📲 Enviar por WhatsApp
-          </button>
-          <button type="button" className="btn btn-secondary" onClick={baixar}>
+          </Button>
+          <Button type="button" variant="secondary" onClick={baixar}>
             ⬇ Baixar (.pdf)
-          </button>
+          </Button>
         </div>
         {msg && <p className="error-msg" style={{ marginTop: 10 }}>{msg}</p>}
-      </div>
+      </Card>
     </>
   );
 }

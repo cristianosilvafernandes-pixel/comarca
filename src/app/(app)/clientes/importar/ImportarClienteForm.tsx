@@ -2,6 +2,9 @@
 
 import { useActionState, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/Button";
+import { Alert } from "@/components/ui/Alert";
+import { FormField } from "@/components/ui/FormField";
 import { saveCliente, type ClienteState } from "../actions";
 import { maskCPF } from "@/lib/utils/cpf";
 import { maskPhone } from "@/lib/utils/phone";
@@ -112,38 +115,33 @@ export function ImportarClienteForm({ userId }: { userId: string }) {
       </div>
 
       {aviso && (
-        <div className="auth-alert" style={{ marginBottom: 16, color: "var(--body)" }}>
+        <Alert variant="info" style={{ marginBottom: 16, color: "var(--body)" }}>
           {aviso}
-        </div>
+        </Alert>
       )}
 
       <form action={formAction} className="card" style={{ maxWidth: 560 }}>
-        {state?.error && <div className="auth-alert error">{state.error}</div>}
+        {state?.error && <Alert>{state.error}</Alert>}
 
-        <div className="form-group">
-          <label htmlFor="nome">Nome completo *</label>
+        <FormField label="Nome completo *" htmlFor="nome">
           <input id="nome" name="nome" className="form-control" required value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Ex: João da Silva" />
-        </div>
-        <div className="form-group">
-          <label htmlFor="cpf">CPF *</label>
+        </FormField>
+        <FormField label="CPF *" htmlFor="cpf">
           <input id="cpf" name="cpf" className="form-control" required value={cpf} onChange={(e) => setCpf(maskCPF(e.target.value))} placeholder="000.000.000-00" inputMode="numeric" />
-        </div>
-        <div className="form-group">
-          <label htmlFor="whatsapp">WhatsApp *</label>
+        </FormField>
+        <FormField label="WhatsApp *" htmlFor="whatsapp">
           <input id="whatsapp" name="whatsapp" className="form-control" required value={whatsapp} onChange={(e) => setWhatsapp(maskPhone(e.target.value))} placeholder="(00) 00000-0000" inputMode="tel" />
-        </div>
-        <div className="form-group">
-          <label htmlFor="email">E-mail (opcional)</label>
+        </FormField>
+        <FormField label="E-mail (opcional)" htmlFor="email">
           <input id="email" name="email" type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="joao@email.com" />
-        </div>
-        <div className="form-group">
-          <label htmlFor="endereco">Endereço (opcional)</label>
+        </FormField>
+        <FormField label="Endereço (opcional)" htmlFor="endereco">
           <input id="endereco" name="endereco" className="form-control" value={endereco} onChange={(e) => setEndereco(e.target.value)} placeholder="Rua, número, cidade/UF" />
-        </div>
+        </FormField>
 
-        <button type="submit" className="btn btn-primary" disabled={pending}>
+        <Button type="submit" variant="primary" disabled={pending}>
           {pending ? "Salvando…" : "Salvar cliente"}
-        </button>
+        </Button>
       </form>
     </>
   );

@@ -197,6 +197,51 @@ export async function marcarParcelaPaga(
   return {};
 }
 
+export type UpdateHonorarioState = { error?: string } | undefined;
+
+/** Atualiza os metadados do honorário (não recalcula parcelas). */
+export async function updateHonorario(
+  _prev: UpdateHonorarioState,
+  formData: FormData,
+): Promise<UpdateHonorarioState> {
+  const id = str(formData, "id");
+  if (!id) return { error: "Honorário inválido." };
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("honorarios")
+    .update({
+      processo: str(formData, "processo") || null,
+      area: (str(formData, "area") || null) as Area | null,
+      tribunal: (str(formData, "tribunal") || null) as Tribunal | null,
+      parte_contraria: str(formData, "parte_contraria") || null,
+      chave_pix: str(formData, "chave_pix") || null,
+      valor_total: num(formData, "valor_total") || null,
+      valor_mensal: num(formData, "valor_mensal") || null,
+      valor_entrada: num(formData, "valor_entrada") || null,
+      valor_causa: num(formData, "valor_causa") || null,
+      percentual_exito: num(formData, "percentual_exito") || null,
+    })
+    .eq("id", id);
+
+  if (error) return { error: "Não foi possível salvar as alterações." };
+
+  revalidatePath(`/honorarios/${id}`);
+  revalidatePath("/honorarios");
+  redirect(`/honorarios/${id}`);
+}
+
+/** Remove um honorário e todas as suas parcelas (cascata). */
+export async function deleteHonorario(id: string): Promise<{ error?: string }> {
+  if (!id) return { error: "Honorário inválido." };
+  const supabase = await createClient();
+  const { error } = await supabase.from("honorarios").delete().eq("id", id);
+  if (error) return { error: "Não foi possível excluir o honorário." };
+  revalidatePath("/honorarios");
+  revalidatePath("/dashboard");
+  redirect("/honorarios");
+}
+
 /** Registra o envio de um lembrete (spec F6 — contagem p/ limite de plano). */
 export async function registrarLembrete(parcelaId: string): Promise<{ ok: boolean }> {
   if (!parcelaId) return { ok: false };

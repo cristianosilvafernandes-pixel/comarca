@@ -16,8 +16,8 @@ type Row = {
   } | null;
 };
 
-/** Busca parcelas PAGAS do advogado (RLS). membroId filtra por sub-perfil. */
-export async function fetchParcelasIR(membroId?: string): Promise<ParcelaIR[]> {
+/** Busca parcelas PAGAS do advogado (RLS). membroIds filtra por sub-perfis. */
+export async function fetchParcelasIR(membroIds: string[] = []): Promise<ParcelaIR[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("parcelas")
@@ -30,7 +30,7 @@ export async function fetchParcelasIR(membroId?: string): Promise<ParcelaIR[]> {
 
   return rows
     .filter((r) => r.honorarios)
-    .filter((r) => !membroId || r.honorarios!.membro_id === membroId)
+    .filter((r) => membroIds.length === 0 || (r.honorarios!.membro_id != null && membroIds.includes(r.honorarios!.membro_id)))
     .map((r) => ({
       clienteNome: r.honorarios!.clientes?.nome ?? "—",
       clienteCpf: r.honorarios!.clientes?.cpf ?? "—",

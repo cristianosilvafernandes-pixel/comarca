@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PerfilForm } from "./PerfilForm";
+import { PageHeader } from "@/components/ui/PageHeader";
 import type { Plano } from "@/lib/database.types";
 
 export const metadata: Metadata = {
@@ -17,21 +18,23 @@ export default async function PerfilPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("nome, oab, chave_pix, foro, plano")
+    .select("nome, cnpj, telefone, endereco, site, chave_pix, foro, plano, logo_url")
     .eq("id", user.id)
     .maybeSingle();
 
   return (
     <div>
-      <div className="page-head">
-        <h1>Meu Perfil</h1>
-      </div>
+      <PageHeader title="Perfil do Escritório" />
       <PerfilForm
         nome={profile?.nome ?? ""}
-        oab={profile?.oab ?? null}
+        cnpj={profile?.cnpj ?? null}
+        telefone={profile?.telefone ?? null}
+        endereco={profile?.endereco ?? null}
+        site={profile?.site ?? null}
         chavePix={profile?.chave_pix ?? null}
         foro={profile?.foro ?? null}
         plano={(profile?.plano ?? "free") as Plano}
+        logoUrl={profile?.logo_url ?? null}
       />
     </div>
   );

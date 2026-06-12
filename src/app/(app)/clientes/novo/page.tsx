@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { ClienteForm } from "../ClienteForm";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 export const metadata: Metadata = {
   title: "Novo cliente — Comarca Honorários",
@@ -16,9 +17,7 @@ export default async function NovoClientePage() {
 
   return (
     <div>
-      <div className="page-head">
-        <h1>Novo cliente</h1>
-      </div>
+      <PageHeader title="Novo cliente" />
       <ClienteForm advogados={advogados ?? []} />
     </div>
   );

@@ -2,6 +2,8 @@
 
 import { useActionState } from "react";
 import { Button } from "@/components/ui/Button";
+import { Alert } from "@/components/ui/Alert";
+import { FormField } from "@/components/ui/FormField";
 import { signUp, type AuthState } from "@/app/auth/actions";
 
 export function SignupForm() {
@@ -9,15 +11,14 @@ export function SignupForm() {
 
   // Sucesso: confirmação de e-mail ON → mostra aviso e oculta o formulário.
   if (state?.message) {
-    return <div className="auth-alert success">{state.message}</div>;
+    return <Alert variant="success">{state.message}</Alert>;
   }
 
   return (
     <form action={formAction} noValidate>
-      {state?.error && <div className="auth-alert error">{state.error}</div>}
+      {state?.error && <Alert>{state.error}</Alert>}
 
-      <div className="form-group">
-        <label htmlFor="nome">Nome</label>
+      <FormField label="Nome" htmlFor="nome">
         <input
           id="nome"
           name="nome"
@@ -27,10 +28,9 @@ export function SignupForm() {
           placeholder="Seu nome"
           required
         />
-      </div>
+      </FormField>
 
-      <div className="form-group">
-        <label htmlFor="email">E-mail</label>
+      <FormField label="E-mail" htmlFor="email">
         <input
           id="email"
           name="email"
@@ -40,10 +40,9 @@ export function SignupForm() {
           placeholder="voce@exemplo.com"
           required
         />
-      </div>
+      </FormField>
 
-      <div className="form-group">
-        <label htmlFor="password">Senha</label>
+      <FormField label="Senha" htmlFor="password">
         <input
           id="password"
           name="password"
@@ -54,7 +53,7 @@ export function SignupForm() {
           minLength={8}
           required
         />
-      </div>
+      </FormField>
 
       <Button type="submit" variant="primary" disabled={pending}>
         {pending ? "Criando…" : "Criar conta"}

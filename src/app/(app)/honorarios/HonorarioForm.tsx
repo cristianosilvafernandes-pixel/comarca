@@ -3,11 +3,12 @@
 import { useActionState, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { Alert } from "@/components/ui/Alert";
+import { FormField } from "@/components/ui/FormField";
 import { createHonorario, type HonorarioState } from "./actions";
+import { AREAS, TRIBUNAIS } from "@/lib/domain/honorario-constants";
 import type { HonorarioTipo } from "@/lib/database.types";
 
-const AREAS = ["Trabalhista", "Cível", "Família", "Criminal", "Previdenciário", "Tributário", "Consumidor", "Outro"];
-const TRIBUNAIS = ["TJRS", "TJSP", "TJRJ", "TRF4", "TST", "STJ", "Outro"];
 const TIPOS: { value: HonorarioTipo; label: string; desc: string }[] = [
   { value: "fixo_parcelado", label: "Fixo parcelado", desc: "Valor total dividido em parcelas" },
   { value: "recorrente", label: "Recorrente", desc: "Mensalidade fixa" },
@@ -18,9 +19,11 @@ const TIPOS: { value: HonorarioTipo; label: string; desc: string }[] = [
 export function HonorarioForm({
   clientes,
   advogados = [],
+  clienteSelecionado,
 }: {
   clientes: { id: string; nome: string }[];
   advogados?: { id: string; nome: string }[];
+  clienteSelecionado?: string;
 }) {
   const router = useRouter();
   const [state, formAction, pending] = useActionState<HonorarioState, FormData>(createHonorario, undefined);
@@ -29,11 +32,20 @@ export function HonorarioForm({
 
   return (
     <form action={formAction} className="card" style={{ maxWidth: 640 }}>
-      {state?.error && <div className="auth-alert error">{state.error}</div>}
+      {state?.error && <Alert>{state.error}</Alert>}
 
-      <div className="form-group">
-        <label htmlFor="cliente_id">Cliente *</label>
-        <select id="cliente_id" name="cliente_id" className="form-control" required defaultValue="">
+      <FormField label="Cliente *" htmlFor="cliente_id">
+        <select
+          id="cliente_id"
+          name="cliente_id"
+          className="form-control"
+          required
+          defaultValue={
+            clienteSelecionado && clientes.some((c) => c.id === clienteSelecionado)
+              ? clienteSelecionado
+              : ""
+          }
+        >
           <option value="" disabled>
             Selecione…
           </option>
@@ -43,22 +55,20 @@ export function HonorarioForm({
             </option>
           ))}
         </select>
-      </div>
+      </FormField>
 
       {advogados.length > 1 && (
-        <div className="form-group">
-          <label htmlFor="membro_id">Advogado responsável</label>
+        <FormField label="Advogado responsável" htmlFor="membro_id">
           <select id="membro_id" name="membro_id" className="form-control" defaultValue="">
             <option value="">Selecione…</option>
             {advogados.map((a) => (
               <option key={a.id} value={a.id}>{a.nome}</option>
             ))}
           </select>
-        </div>
+        </FormField>
       )}
 
-      <div className="form-group">
-        <label htmlFor="tipo">Tipo de honorário *</label>
+      <FormField label="Tipo de honorário *" htmlFor="tipo">
         <select
           id="tipo"
           name="tipo"
@@ -72,12 +82,11 @@ export function HonorarioForm({
             </option>
           ))}
         </select>
-      </div>
+      </FormField>
 
       <div className="row">
         <div className="col-6">
-          <div className="form-group">
-            <label htmlFor="area">Área</label>
+          <FormField label="Área" htmlFor="area">
             <select id="area" name="area" className="form-control" defaultValue="">
               <option value="">—</option>
               {AREAS.map((a) => (
@@ -86,11 +95,10 @@ export function HonorarioForm({
                 </option>
               ))}
             </select>
-          </div>
+          </FormField>
         </div>
         <div className="col-6">
-          <div className="form-group">
-            <label htmlFor="tribunal">Tribunal</label>
+          <FormField label="Tribunal" htmlFor="tribunal">
             <select id="tribunal" name="tribunal" className="form-control" defaultValue="">
               <option value="">—</option>
               {TRIBUNAIS.map((t) => (
@@ -99,22 +107,20 @@ export function HonorarioForm({
                 </option>
               ))}
             </select>
-          </div>
+          </FormField>
         </div>
       </div>
 
       <div className="row">
         <div className="col-6">
-          <div className="form-group">
-            <label htmlFor="processo">Processo</label>
+          <FormField label="Processo" htmlFor="processo">
             <input id="processo" name="processo" className="form-control" placeholder="Nº ou descrição" />
-          </div>
+          </FormField>
         </div>
         <div className="col-6">
-          <div className="form-group">
-            <label htmlFor="parte_contraria">Parte contrária</label>
+          <FormField label="Parte contrária" htmlFor="parte_contraria">
             <input id="parte_contraria" name="parte_contraria" className="form-control" />
-          </div>
+          </FormField>
         </div>
       </div>
 
@@ -123,26 +129,23 @@ export function HonorarioForm({
         <fieldset className="tipo-fields">
           <div className="row">
             <div className="col-6">
-              <div className="form-group">
-                <label htmlFor="valor_total">Valor total (R$) *</label>
+              <FormField label="Valor total (R$) *" htmlFor="valor_total">
                 <input id="valor_total" name="valor_total" type="number" step="0.01" min="0" className="form-control" required />
-              </div>
+              </FormField>
             </div>
             <div className="col-6">
-              <div className="form-group">
-                <label htmlFor="frequencia">Frequência</label>
+              <FormField label="Frequência" htmlFor="frequencia">
                 <select id="frequencia" name="frequencia" className="form-control" defaultValue="Mensal">
                   <option>Mensal</option>
                   <option>Quinzenal</option>
                   <option>Única</option>
                 </select>
-              </div>
+              </FormField>
             </div>
           </div>
           <div className="row">
             <div className="col-6">
-              <div className="form-group">
-                <label htmlFor="num_parcelas">Nº de parcelas (1–12)</label>
+              <FormField label="Nº de parcelas (1–12)" htmlFor="num_parcelas">
                 <input
                   id="num_parcelas"
                   name="num_parcelas"
@@ -153,13 +156,12 @@ export function HonorarioForm({
                   value={numParcelas}
                   onChange={(e) => setNumParcelas(Number(e.target.value))}
                 />
-              </div>
+              </FormField>
             </div>
             <div className="col-6">
-              <div className="form-group">
-                <label htmlFor="data_primeira">1º vencimento</label>
+              <FormField label="1º vencimento" htmlFor="data_primeira">
                 <input id="data_primeira" name="data_primeira" type="date" className="form-control" />
-              </div>
+              </FormField>
             </div>
           </div>
           {numParcelas === 1 && (
@@ -175,22 +177,19 @@ export function HonorarioForm({
 
       {tipo === "recorrente" && (
         <fieldset className="tipo-fields">
-          <div className="form-group">
-            <label htmlFor="valor_mensal">Valor mensal (R$) *</label>
+          <FormField label="Valor mensal (R$) *" htmlFor="valor_mensal">
             <input id="valor_mensal" name="valor_mensal" type="number" step="0.01" min="0" className="form-control" required />
-          </div>
+          </FormField>
           <div className="row">
             <div className="col-6">
-              <div className="form-group">
-                <label htmlFor="data_inicio">Início</label>
+              <FormField label="Início" htmlFor="data_inicio">
                 <input id="data_inicio" name="data_inicio" type="date" className="form-control" />
-              </div>
+              </FormField>
             </div>
             <div className="col-6">
-              <div className="form-group">
-                <label htmlFor="data_fim">Fim (opcional)</label>
+              <FormField label="Fim (opcional)" htmlFor="data_fim">
                 <input id="data_fim" name="data_fim" type="date" className="form-control" />
-              </div>
+              </FormField>
             </div>
           </div>
         </fieldset>
@@ -200,16 +199,14 @@ export function HonorarioForm({
         <fieldset className="tipo-fields">
           <div className="row">
             <div className="col-6">
-              <div className="form-group">
-                <label htmlFor="valor_causa">Valor da causa (R$) *</label>
+              <FormField label="Valor da causa (R$) *" htmlFor="valor_causa">
                 <input id="valor_causa" name="valor_causa" type="number" step="0.01" min="0" className="form-control" required />
-              </div>
+              </FormField>
             </div>
             <div className="col-6">
-              <div className="form-group">
-                <label htmlFor="percentual_exito">% de êxito *</label>
+              <FormField label="% de êxito *" htmlFor="percentual_exito">
                 <input id="percentual_exito" name="percentual_exito" type="number" step="0.01" min="0" max="100" className="form-control" required />
-              </div>
+              </FormField>
             </div>
           </div>
           <p style={{ fontSize: 12 }}>Sem parcelas por data — a cobrança de êxito é lançada após a sentença.</p>
@@ -220,39 +217,34 @@ export function HonorarioForm({
         <fieldset className="tipo-fields">
           <div className="row">
             <div className="col-6">
-              <div className="form-group">
-                <label htmlFor="valor_entrada">Entrada (R$) *</label>
+              <FormField label="Entrada (R$) *" htmlFor="valor_entrada">
                 <input id="valor_entrada" name="valor_entrada" type="number" step="0.01" min="0" className="form-control" required />
-              </div>
+              </FormField>
             </div>
             <div className="col-6">
-              <div className="form-group">
-                <label htmlFor="data_primeira">Vencimento da entrada</label>
+              <FormField label="Vencimento da entrada" htmlFor="data_primeira">
                 <input id="data_primeira" name="data_primeira" type="date" className="form-control" />
-              </div>
+              </FormField>
             </div>
           </div>
           <div className="row">
             <div className="col-6">
-              <div className="form-group">
-                <label htmlFor="valor_causa">Valor da causa (R$)</label>
+              <FormField label="Valor da causa (R$)" htmlFor="valor_causa">
                 <input id="valor_causa" name="valor_causa" type="number" step="0.01" min="0" className="form-control" />
-              </div>
+              </FormField>
             </div>
             <div className="col-6">
-              <div className="form-group">
-                <label htmlFor="percentual_exito">% de êxito</label>
+              <FormField label="% de êxito" htmlFor="percentual_exito">
                 <input id="percentual_exito" name="percentual_exito" type="number" step="0.01" min="0" max="100" className="form-control" />
-              </div>
+              </FormField>
             </div>
           </div>
         </fieldset>
       )}
 
-      <div className="form-group">
-        <label htmlFor="chave_pix">Chave PIX (opcional — usa a do perfil se vazio)</label>
+      <FormField label="Chave PIX (opcional — usa a do perfil se vazio)" htmlFor="chave_pix">
         <input id="chave_pix" name="chave_pix" className="form-control" />
-      </div>
+      </FormField>
 
       <div className="fee-card-actions">
         <Button type="submit" variant="primary" disabled={pending}>

@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { fetchParcelasIR } from "./data";
 import { YearSelect } from "./YearSelect";
+import { AdvogadoFilter } from "@/components/AdvogadoFilter";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Card } from "@/components/ui/Card";
+import { parseAdv } from "@/lib/utils/adv-filter";
 import { agregarRelatorioIR, anoApuracao } from "@/lib/domain/ir";
 import { formatCurrency, formatDate } from "@/lib/utils/format";
 
@@ -16,11 +20,12 @@ export default async function RelatorioIRPage({
   searchParams: Promise<{ ano?: string; adv?: string }>;
 }) {
   const sp = await searchParams;
-  const advId = sp.adv || "todos";
+  const advRaw = sp.adv || "";
+  const advIds = parseAdv(advRaw);
 
   const supabase = await createClient();
   const [parcelas, { data: advogados }] = await Promise.all([
-    fetchParcelasIR(advId !== "todos" ? advId : undefined),
+    fetchParcelasIR(advIds),
     supabase.from("advogados").select("id, nome").eq("ativo", true).order("nome"),
   ]);
 
@@ -33,50 +38,36 @@ export default async function RelatorioIRPage({
   const rel = agregarRelatorioIR(parcelas, ano);
   const temLancamentos = rel.totalGeral > 0;
 
-  const advParam = advId !== "todos" ? `&adv=${advId}` : "";
+  const advParam = advRaw ? `&adv=${encodeURIComponent(advRaw)}` : "";
 
   return (
     <div>
-      <div className="page-head">
-        <h1>Relatório de Rendimentos (IR)</h1>
-        <a className="btn btn-primary" href={`/relatorio-ir/csv?ano=${ano}${advParam}`}>
-          ⬇ Exportar CSV
-        </a>
-      </div>
+      <PageHeader
+        title="Relatório de Rendimentos (IR)"
+        action={
+          <a className="btn btn-primary" href={`/relatorio-ir/csv?ano=${ano}${advParam}`}>
+            ⬇ Exportar CSV
+          </a>
+        }
+      />
 
-      {(advogados ?? []).length > 1 && (
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 13, color: "var(--body)" }}>Advogado:</span>
-          {[{ id: "todos", nome: "Todos" }, ...(advogados ?? [])].map((a) => (
-            <Link
-              key={a.id}
-              href={a.id === "todos" ? `/relatorio-ir?ano=${ano}` : `/relatorio-ir?ano=${ano}&adv=${a.id}`}
-              className={`btn btn-secondary${advId === a.id || (a.id === "todos" && advId === "todos") ? " active" : ""}`}
-              style={{ fontSize: 13, padding: "4px 12px" }}
-            >
-              {a.nome}
-            </Link>
-          ))}
-        </div>
-      )}
+      <AdvogadoFilter advogados={advogados ?? []} selected={advIds} />
 
-      <div className="card" style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <Card style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <label style={{ marginBottom: 0 }}>Ano de apuração:</label>
-        <YearSelect anos={anosDisponiveis} ano={ano} adv={advId !== "todos" ? advId : undefined} />
-      </div>
+        <YearSelect anos={anosDisponiveis} ano={ano} adv={advRaw || undefined} />
+      </Card>
 
       {!temLancamentos ? (
-        <div className="empty-state">
-          <div className="empty-state-icon">🧾</div>
-          <h3>Sem rendimentos em {ano}</h3>
-          <p style={{ marginTop: 8 }}>
-            Marque parcelas como pagas para que apareçam aqui na apuração do ano.
-          </p>
-        </div>
+        <EmptyState
+          icon="🧾"
+          title={`Sem rendimentos em ${ano}`}
+          description="Marque parcelas como pagas para que apareçam aqui na apuração do ano."
+        />
       ) : (
         <>
           {rel.grupos.map((g) => (
-            <div className="card" key={g.categoria} style={{ padding: 0, overflowX: "auto" }}>
+            <Card key={g.categoria} style={{ padding: 0, overflowX: "auto" }}>
               <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px", borderBottom: "1px solid var(--gray-border)" }}>
                 <strong>{g.categoria}</strong>
                 <strong>{formatCurrency(g.total)}</strong>
@@ -109,10 +100,10 @@ export default async function RelatorioIRPage({
                   </tbody>
                 </table>
               )}
-            </div>
+            </Card>
           ))}
 
-          <div className="card">
+          <Card>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
               <span style={{ color: "var(--text-muted)" }}>Total contratual</span>
               <span>{formatCurrency(rel.totalPorOrigem.contratual)}</span>
@@ -125,7 +116,7 @@ export default async function RelatorioIRPage({
               <span>Total geral apurado em {ano}</span>
               <span className="valor">{formatCurrency(rel.totalGeral)}</span>
             </div>
-          </div>
+          </Card>
         </>
       )}
     </div>

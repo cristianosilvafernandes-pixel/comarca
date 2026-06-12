@@ -1,6 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { AdvogadoFilter } from "@/components/AdvogadoFilter";
+import { Card } from "@/components/ui/Card";
 import type { PeriodoTipo } from "@/lib/domain/dashboard";
 
 interface Props {
@@ -8,19 +10,19 @@ interface Props {
   de: string;
   ate: string;
   status: string;
-  adv: string;
+  advRaw: string;
+  advIds: string[];
   advogados: { id: string; nome: string }[];
 }
 
-export function DashboardFilters({ periodo, de, ate, status, adv, advogados }: Props) {
+export function DashboardFilters({ periodo, de, ate, status, advRaw, advIds, advogados }: Props) {
   const router = useRouter();
 
-  function nav(next: { periodo?: string; de?: string; ate?: string; adv?: string }) {
+  function nav(next: { periodo?: string; de?: string; ate?: string }) {
     const p = new URLSearchParams();
     p.set("periodo", next.periodo ?? periodo);
     if (status && status !== "todos") p.set("status", status);
-    const advVal = next.adv ?? adv;
-    if (advVal && advVal !== "todos") p.set("adv", advVal);
+    if (advRaw) p.set("adv", advRaw);
     const d = next.de ?? de;
     const a = next.ate ?? ate;
     if ((next.periodo ?? periodo) === "customizado") {
@@ -31,23 +33,8 @@ export function DashboardFilters({ periodo, de, ate, status, adv, advogados }: P
   }
 
   return (
-    <div className="card" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 16, marginBottom: 24 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <label style={{ marginBottom: 0, color: "var(--body)", fontSize: 14, whiteSpace: "nowrap" }}>
-          Advogado:
-        </label>
-        <select
-          className="form-control"
-          style={{ width: "auto", minWidth: 180 }}
-          value={adv}
-          onChange={(e) => nav({ adv: e.target.value })}
-        >
-          <option value="todos">Todos os advogados</option>
-          {advogados.map((a) => (
-            <option key={a.id} value={a.id}>{a.nome}</option>
-          ))}
-        </select>
-      </div>
+    <Card style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 16, marginBottom: 24 }}>
+      <AdvogadoFilter advogados={advogados} selected={advIds} />
 
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <label style={{ marginBottom: 0, color: "var(--body)", fontSize: 14, whiteSpace: "nowrap" }}>
@@ -85,6 +72,6 @@ export function DashboardFilters({ periodo, de, ate, status, adv, advogados }: P
           />
         </div>
       )}
-    </div>
+    </Card>
   );
 }

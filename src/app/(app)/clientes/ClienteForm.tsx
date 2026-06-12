@@ -3,6 +3,8 @@
 import { useActionState, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { Alert } from "@/components/ui/Alert";
+import { FormField } from "@/components/ui/FormField";
 import { maskCPF } from "@/lib/utils/cpf";
 import { maskPhone } from "@/lib/utils/phone";
 import { saveCliente, type ClienteState } from "./actions";
@@ -24,17 +26,23 @@ export function ClienteForm({
   return (
     <form action={formAction} className="card" style={{ maxWidth: 560 }}>
       {cliente?.id && <input type="hidden" name="id" value={cliente.id} />}
-      {state?.error && <div className="auth-alert error">{state.error}</div>}
+      {state?.error && <Alert>{state.error}</Alert>}
 
-      <div className="form-group">
-        <label htmlFor="nome">Nome *</label>
+      {!cliente && (
+        <div style={{ marginBottom: 20 }}>
+          <a href="/clientes/importar" className="btn btn-secondary" style={{ width: "100%", justifyContent: "center" }}>
+            📎 Importar de documento
+          </a>
+        </div>
+      )}
+
+      <FormField label="Nome *" htmlFor="nome">
         <input id="nome" name="nome" className="form-control" defaultValue={cliente?.nome ?? ""} required />
-      </div>
+      </FormField>
 
       <div className="row">
         <div className="col-6">
-          <div className="form-group">
-            <label htmlFor="cpf">CPF *</label>
+          <FormField label="CPF *" htmlFor="cpf">
             <input
               id="cpf"
               name="cpf"
@@ -45,11 +53,10 @@ export function ClienteForm({
               inputMode="numeric"
               required
             />
-          </div>
+          </FormField>
         </div>
         <div className="col-6">
-          <div className="form-group">
-            <label htmlFor="whatsapp">WhatsApp *</label>
+          <FormField label="WhatsApp *" htmlFor="whatsapp">
             <input
               id="whatsapp"
               name="whatsapp"
@@ -60,23 +67,20 @@ export function ClienteForm({
               inputMode="tel"
               required
             />
-          </div>
+          </FormField>
         </div>
       </div>
 
-      <div className="form-group">
-        <label htmlFor="email">E-mail</label>
+      <FormField label="E-mail" htmlFor="email">
         <input id="email" name="email" type="email" className="form-control" defaultValue={cliente?.email ?? ""} />
-      </div>
+      </FormField>
 
-      <div className="form-group">
-        <label htmlFor="endereco">Endereço</label>
+      <FormField label="Endereço" htmlFor="endereco">
         <input id="endereco" name="endereco" className="form-control" defaultValue={cliente?.endereco ?? ""} />
-      </div>
+      </FormField>
 
       {advogados.length > 1 && (
-        <div className="form-group">
-          <label htmlFor="membro_id">Advogado responsável</label>
+        <FormField label="Advogado responsável" htmlFor="membro_id">
           <select
             id="membro_id"
             name="membro_id"
@@ -88,7 +92,7 @@ export function ClienteForm({
               <option key={a.id} value={a.id}>{a.nome}</option>
             ))}
           </select>
-        </div>
+        </FormField>
       )}
 
       <div className="fee-card-actions">

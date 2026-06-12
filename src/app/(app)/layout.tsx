@@ -20,7 +20,7 @@ export default async function AppLayout({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("nome, oab")
+    .select("nome, logo_url")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -28,7 +28,7 @@ export default async function AppLayout({
 
   return (
     <div id="app">
-      <AppHeader nome={nome} oab={profile?.oab} />
+      <AppHeader nome={nome} logoUrl={profile?.logo_url ?? null} />
       <div id="app-body">
         <Sidebar />
         <main className="main-content">{children}</main>

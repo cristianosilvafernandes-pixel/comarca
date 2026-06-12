@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { signOut } from "@/app/auth/actions";
 import { Logo } from "@/components/Logo";
 
@@ -8,7 +9,7 @@ function initials(nome: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-export function AppHeader({ nome, oab }: { nome: string; oab?: string | null }) {
+export function AppHeader({ nome, logoUrl }: { nome: string; logoUrl?: string | null }) {
   return (
     <header className="app-header">
       <div className="header-container">
@@ -25,11 +26,23 @@ export function AppHeader({ nome, oab }: { nome: string; oab?: string | null }) 
           >
             <div className="user-text">
               <div className="name">{nome}</div>
-              <div className="role">{oab || "Advogado(a)"}</div>
-            </div>
-            <div className="avatar" aria-hidden="true">
-              {initials(nome)}
-            </div>
+              </div>
+            {logoUrl ? (
+              <div className="avatar" aria-hidden="true" style={{ padding: 0, overflow: "hidden", background: "transparent" }}>
+                <Image
+                  src={logoUrl}
+                  alt="Logo do escritório"
+                  width={36}
+                  height={36}
+                  style={{ objectFit: "contain", width: "100%", height: "100%" }}
+                  unoptimized
+                />
+              </div>
+            ) : (
+              <div className="avatar" aria-hidden="true">
+                {initials(nome)}
+              </div>
+            )}
           </a>
           <form action={signOut}>
             <button type="submit" className="btn btn-secondary" title="Sair">

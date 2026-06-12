@@ -1,6 +1,8 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Alert } from "@/components/ui/Alert";
 import { maskCPF } from "@/lib/utils/cpf";
 import { marcarParcelaPaga, type ParcelaPagaState } from "./actions";
 
@@ -28,9 +30,9 @@ export function ParcelaActions({ parcelaId, honorarioId, status, dataPagamento }
 
   if (!open) {
     return (
-      <button type="button" className="btn btn-secondary" onClick={() => setOpen(true)}>
+      <Button type="button" variant="secondary" onClick={() => setOpen(true)}>
         {cta}
-      </button>
+      </Button>
     );
   }
 
@@ -39,7 +41,7 @@ export function ParcelaActions({ parcelaId, honorarioId, status, dataPagamento }
       <input type="hidden" name="parcela_id" value={parcelaId} />
       <input type="hidden" name="honorario_id" value={honorarioId} />
 
-      {state?.error && <div className="auth-alert error" style={{ margin: 0 }}>{state.error}</div>}
+      {state?.error && <Alert style={{ margin: 0 }}>{state.error}</Alert>}
 
       <select
         name="origem_pagamento"
@@ -63,12 +65,12 @@ export function ParcelaActions({ parcelaId, honorarioId, status, dataPagamento }
       )}
 
       <div style={{ display: "flex", gap: 8 }}>
-        <button type="submit" className="btn btn-success" disabled={pending}>
+        <Button type="submit" variant="success" disabled={pending}>
           {pending ? "Salvando…" : "Confirmar"}
-        </button>
-        <button type="button" className="btn btn-secondary" onClick={() => setOpen(false)}>
+        </Button>
+        <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
           Cancelar
-        </button>
+        </Button>
       </div>
     </form>
   );

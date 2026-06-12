@@ -35,20 +35,28 @@ export interface Database {
         Row: {
           id: string;
           nome: string;
-          oab: string | null;
+          cnpj: string | null;
+          telefone: string | null;
+          endereco: string | null;
+          site: string | null;
           chave_pix: string | null;
           foro: string | null;
           plano: Plano;
+          logo_url: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id: string;
           nome: string;
-          oab?: string | null;
+          cnpj?: string | null;
+          telefone?: string | null;
+          endereco?: string | null;
+          site?: string | null;
           chave_pix?: string | null;
           foro?: string | null;
           plano?: Plano;
+          logo_url?: string | null;
           created_at?: string;
           updated_at?: string;
         };

@@ -1,5 +1,6 @@
 import { type NextRequest } from "next/server";
 import { fetchParcelasIR } from "../data";
+import { parseAdv } from "@/lib/utils/adv-filter";
 import { agregarRelatorioIR, gerarCSV, nomeArquivoCSV } from "@/lib/domain/ir";
 
 /** Download do CSV de apuração do IR (spec F10, INV-116). RLS aplica pelo usuário. */
@@ -8,7 +9,7 @@ export async function GET(request: NextRequest) {
   const advParam = request.nextUrl.searchParams.get("adv");
   const ano = anoParam ? Number(anoParam) : new Date().getUTCFullYear();
 
-  const parcelas = await fetchParcelasIR(advParam ?? undefined);
+  const parcelas = await fetchParcelasIR(parseAdv(advParam));
   const rel = agregarRelatorioIR(parcelas, ano);
   const csv = gerarCSV(rel);
 
