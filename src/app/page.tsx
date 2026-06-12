@@ -26,7 +26,7 @@ const FAQS = [
   },
   {
     q: "E se eu já uso planilha ou agenda?",
-    a: "Planilha não manda WhatsApp sozinha. Comarca lembra você 2 dias antes — e você decide se envia ou não.",
+    a: "Planilha não mostra o que vence nem monta a cobrança. Comarca destaca cada parcela a vencer e já deixa a mensagem pronta — você decide se envia ou não.",
   },
   {
     q: "O Comarca acessa minha conta bancária?",
@@ -64,13 +64,14 @@ export default function LandingPage() {
             <h1 className="hero-headline">Nunca mais perca um honorário esquecido.</h1>
             <p className="hero-subheadline">
               Advogado não perde honorário por falta de cliente. Perde por falta de cobrança. Comarca
-              resolve isso — lembretes automáticos via WhatsApp, sem taxas, você recebe 100% na sua conta.
+              organiza tudo por cliente e processo, mostra o que vence e deixa a mensagem pronta — você
+              envia pelo WhatsApp em um toque. Sem taxas, você recebe 100% na sua conta.
             </p>
 
             <ul className="hero-bullets">
               <li className="bullet-item">
                 <Check />
-                <span><strong>Lembrete 2 dias antes do vencimento</strong> — você nunca esquece de cobrar</span>
+                <span><strong>Painel destaca o que vence</strong> — você vê de relance cada parcela a cobrar</span>
               </li>
               <li className="bullet-item">
                 <Check />
@@ -168,7 +169,7 @@ export default function LandingPage() {
           <div className="como-grid">
             {[
               ["01", "Cadastre o cliente e o honorário", "Cliente, processo, valor, parcelas. Tudo configurado em apenas 30 segundos."],
-              ["02", "Receba lembretes automáticos", "2 dias antes do vencimento direto no seu WhatsApp com todos os dados do processo cadastrado."],
+              ["02", "Veja o que está vencendo", "O painel destaca as parcelas que vencem nos próximos dias, com todos os dados do processo cadastrado."],
               ["03", "Envie cobrança ao cliente", "Um toque abre a mensagem pré-formatada editável. Tom educado e profissional, sem parecer cobrador."],
               ["04", "Marque como pago", "Seu cliente realizou o pagamento? Um único clique e o registro sai da lista de pendentes."],
             ].map(([num, title, desc]) => (
@@ -269,12 +270,12 @@ export default function LandingPage() {
             <div className="controle-card">
               <span className="controle-icon">📋</span>
               <h3 className="controle-card-title">Parcelas no radar</h3>
-              <p className="controle-card-text">Honorário parcelado? Comarca lembra cada vencimento. Você não precisa abrir planilha.</p>
+              <p className="controle-card-text">Honorário parcelado? Comarca acompanha cada vencimento. Tudo num painel, sem planilha.</p>
             </div>
             <div className="controle-card">
               <span className="controle-icon">⚖️</span>
               <h3 className="controle-card-title">Honorário de êxito</h3>
-              <p className="controle-card-text">Cadastre o processo e o percentual combinado. Comarca avisa quando chegar a hora de cobrar.</p>
+              <p className="controle-card-text">Cadastre o processo e o percentual combinado. Comarca mantém no radar para você cobrar na hora certa.</p>
             </div>
             <div className="controle-card">
               <span className="controle-icon">📊</span>
@@ -366,7 +367,7 @@ export default function LandingPage() {
         <div className="container">
           <h2 className="cta-final-title">Teste com seus próprios clientes.</h2>
           <p className="cta-final-sub">Cadastre 3 honorários reais. Receba os lembretes. Veja se funciona pra você.</p>
-          <Link href={CTA} className="btn btn-white" style={{ padding: "16px 32px", fontSize: 18, fontWeight: 700 }}>
+          <Link href={CTA} className="btn btn-white" style={{ padding: "16px 32px", fontSize: 18, fontWeight: 600 }}>
             Criar conta grátis
           </Link>
           <p className="cta-final-info">7 dias grátis. Sem cartão. Cancela quando quiser.</p>
@@ -382,7 +383,7 @@ export default function LandingPage() {
                 <Logo size={24} />
                 Comarca
               </a>
-              <p className="footer-tagline">Lembretes automáticos de honorários para advogados.</p>
+              <p className="footer-tagline">Controle e cobrança de honorários para advogados.</p>
             </div>
             <div className="footer-meta-col">
               <span className="footer-right-text">Feito por advogados, para advogados.</span>

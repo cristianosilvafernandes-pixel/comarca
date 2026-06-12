@@ -92,7 +92,7 @@ export function ImportarClienteForm({ userId }: { userId: string }) {
         <input
           ref={fileRef}
           type="file"
-          accept=".pdf,.doc,.docx,image/*"
+          accept=".pdf,image/*"
           style={{ display: "none" }}
           onChange={onFile}
         />

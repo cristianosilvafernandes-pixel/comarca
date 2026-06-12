@@ -112,7 +112,7 @@ export default async function RelatorioIRPage({
               <span style={{ color: "var(--text-muted)" }}>Total sucumbencial</span>
               <span>{formatCurrency(rel.totalPorOrigem.sucumbencial)}</span>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid var(--gray-border)", paddingTop: 8, fontWeight: 700 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid var(--gray-border)", paddingTop: 8, fontWeight: 600 }}>
               <span>Total geral apurado em {ano}</span>
               <span className="valor">{formatCurrency(rel.totalGeral)}</span>
             </div>

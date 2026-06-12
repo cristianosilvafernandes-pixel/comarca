@@ -61,7 +61,7 @@ export default async function PlanosPage() {
                 <h3>{p.nome}</h3>
                 {ehAtual && <span className="badge badge-pago">Atual</span>}
               </div>
-              <div style={{ fontSize: 28, fontWeight: 700, margin: "8px 0" }}>
+              <div style={{ fontSize: 28, fontWeight: 600, margin: "8px 0" }}>
                 {p.preco}
                 <span style={{ fontSize: 14, fontWeight: 400, color: "var(--text-muted)" }}>/mês</span>
               </div>
