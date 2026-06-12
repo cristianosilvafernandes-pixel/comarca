@@ -17,13 +17,16 @@ export default async function EditarHonorarioPage({
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data: hon } = await supabase
-    .from("honorarios")
-    .select(
-      "id, tipo, processo, area, tribunal, parte_contraria, chave_pix, valor_total, valor_mensal, valor_entrada, valor_causa, percentual_exito, clientes:cliente_id(nome)",
-    )
-    .eq("id", id)
-    .maybeSingle();
+  const [{ data: hon }, { data: advogados }] = await Promise.all([
+    supabase
+      .from("honorarios")
+      .select(
+        "id, tipo, processo, area, tribunal, parte_contraria, chave_pix, valor_total, valor_mensal, valor_entrada, valor_causa, percentual_exito, parceiro_id, parceiro_percentual, clientes:cliente_id(nome)",
+      )
+      .eq("id", id)
+      .maybeSingle(),
+    supabase.from("advogados").select("id, nome").eq("ativo", true).order("nome"),
+  ]);
 
   if (!hon) notFound();
 
@@ -49,6 +52,9 @@ export default async function EditarHonorarioPage({
         valorEntrada={hon.valor_entrada}
         valorCausa={hon.valor_causa}
         percentualExito={hon.percentual_exito}
+        advogados={advogados ?? []}
+        parceiroId={hon.parceiro_id}
+        parceiroPercentual={hon.parceiro_percentual}
         cancelHref={`/honorarios/${id}`}
       />
     </div>

@@ -49,10 +49,16 @@ export async function createHonorario(_prev: HonorarioState, formData: FormData)
     .eq("id", user.id)
     .maybeSingle();
 
+  const parceiro_id = str(formData, "parceiro_id") || null;
+
   const base: HonorarioInsert = {
     cliente_id,
     tipo,
     membro_id,
+    parceiro_id,
+    parceiro_percentual: parceiro_id
+      ? Math.max(0, Math.min(100, num(formData, "parceiro_percentual")))
+      : null,
     processo: str(formData, "processo") || null,
     area: (str(formData, "area") || null) as Area | null,
     tribunal: (str(formData, "tribunal") || null) as Tribunal | null,
@@ -207,10 +213,16 @@ export async function updateHonorario(
   const id = str(formData, "id");
   if (!id) return { error: "Honorário inválido." };
 
+  const parceiro_id = str(formData, "parceiro_id") || null;
+
   const supabase = await createClient();
   const { error } = await supabase
     .from("honorarios")
     .update({
+      parceiro_id,
+      parceiro_percentual: parceiro_id
+        ? Math.max(0, Math.min(100, num(formData, "parceiro_percentual")))
+        : null,
       processo: str(formData, "processo") || null,
       area: (str(formData, "area") || null) as Area | null,
       tribunal: (str(formData, "tribunal") || null) as Tribunal | null,

@@ -150,6 +150,8 @@ export interface Database {
           created_at: string;
           updated_at: string;
           membro_id: string | null;
+          parceiro_id: string | null;
+          parceiro_percentual: number | null;
         };
         Insert: {
           id?: string;
@@ -173,6 +175,8 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
           membro_id?: string | null;
+          parceiro_id?: string | null;
+          parceiro_percentual?: number | null;
         };
         Update: Partial<Database["public"]["Tables"]["honorarios"]["Insert"]>;
         Relationships: [
@@ -188,6 +192,13 @@ export interface Database {
             columns: ["cliente_id"];
             isOneToOne: false;
             referencedRelation: "clientes";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "honorarios_parceiro_id_fkey";
+            columns: ["parceiro_id"];
+            isOneToOne: false;
+            referencedRelation: "advogados";
             referencedColumns: ["id"];
           },
         ];

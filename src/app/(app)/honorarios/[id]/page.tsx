@@ -32,7 +32,7 @@ export default async function HonorarioDetailPage({
     supabase
       .from("honorarios")
       .select(
-        "id, tipo, processo, area, tribunal, parte_contraria, valor_total, valor_mensal, valor_causa, percentual_exito, valor_entrada, chave_pix, link_publico_token, clientes:cliente_id(nome, whatsapp), parcelas(id, numero, valor, vencimento, status_registrado, data_pagamento)",
+        "id, tipo, processo, area, tribunal, parte_contraria, valor_total, valor_mensal, valor_causa, percentual_exito, valor_entrada, chave_pix, link_publico_token, parceiro_percentual, parceiro:parceiro_id(nome), clientes:cliente_id(nome, whatsapp), parcelas(id, numero, valor, vencimento, status_registrado, data_pagamento)",
       )
       .eq("id", id)
       .maybeSingle(),
@@ -43,6 +43,7 @@ export default async function HonorarioDetailPage({
 
   const clienteObj = hon.clientes as { nome: string; whatsapp: string } | null;
   const cliente = clienteObj?.nome ?? "—";
+  const parceiroNome = (hon.parceiro as { nome: string } | null)?.nome ?? null;
   const parcelas = [...(hon.parcelas ?? [])].sort((a, b) => a.numero - b.numero);
   const baseUrl = await resolveBaseUrl();
   const linkPublico = montarLinkPublico(baseUrl, hon.link_publico_token);
@@ -105,6 +106,12 @@ export default async function HonorarioDetailPage({
           {hon.percentual_exito != null && <div>% êxito: {hon.percentual_exito}%</div>}
           {hon.parte_contraria && <div>Parte contrária: {hon.parte_contraria}</div>}
           {hon.chave_pix && <div>PIX: {hon.chave_pix}</div>}
+          {parceiroNome && (
+            <div>
+              Divisão: Titular {100 - (hon.parceiro_percentual ?? 0)}% ·{" "}
+              {parceiroNome} {hon.parceiro_percentual ?? 0}%
+            </div>
+          )}
         </div>
       </Card>
 

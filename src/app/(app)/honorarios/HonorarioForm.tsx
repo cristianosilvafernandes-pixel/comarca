@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { FormField } from "@/components/ui/FormField";
 import { createHonorario, type HonorarioState } from "./actions";
+import { DivisaoAdvogado } from "./DivisaoAdvogado";
 import { AREAS, TRIBUNAIS } from "@/lib/domain/honorario-constants";
 import type { HonorarioTipo } from "@/lib/database.types";
 
@@ -245,6 +246,8 @@ export function HonorarioForm({
       <FormField label="Chave PIX (opcional — usa a do perfil se vazio)" htmlFor="chave_pix">
         <input id="chave_pix" name="chave_pix" className="form-control" />
       </FormField>
+
+      <DivisaoAdvogado advogados={advogados} />
 
       <div className="fee-card-actions">
         <Button type="submit" variant="primary" disabled={pending}>

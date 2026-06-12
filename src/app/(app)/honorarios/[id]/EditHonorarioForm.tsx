@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { FormField } from "@/components/ui/FormField";
 import { updateHonorario, type UpdateHonorarioState } from "../actions";
+import { DivisaoAdvogado } from "../DivisaoAdvogado";
 import { AREAS, TRIBUNAIS, TIPO_LABEL } from "@/lib/domain/honorario-constants";
 import type { HonorarioTipo } from "@/lib/database.types";
 
@@ -21,13 +22,16 @@ interface Props {
   valorEntrada: number | null;
   valorCausa: number | null;
   percentualExito: number | null;
+  advogados: { id: string; nome: string }[];
+  parceiroId: string | null;
+  parceiroPercentual: number | null;
   cancelHref: string;
 }
 
 export function EditHonorarioForm({
   id, tipo, processo, area, tribunal, parteContraria,
   chavePix, valorTotal, valorMensal, valorEntrada, valorCausa,
-  percentualExito, cancelHref,
+  percentualExito, advogados, parceiroId, parceiroPercentual, cancelHref,
 }: Props) {
   const [state, formAction, pending] = useActionState<UpdateHonorarioState, FormData>(
     updateHonorario,
@@ -141,6 +145,12 @@ export function EditHonorarioForm({
           defaultValue={chavePix ?? ""}
         />
       </FormField>
+
+      <DivisaoAdvogado
+        advogados={advogados}
+        parceiroIdInicial={parceiroId}
+        percentualInicial={parceiroPercentual}
+      />
 
       <div className="fee-card-actions">
         <Button type="submit" variant="primary" disabled={pending}>
