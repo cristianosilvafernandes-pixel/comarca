@@ -102,6 +102,16 @@ export default async function PublicPaymentPage({
             </>
           )}
 
+          {podeConfirmar && !dados.chave_pix && (
+            <PublicActions
+              token={token}
+              numeroParcela={dados.parcela.numero}
+              chavePix=""
+              copiaCola={null}
+              podeConfirmar={true}
+            />
+          )}
+
           {emAnalise && (
             <p className={styles.actionText} style={{ marginTop: 16 }}>
               Você confirmou o pagamento. O advogado vai validar o recebimento.

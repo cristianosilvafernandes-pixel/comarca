@@ -37,7 +37,8 @@ Deno.serve(async (req) => {
     .from("honorarios")
     .select(`
       id, processo, chave_pix, advogado_id, cliente_id,
-      profiles:advogado_id ( nome, oab ),
+      profiles:advogado_id ( nome ),
+      membro:membro_id ( nome, oab ),
       clientes:cliente_id ( nome ),
       parcelas ( numero, valor, vencimento, status_registrado )
     `)
@@ -54,9 +55,12 @@ Deno.serve(async (req) => {
 
   const total = hon.parcelas.length;
 
+  const advNome = hon.membro?.nome ?? hon.profiles?.nome ?? null;
+  const advOab = hon.membro?.oab ?? null;
+
   // Payload mínimo. NADA de IDs internos, advogado_id, cliente_id, e-mail, etc.
   return json({
-    advogado: { nome: hon.profiles?.nome, oab: hon.profiles?.oab },
+    advogado: { nome: advNome, oab: advOab },
     cliente: hon.clientes?.nome,
     processo: hon.processo ?? "Não informado",
     parcela: { numero: aberta.numero, total },
