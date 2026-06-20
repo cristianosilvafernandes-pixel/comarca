@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { createPortal } from "react-dom";
+import { Modal } from "@/components/ui/Modal";
 import { registrarLembrete } from "./actions";
 
 interface Props {
@@ -48,7 +48,7 @@ export function LembreteButton({ parcelaId, clienteNome, mensagem, waUrl, label 
 
   if (!waUrl) {
     return (
-      <span style={{ fontSize: 12, color: "var(--text-muted)" }} title="WhatsApp do cliente inválido">
+      <span style={{ fontSize: 12, color: "var(--mute)" }} title="WhatsApp do cliente inválido">
         sem WhatsApp
       </span>
     );
@@ -91,104 +91,57 @@ export function LembreteButton({ parcelaId, clienteNome, mensagem, waUrl, label 
         {done ? "✓ enviado" : (label ?? "💬 Lembrete")}
       </button>
 
-      {modalAberto && createPortal(
-        <div
-          style={{
-            position: "fixed", inset: 0, zIndex: 9999,
-            background: "rgba(0,0,0,0.5)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            padding: "16px",
-          }}
-          onClick={(e) => e.target === e.currentTarget && setModalAberto(false)}
-        >
-          <div
-            style={{
-              background: "#fff",
-              color: "#111",
-              borderRadius: 12,
-              boxShadow: "0 24px 64px rgba(0,0,0,0.35)",
-              width: "min(520px, 100%)",
-              display: "flex", flexDirection: "column", gap: 0,
-              maxHeight: "90vh", overflow: "hidden",
-            }}
-          >
-            {/* Header */}
-            <div style={{
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              padding: "20px 24px 16px",
-              borderBottom: "1px solid var(--border)",
-            }}>
-              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>
-                📱 Enviar Lembrete via WhatsApp
-              </h3>
-              <button
-                type="button"
-                onClick={() => setModalAberto(false)}
-                style={{
-                  background: "var(--surface-raised)", border: "none", borderRadius: 6,
-                  width: 28, height: 28, cursor: "pointer", fontSize: 14,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  color: "var(--text-muted)",
-                }}
-              >
-                ✕
-              </button>
-            </div>
+      <Modal
+        open={modalAberto}
+        title="📱 Enviar lembrete via WhatsApp"
+        onClose={() => setModalAberto(false)}
+        fullscreenMobile
+        footer={
+          <>
+            <button type="button" className="btn btn-secondary" onClick={() => setModalAberto(false)}>
+              Cancelar
+            </button>
+            <button type="button" className="btn btn-primary" onClick={enviar}>
+              Copiar e abrir WhatsApp
+            </button>
+          </>
+        }
+      >
+        {/* Destinatário */}
+        <div style={{ fontSize: 14, display: "flex", flexDirection: "column", gap: 4, marginBottom: 16 }}>
+          <div><strong>Para:</strong> {clienteNome}</div>
+          <div><strong>WhatsApp:</strong> {telefone}</div>
+        </div>
 
-            {/* Body */}
-            <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 16, overflowY: "auto" }}>
-              {/* Destinatário */}
-              <div style={{ fontSize: 14, display: "flex", flexDirection: "column", gap: 4 }}>
-                <div><strong>Para:</strong> {clienteNome}</div>
-                <div><strong>WhatsApp:</strong> {telefone}</div>
-              </div>
+        {/* Boleto */}
+        <div className="form-group">
+          <label>
+            Código de barras do boleto{" "}
+            <span style={{ fontWeight: 400, color: "var(--mute)" }}>(opcional)</span>
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Cole aqui o código de barras"
+            value={boleto}
+            onChange={(e) => onBoletoChange(e.target.value)}
+            autoFocus
+          />
+        </div>
 
-              {/* Boleto */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <label style={{ fontSize: 13, fontWeight: 500 }}>
-                  Código de barras do boleto <span style={{ fontWeight: 400, color: "var(--text-muted)" }}>(opcional)</span>
-                </label>
-                <input
-                  type="text"
-                  className="input"
-                  placeholder="Cole aqui o código de barras"
-                  value={boleto}
-                  onChange={(e) => onBoletoChange(e.target.value)}
-                  autoFocus
-                />
-              </div>
-
-              {/* Mensagem editável */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <label style={{ fontSize: 13, fontWeight: 500 }}>Mensagem (editável):</label>
-                <textarea
-                  ref={textareaRef}
-                  className="input"
-                  rows={10}
-                  value={msgEditada}
-                  onChange={(e) => setMsgEditada(e.target.value)}
-                  style={{ fontFamily: "monospace", fontSize: 13, resize: "vertical" }}
-                />
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div style={{
-              display: "flex", gap: 8, justifyContent: "flex-end",
-              padding: "16px 24px",
-              borderTop: "1px solid var(--border)",
-            }}>
-              <button type="button" className="btn btn-ghost" onClick={() => setModalAberto(false)}>
-                Cancelar
-              </button>
-              <button type="button" className="btn btn-primary" onClick={enviar}>
-                Copiar e abrir WhatsApp
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
+        {/* Mensagem editável */}
+        <div className="form-group">
+          <label>Mensagem (editável)</label>
+          <textarea
+            ref={textareaRef}
+            className="form-control"
+            rows={10}
+            value={msgEditada}
+            onChange={(e) => setMsgEditada(e.target.value)}
+            style={{ fontFamily: "var(--font-mono)", fontSize: 13, resize: "vertical" }}
+          />
+        </div>
+      </Modal>
     </>
   );
 }

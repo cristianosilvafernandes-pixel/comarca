@@ -32,6 +32,8 @@
   --warning-soft: #ffefcf;
   --warning-deep: #ab570a;
   --violet: #7928ca;
+  --violet-soft: #d8ccf1;
+  --violet-deep: #4c2889;
   --cyan: #50e3c2;
   --pink: #ff0080;
 
@@ -872,7 +874,7 @@ textarea { min-height: 80px; resize: vertical; padding-top: 10px; }
 .badge-atrasado { background-color: var(--error-soft); color: var(--error-deep); }
 .badge-pendente { background-color: var(--canvas-soft-2); color: var(--body); }
 .badge-pago_verificacao { background-color: var(--link-bg-soft); color: var(--link-deep); }
-.badge-aguardando_exito { background-color: var(--violet-soft, #d8ccf1); color: var(--violet); }
+.badge-aguardando_exito { background-color: var(--violet-soft); color: var(--violet-deep); }
 
 /* ADVOGADO SUMMARY CARDS */
 .adv-cards-row {
