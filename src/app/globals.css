@@ -483,7 +483,13 @@ textarea { min-height: 80px; resize: vertical; padding-top: 10px; }
   display: flex;
   align-items: center;
   gap: 16px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
+a.summary-card:hover { box-shadow: var(--shadow-3); transform: translateY(-1px); }
+.summary-card-active { box-shadow: var(--shadow-3), inset 0 0 0 2px var(--link); }
 
 .summary-icon {
   font-size: 24px;

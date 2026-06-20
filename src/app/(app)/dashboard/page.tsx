@@ -7,6 +7,7 @@ import { parseAdv } from "@/lib/utils/adv-filter";
 import { filtrarPorPeriodo, ordenarPorVencimento, type PeriodoTipo } from "@/lib/domain/dashboard";
 import { montarItens, resumoFinanceiro, type HonorarioFull } from "@/lib/domain/lembrete-itens";
 import { ResumoCard } from "@/components/ResumoCard";
+import { SummaryCard } from "@/components/SummaryCard";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { StatusTabs } from "@/components/StatusTabs";
@@ -138,32 +139,31 @@ export default async function DashboardPage({
         }
       />
 
-      {/* Summary cards */}
+      {/* Summary cards (clicáveis → filtram a lista) */}
       <div className="summary-grid">
-        <div className="summary-card">
-          <div className="sum-icon-circle"></div>
-          <div className="summary-info">
-            <span className="val">{formatCurrency(resumo.pendentes)}</span>
-            <span className="label">Pendentes</span>
-            <span className="desc">{resumo.nPend} lembretes pendentes</span>
-          </div>
-        </div>
-        <div className="summary-card summary-card-danger">
-          <div className="sum-icon-circle sum-icon-danger"></div>
-          <div className="summary-info">
-            <span className="val">{formatCurrency(resumo.atrasados)}</span>
-            <span className="label">Atrasados</span>
-            <span className="desc">{resumo.nAtr} honorários atrasados</span>
-          </div>
-        </div>
-        <div className="summary-card summary-card-success">
-          <div className="sum-icon-circle sum-icon-success">✓</div>
-          <div className="summary-info">
-            <span className="val">{formatCurrency(resumo.confirmados)}</span>
-            <span className="label">Confirmados</span>
-            <span className="desc">{resumo.nConf} confirmados</span>
-          </div>
-        </div>
+        <SummaryCard
+          value={formatCurrency(resumo.pendentes)}
+          label="Pendentes"
+          desc={`${resumo.nPend} lembretes pendentes`}
+          href={qs("pendente")}
+          active={statusFiltro === "pendente"}
+        />
+        <SummaryCard
+          value={formatCurrency(resumo.atrasados)}
+          label="Atrasados"
+          desc={`${resumo.nAtr} honorários atrasados`}
+          variant="danger"
+          href={qs("atrasado")}
+          active={statusFiltro === "atrasado"}
+        />
+        <SummaryCard
+          value={formatCurrency(resumo.confirmados)}
+          label="Pagos"
+          desc={`${resumo.nConf} pagos`}
+          variant="success"
+          href={qs("pago")}
+          active={statusFiltro === "pago"}
+        />
       </div>
 
       {/* Filters */}
