@@ -108,24 +108,8 @@ export default async function ClientesPage({
       <PageHeader
         title="Clientes"
         action={
-          <Link href="/clientes/novo" className="btn btn-blue">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              width="16"
-              height="16"
-              aria-hidden="true"
-            >
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <line x1="19" y1="8" x2="19" y2="14" />
-              <line x1="22" y1="11" x2="16" y2="11" />
-            </svg>
-            Novo Cliente
+          <Link href="/clientes/novo" className="btn btn-primary">
+            + Novo cliente
           </Link>
         }
       />
@@ -140,7 +124,7 @@ export default async function ClientesPage({
           title="Nenhum cliente cadastrado"
           description="Cadastre seu primeiro cliente para criar honorários."
           action={
-            <Link href="/clientes/novo" className="btn btn-blue">
+            <Link href="/clientes/novo" className="btn btn-primary">
               Cadastrar cliente
             </Link>
           }
@@ -188,11 +172,11 @@ export default async function ClientesPage({
                   <Link href={`/honorarios?cliente=${c.id}`} className="btn btn-secondary">
                     Ver honorários
                   </Link>
-                  <Link href={`/honorarios/novo?cliente=${c.id}`} className="btn btn-blue">
-                    Novo honorário
+                  <Link href={`/honorarios/novo?cliente=${c.id}`} className="btn btn-primary">
+                    + Novo honorário
                   </Link>
                   <Link href={`/clientes/${c.id}/editar`} className="btn btn-secondary">
-                    ✏️ Editar
+                    Editar
                   </Link>
                 </div>
               </div>

@@ -29,7 +29,7 @@ export default async function EquipePage({
       <PageHeader
         title="Equipe"
         action={
-          <Link href="/equipe/novo" className="btn btn-blue">
+          <Link href="/equipe/novo" className="btn btn-primary">
             + Novo advogado
           </Link>
         }
@@ -45,7 +45,7 @@ export default async function EquipePage({
           title="Nenhum advogado cadastrado"
           description="Cadastre os advogados do escritório para vincular honorários a cada um."
           action={
-            <Link href="/equipe/novo" className="btn btn-blue">
+            <Link href="/equipe/novo" className="btn btn-primary">
               Cadastrar advogado
             </Link>
           }
@@ -66,7 +66,7 @@ export default async function EquipePage({
                 </div>
                 <div style={{ display: "flex", gap: 8 }}>
                   <Link href={`/equipe/${adv.id}/editar`} className="btn btn-secondary">
-                    ✏️ Editar
+                    Editar
                   </Link>
                   <DeleteButton id={adv.id} />
                 </div>

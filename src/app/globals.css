@@ -361,8 +361,6 @@ a { color: inherit; text-decoration: none; }
 .btn-danger { background-color: var(--error); color: var(--on-primary); }
 .btn-danger:hover { background-color: var(--error-deep); }
 .btn:disabled { background-color: var(--canvas-soft-2); color: var(--mute); cursor: not-allowed; border-color: var(--hairline); }
-.btn-blue { background-color: var(--link); color: var(--on-primary); }
-.btn-blue:hover { background-color: var(--link-deep); }
 
 .btn-icon {
   display: inline-flex;

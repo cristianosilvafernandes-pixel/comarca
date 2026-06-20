@@ -506,10 +506,10 @@ export function ContratoForm({
         </FormField>
         <div style={{ display: "flex", gap: 12, marginTop: 16, flexWrap: "wrap" }}>
           <Button type="button" variant="success" onClick={enviarWhatsApp}>
-            📲 Enviar por WhatsApp
+            Enviar por WhatsApp
           </Button>
           <Button type="button" variant="secondary" onClick={baixar}>
-            ⬇ Baixar PDF (em breve)
+            Baixar PDF (em breve)
           </Button>
         </div>
         {msg && (

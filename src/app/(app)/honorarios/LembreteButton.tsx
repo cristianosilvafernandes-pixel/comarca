@@ -88,7 +88,7 @@ export function LembreteButton({ parcelaId, clienteNome, mensagem, waUrl, label 
         onClick={abrirModal}
         title="Copia a mensagem e abre o WhatsApp"
       >
-        {done ? "✓ enviado" : (label ?? "💬 Lembrete")}
+        {done ? "Enviado" : (label ?? "Lembrete")}
       </button>
 
       <Modal

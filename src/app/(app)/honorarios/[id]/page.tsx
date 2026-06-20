@@ -200,7 +200,7 @@ export default async function HonorarioDetailPage({
 
       <div style={{ display: "flex", gap: 12, marginTop: 24, flexWrap: "wrap" }}>
         <a href={`/honorarios/${hon.id}/editar`} className="btn btn-secondary">
-          ✏️ Editar
+          Editar
         </a>
         <DeleteHonorarioButton id={hon.id} />
       </div>

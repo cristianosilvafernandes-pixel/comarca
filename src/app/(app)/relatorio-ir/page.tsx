@@ -48,7 +48,7 @@ export default async function RelatorioIRPage({
         title="Relatório de Rendimentos (IR)"
         action={
           <a className="btn btn-primary" href={`/relatorio-ir/csv?ano=${ano}${advParam}`}>
-            ⬇ Exportar CSV
+            Exportar CSV
           </a>
         }
       />
