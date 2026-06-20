@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useEffect } from "react";
+import { useActionState, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
@@ -44,7 +44,6 @@ export function HonorarioForm({
   const [valorEntrada, setValorEntrada] = useState("");
 
   const aVista = numParcelas === 1;
-  const frequenciaAuto = aVista ? "Única" : undefined;
 
   const valorPorParcela = (() => {
     if (tipo === "fixo_parcelado") {
@@ -53,9 +52,6 @@ export function HonorarioForm({
     }
     return null;
   })();
-
-  // reset parcelas ao trocar tipo
-  useEffect(() => { setNumParcelas(1); }, [tipo]);
 
   return (
     <form action={formAction} className="card" style={{ maxWidth: 640 }}>
@@ -141,7 +137,7 @@ export function HonorarioForm({
                 name="_tipo_ui"
                 value={t.value}
                 checked={tipo === t.value}
-                onChange={() => setTipo(t.value)}
+                onChange={() => { setTipo(t.value); setNumParcelas(1); }}
               />
               <span>
                 <span style={{ display: "block", fontWeight: 500, fontSize: 14 }}>{t.label}</span>
