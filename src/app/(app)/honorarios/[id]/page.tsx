@@ -180,7 +180,7 @@ export default async function HonorarioDetailPage({
                         {p.status_registrado !== "pago" &&
                           (() => {
                             const l = lembreteDe(p);
-                            return <LembreteButton parcelaId={p.id} mensagem={l.mensagem} waUrl={l.waUrl} />;
+                            return <LembreteButton parcelaId={p.id} clienteNome={clienteObj?.nome ?? "Cliente"} mensagem={l.mensagem} waUrl={l.waUrl} />;
                           })()}
                       </div>
                     </td>
