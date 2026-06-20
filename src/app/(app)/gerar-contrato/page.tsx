@@ -11,32 +11,36 @@ export default async function GerarContratoPage() {
   const supabase = await createClient();
   const { data: userData } = await supabase.auth.getUser();
 
-  const [{ data: clientes }, { data: advogados }, { data: profile }] = await Promise.all([
-    supabase.from("clientes").select("id, nome, cpf, endereco, whatsapp").order("nome"),
+  const [{ data: advogados }, { data: profile }, { data: honorarios }] = await Promise.all([
     supabase.from("advogados").select("id, nome, oab").eq("ativo", true).order("nome"),
-    supabase.from("profiles").select("foro, nome").eq("id", userData.user?.id ?? "").maybeSingle(),
+    supabase
+      .from("profiles")
+      .select("foro, nome, chave_pix, endereco")
+      .eq("id", userData.user?.id ?? "")
+      .maybeSingle(),
+    supabase
+      .from("honorarios")
+      .select("id, processo, valor_total, area, tipo, clientes(nome, cpf, endereco, email, whatsapp)")
+      .order("created_at", { ascending: false }),
   ]);
-
-  const advsArr = advogados ?? [];
-  const foro = profile?.foro ?? null;
-  const escritorioNome = profile?.nome ?? null;
 
   const hoje = new Date().toISOString().slice(0, 10);
 
   return (
     <div>
       <PageHeader title="Geração de Contrato de Honorários" />
-      <p style={{ marginBottom: 16 }}>
-        Selecione um cliente, preencha objeto e valor — o modelo é preenchido automaticamente e
-        permanece editável.
+      <p style={{ marginBottom: 20, color: "var(--body)", fontSize: 14 }}>
+        Preencha os passos abaixo para gerar o instrumento contratual customizado.
       </p>
 
       <ContratoForm
-        clientes={clientes ?? []}
-        advogados={advsArr}
-        foro={foro}
+        advogados={advogados ?? []}
+        honorarios={honorarios ?? []}
+        perfilForo={profile?.foro ?? null}
+        perfilChavePix={profile?.chave_pix ?? null}
+        perfilEndereco={profile?.endereco ?? null}
+        escritorioNome={profile?.nome ?? null}
         hoje={hoje}
-        escritorioNome={escritorioNome}
       />
     </div>
   );
