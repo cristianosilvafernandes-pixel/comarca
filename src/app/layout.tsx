@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Comarca Honorários — Cobrança de honorários para advogados",
+  title: "Comarca Honorários — Do contrato ao recebimento, para advogados",
   description:
-    "Acompanhe e cobre honorários sem perder parcelas. Mensagem de cobrança pronta pra WhatsApp, página pública de pagamento PIX e relatório de IR. Zero taxa: você recebe 100% na sua chave PIX.",
+    "Gere o contrato em PDF, cobre pelo WhatsApp, receba via PIX, divida entre os sócios e organize seu imposto de renda. Gestão de honorários feita só para advogados. Zero taxa: você recebe 100% na sua chave PIX.",
 };
 
 export default function RootLayout({
