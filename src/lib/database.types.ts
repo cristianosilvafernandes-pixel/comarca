@@ -24,6 +24,7 @@ export type Area =
 export type Tribunal = "TJRS" | "TJSP" | "TJRJ" | "TRF4" | "TST" | "STJ" | "Outro";
 export type StatusRegistrado = "em_aberto" | "pago" | "pago_verificacao";
 export type OrigemPagamento = "contratual" | "sucumbencial";
+export type StatusSucumbencial = "aguardando" | "recebido";
 export type StatusExtracao = "pendente" | "processando" | "concluido" | "erro";
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
@@ -313,6 +314,34 @@ export interface Database {
           },
         ];
       };
+      sucumbenciais: {
+        Row: {
+          id: string;
+          honorario_id: string;
+          advogado_id: string;
+          valor: number;
+          doc_adversario: string;
+          status: StatusSucumbencial;
+          data_recebimento: string | null;
+          divisao_parceiro_id: string | null;
+          divisao_parceiro_pct: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          honorario_id: string;
+          advogado_id?: string;
+          valor: number;
+          doc_adversario: string;
+          status?: StatusSucumbencial;
+          data_recebimento?: string | null;
+          divisao_parceiro_id?: string | null;
+          divisao_parceiro_pct?: number | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["sucumbenciais"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -334,3 +363,4 @@ export type Honorario = Database["public"]["Tables"]["honorarios"]["Row"];
 export type Parcela = Database["public"]["Tables"]["parcelas"]["Row"];
 export type Documento = Database["public"]["Tables"]["documentos"]["Row"];
 export type Lembrete = Database["public"]["Tables"]["lembretes"]["Row"];
+export type Sucumbencial = Database["public"]["Tables"]["sucumbenciais"]["Row"];
