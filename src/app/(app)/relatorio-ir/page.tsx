@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
-import { fetchParcelasIR } from "./data";
+import { fetchParcelasIR, fetchSucumbenciaisIR } from "./data";
 import { YearSelect } from "./YearSelect";
 import { AdvogadoFilter } from "@/components/AdvogadoFilter";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -24,10 +24,12 @@ export default async function RelatorioIRPage({
   const advIds = parseAdv(advRaw);
 
   const supabase = await createClient();
-  const [parcelas, { data: advogados }] = await Promise.all([
+  const [parcelasContrato, sucumbenciais, { data: advogados }] = await Promise.all([
     fetchParcelasIR(advIds),
+    fetchSucumbenciaisIR(advIds),
     supabase.from("advogados").select("id, nome").eq("ativo", true).order("nome"),
   ]);
+  const parcelas = [...parcelasContrato, ...sucumbenciais];
 
   const anoAtual = new Date().getUTCFullYear();
   const anosDisponiveis = Array.from(

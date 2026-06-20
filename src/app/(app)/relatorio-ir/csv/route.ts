@@ -1,5 +1,5 @@
 import { type NextRequest } from "next/server";
-import { fetchParcelasIR } from "../data";
+import { fetchParcelasIR, fetchSucumbenciaisIR } from "../data";
 import { parseAdv } from "@/lib/utils/adv-filter";
 import { agregarRelatorioIR, gerarCSV, nomeArquivoCSV } from "@/lib/domain/ir";
 
@@ -8,8 +8,13 @@ export async function GET(request: NextRequest) {
   const anoParam = request.nextUrl.searchParams.get("ano");
   const advParam = request.nextUrl.searchParams.get("adv");
   const ano = anoParam ? Number(anoParam) : new Date().getUTCFullYear();
+  const advIds = parseAdv(advParam);
 
-  const parcelas = await fetchParcelasIR(parseAdv(advParam));
+  const [parcelasContrato, sucumbenciais] = await Promise.all([
+    fetchParcelasIR(advIds),
+    fetchSucumbenciaisIR(advIds),
+  ]);
+  const parcelas = [...parcelasContrato, ...sucumbenciais];
   const rel = agregarRelatorioIR(parcelas, ano);
   const csv = gerarCSV(rel);
 
