@@ -20,7 +20,9 @@ export default async function GerarContratoPage() {
       .maybeSingle(),
     supabase
       .from("honorarios")
-      .select("id, processo, valor_total, area, tipo, clientes(nome, cpf, endereco, email, whatsapp)")
+      .select(
+        "id, processo, area, parte_contraria, tipo, frequencia, valor_total, valor_mensal, valor_entrada, valor_causa, percentual_exito, chave_pix, clientes(id, nome, cpf, endereco, email, whatsapp)",
+      )
       .order("created_at", { ascending: false }),
   ]);
 

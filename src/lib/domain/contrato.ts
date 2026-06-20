@@ -2,7 +2,7 @@
  * Geração de contrato de honorários advocatícios (modelo Caldeira & Ferreira).
  */
 
-import { formatDate } from "@/lib/utils/format";
+import { formatCurrency } from "@/lib/utils/format";
 
 export interface Signatario {
   nome: string;
@@ -18,6 +18,12 @@ export interface ContratoInput {
   descricaoDemanda?: string | null;
   valor?: string | null;
   formaPagamento?: string | null;
+  /** Tipo do honorário vinculado — adapta a Cláusula Primeira. */
+  tipoHonorario?: string | null;
+  valorMensal?: number | null;
+  valorEntrada?: number | null;
+  valorCausa?: number | null;
+  percentualExito?: number | null;
   chavePix?: string | null;
   foro?: string | null;
   enderecoEscritorio?: string | null;
@@ -101,6 +107,24 @@ export function montarContrato(i: ContratoInput): string {
       ? "de forma parcelada conforme condições acordadas entre as partes"
       : "à vista no ato de assinatura do presente instrumento";
 
+  // Corpo da Cláusula Primeira — adapta ao tipo de honorário
+  const fmt = (n?: number | null) => formatCurrency(n ?? 0);
+  const causaTxt = i.valorCausa ? ` (valor da causa: ${fmt(i.valorCausa)})` : "";
+  let corpoHonorarios: string;
+  switch (i.tipoHonorario) {
+    case "recorrente":
+      corpoHonorarios = `a quantia mensal de ${fmt(i.valorMensal)}, a título de honorários pela prestação continuada de serviços de assessoria jurídica`;
+      break;
+    case "ad_exitum":
+      corpoHonorarios = `honorários de êxito equivalentes a ${i.percentualExito ?? 0}% sobre o proveito econômico obtido na demanda${causaTxt}`;
+      break;
+    case "fixo_exitum":
+      corpoHonorarios = `a quantia fixa de ${fmt(i.valorEntrada)} a título de honorários contratuais, acrescida de honorários de êxito equivalentes a ${i.percentualExito ?? 0}% sobre o proveito econômico obtido${causaTxt}`;
+      break;
+    default:
+      corpoHonorarios = `a quantia de ${valor}, ${formaTexto}`;
+  }
+
   return `CONTRATO DE HONORÁRIOS ADVOCATÍCIOS
 
 Pelo presente instrumento e na melhor forma de direito, qualifica-se as partes:
@@ -114,7 +138,7 @@ ${paragMandato}
 Com a respectiva contratação dos serviços jurídicos, o CONTRATANTE compromete-se ao pagamento de honorários advocatícios ${prep} ${contratadoRef}, conforme as cláusulas a seguir expostas:
 
 CLÁUSULA PRIMEIRA – DOS HONORÁRIOS ADVOCATÍCIOS
-Em remuneração aos serviços jurídicos profissionais ora pactuados (honorários advocatícios), fica acordado entre as partes deste presente instrumento que o CONTRATANTE pagará ${prep} ${contratadoRef} a quantia de ${valor}, ${formaTexto}.
+Em remuneração aos serviços jurídicos profissionais ora pactuados (honorários advocatícios), fica acordado entre as partes deste presente instrumento que o CONTRATANTE pagará ${prep} ${contratadoRef} ${corpoHonorarios}.
 
 PARÁGRAFO PRIMEIRO: Os pagamentos serão efetivados diretamente ${prep} ${contratadoRef}, seja em espécie (moeda corrente nacional) ou transferência bancária através de PIX (Chave: ${chavePix}).
 

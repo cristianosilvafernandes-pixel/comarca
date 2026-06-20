@@ -102,4 +102,41 @@ describe("montarContrato", () => {
     expect(txt).toContain("justos e contratados");
     expect(txt).toContain("2 (duas) vias de igual teor");
   });
+
+  it("honorário fixo/parcelado — usa o valor informado", () => {
+    const txt = montarContrato({ ...base, tipoHonorario: "fixo_parcelado" });
+    expect(txt).toContain("a quantia de R$ 3.600,00");
+  });
+
+  it("honorário recorrente — quantia mensal e assessoria continuada", () => {
+    const txt = montarContrato({ ...base, tipoHonorario: "recorrente", valorMensal: 800 });
+    expect(txt).toContain("quantia mensal de");
+    expect(txt).toContain("800,00");
+    expect(txt).toContain("assessoria jurídica");
+  });
+
+  it("honorário ad exitum — percentual sobre proveito econômico", () => {
+    const txt = montarContrato({
+      ...base,
+      tipoHonorario: "ad_exitum",
+      valorCausa: 50000,
+      percentualExito: 20,
+    });
+    expect(txt).toContain("honorários de êxito equivalentes a 20%");
+    expect(txt).toContain("proveito econômico");
+    expect(txt).toContain("50.000,00");
+  });
+
+  it("honorário fixo + êxito — entrada fixa mais percentual", () => {
+    const txt = montarContrato({
+      ...base,
+      tipoHonorario: "fixo_exitum",
+      valorEntrada: 2000,
+      valorCausa: 50000,
+      percentualExito: 30,
+    });
+    expect(txt).toContain("quantia fixa de");
+    expect(txt).toContain("2.000,00");
+    expect(txt).toContain("êxito equivalentes a 30%");
+  });
 });
