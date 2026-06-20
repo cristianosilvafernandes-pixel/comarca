@@ -37,6 +37,7 @@ interface Props {
   perfilChavePix: string | null;
   perfilEndereco: string | null;
   escritorioNome: string | null;
+  logoUrl: string | null;
   hoje: string;
 }
 
@@ -84,6 +85,7 @@ export function ContratoForm({
   perfilChavePix,
   perfilEndereco,
   escritorioNome,
+  logoUrl,
   hoje,
 }: Props) {
   const [honorarioId, setHonorarioId] = useState("");
@@ -118,6 +120,7 @@ export function ContratoForm({
   // Preview
   const [editado, setEditado] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
+  const [incluirLogo, setIncluirLogo] = useState(!!logoUrl);
 
   function reset() {
     setEditado(null);
@@ -179,32 +182,64 @@ export function ContratoForm({
   const texto = editado ?? gerado;
 
   async function gerarPdf() {
-    const { jsPDF } = await import("jspdf");
+    const [{ jsPDF }, { arialRegularBase64, arialBoldBase64 }, { computeLogoDims, loadLogoPng }] =
+      await Promise.all([
+        import("jspdf"),
+        import("@/lib/fonts/arial"),
+        import("@/lib/pdf/logo"),
+      ]);
+
     const nome = (contratanteNome || "contrato").replace(/\s+/g, "_");
     const doc = new jsPDF({ unit: "mm", format: "a4" });
-    const margin = 20;
-    const usableWidth = doc.internal.pageSize.getWidth() - margin * 2;
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const lineH = 5;
-    let y = margin;
 
-    if (escritorioNome) {
-      doc.setFont("Helvetica", "bold");
-      doc.setFontSize(13);
-      doc.text(escritorioNome, doc.internal.pageSize.getWidth() / 2, y, { align: "center" });
-      y += 8;
-      doc.setDrawColor(180, 180, 180);
-      doc.line(margin, y, doc.internal.pageSize.getWidth() - margin, y);
-      y += 8;
+    doc.addFileToVFS("Arial.ttf", arialRegularBase64);
+    doc.addFont("Arial.ttf", "Arial", "normal");
+    doc.addFileToVFS("Arial-Bold.ttf", arialBoldBase64);
+    doc.addFont("Arial-Bold.ttf", "Arial", "bold");
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    const usableWidth = pageWidth - margin * 2;
+    const lineH = 5;
+    const LOGO_MAX_H = 18; // mm
+
+    let logo: { dataUrl: string; width: number; height: number } | null = null;
+    if (incluirLogo && logoUrl) {
+      logo = await loadLogoPng(logoUrl);
     }
 
-    doc.setFont("Courier");
+    function drawHeader(): number {
+      let hy = margin;
+      if (logo) {
+        const { w, h } = computeLogoDims(logo.width, logo.height, usableWidth, LOGO_MAX_H);
+        doc.addImage(logo.dataUrl, "PNG", (pageWidth - w) / 2, hy, w, h);
+        hy += h + 6;
+      }
+      if (escritorioNome) {
+        doc.setFont("Arial", "bold");
+        doc.setFontSize(13);
+        doc.text(escritorioNome, pageWidth / 2, hy, { align: "center" });
+        hy += 8;
+      }
+      if (logo || escritorioNome) {
+        doc.setDrawColor(180, 180, 180);
+        doc.line(margin, hy, pageWidth - margin, hy);
+        hy += 8;
+      }
+      return hy;
+    }
+
+    let y = drawHeader();
+    doc.setFont("Arial", "normal");
     doc.setFontSize(10);
 
     for (const line of doc.splitTextToSize(texto, usableWidth)) {
       if (y + lineH > pageHeight - margin) {
         doc.addPage();
-        y = margin;
+        y = drawHeader();
+        doc.setFont("Arial", "normal");
+        doc.setFontSize(10);
       }
       doc.text(line as string, margin, y);
       y += lineH;
@@ -489,13 +524,32 @@ export function ContratoForm({
       {/* PASSO 4 */}
       <Card style={{ maxWidth: 760 }}>
         <StepLabel n={4} title="Preview do Contrato" />
+        {logoUrl && (
+          <label
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              marginBottom: 16,
+              fontSize: 14,
+              cursor: "pointer",
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={incluirLogo}
+              onChange={(e) => setIncluirLogo(e.target.checked)}
+            />
+            <span>Incluir logo do escritório no contrato</span>
+          </label>
+        )}
         <FormField label="Texto do Contrato (Editável)" htmlFor="contrato-texto">
           <textarea
             id="contrato-texto"
             className="form-control"
             rows={22}
             style={{
-              fontFamily: "var(--font-mono, monospace)",
+              fontFamily: "Arial, Helvetica, sans-serif",
               fontSize: 13,
               lineHeight: 1.6,
               resize: "vertical",

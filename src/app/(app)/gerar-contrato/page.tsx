@@ -15,7 +15,7 @@ export default async function GerarContratoPage() {
     supabase.from("advogados").select("id, nome, oab").eq("ativo", true).order("nome"),
     supabase
       .from("profiles")
-      .select("foro, nome, chave_pix, endereco")
+      .select("foro, nome, chave_pix, endereco, logo_url")
       .eq("id", userData.user?.id ?? "")
       .maybeSingle(),
     supabase
@@ -40,6 +40,7 @@ export default async function GerarContratoPage() {
         perfilChavePix={profile?.chave_pix ?? null}
         perfilEndereco={profile?.endereco ?? null}
         escritorioNome={profile?.nome ?? null}
+        logoUrl={profile?.logo_url ?? null}
         hoje={hoje}
       />
     </div>
