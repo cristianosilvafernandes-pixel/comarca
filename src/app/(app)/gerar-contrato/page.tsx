@@ -18,9 +18,6 @@ export default async function GerarContratoPage() {
   ]);
 
   const advsArr = advogados ?? [];
-  const defaultAdv = advsArr[0];
-  const advogadoNome = defaultAdv?.nome ?? "Advogado";
-  const advogadoOab = defaultAdv?.oab ?? null;
   const foro = profile?.foro ?? null;
   const escritorioNome = profile?.nome ?? null;
 
@@ -37,8 +34,6 @@ export default async function GerarContratoPage() {
       <ContratoForm
         clientes={clientes ?? []}
         advogados={advsArr}
-        advogadoNome={advogadoNome}
-        advogadoOab={advogadoOab}
         foro={foro}
         hoje={hoje}
         escritorioNome={escritorioNome}

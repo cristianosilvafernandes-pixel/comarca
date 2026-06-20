@@ -24,41 +24,47 @@ interface AdvogadoOpt {
 interface Props {
   clientes: ClienteOpt[];
   advogados?: AdvogadoOpt[];
-  advogadoNome: string;
-  advogadoOab: string | null;
   foro: string | null;
   hoje: string;
   escritorioNome?: string | null;
 }
 
-export function ContratoForm({ clientes, advogados = [], advogadoNome, advogadoOab, foro, hoje, escritorioNome }: Props) {
+export function ContratoForm({ clientes, advogados = [], foro, hoje, escritorioNome }: Props) {
   const [clienteId, setClienteId] = useState("");
   const [objeto, setObjeto] = useState("Defesa em processo judicial");
   const [valor, setValor] = useState("R$ 3.600,00");
   const [editado, setEditado] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
-  const [advId, setAdvId] = useState(advogados[0]?.id ?? "");
+  const [advIds, setAdvIds] = useState<string[]>(() =>
+    advogados[0] ? [advogados[0].id] : [],
+  );
 
   const cliente = clientes.find((c) => c.id === clienteId) ?? null;
-  const advSelecionado = advogados.find((a) => a.id === advId);
-  const nomeAdv = advSelecionado?.nome ?? advogadoNome;
-  const oabAdv = advSelecionado?.oab ?? advogadoOab;
 
-  const gerado = useMemo(
-    () =>
-      montarContrato({
-        clienteNome: cliente?.nome,
-        clienteCpf: cliente?.cpf,
-        clienteEndereco: cliente?.endereco,
-        advogadoNome: nomeAdv,
-        advogadoOab: oabAdv,
-        objeto,
-        valor,
-        foro,
-        dataHoje: hoje,
-      }),
-    [cliente, nomeAdv, oabAdv, objeto, valor, foro, hoje],
-  );
+  function toggleAdv(id: string, checked: boolean) {
+    setAdvIds((prev) => {
+      if (checked) return prev.includes(id) ? prev : [...prev, id];
+      if (prev.length <= 1) return prev;
+      return prev.filter((x) => x !== id);
+    });
+    setEditado(null);
+  }
+
+  const gerado = useMemo(() => {
+    const signatarios = advogados
+      .filter((a) => advIds.includes(a.id))
+      .map((a) => ({ nome: a.nome, oab: a.oab }));
+    return montarContrato({
+      clienteNome: cliente?.nome,
+      clienteCpf: cliente?.cpf,
+      clienteEndereco: cliente?.endereco,
+      signatarios,
+      objeto,
+      valor,
+      foro,
+      dataHoje: hoje,
+    });
+  }, [cliente, advogados, advIds, objeto, valor, foro, hoje]);
 
   const texto = editado ?? gerado;
 
@@ -136,23 +142,28 @@ export function ContratoForm({ clientes, advogados = [], advogadoNome, advogadoO
   return (
     <>
       <Card style={{ maxWidth: 720 }}>
-        {advogados.length > 1 && (
-          <FormField label="Advogado *" htmlFor="contrato-advogado">
-            <select
-              id="contrato-advogado"
-              className="form-control"
-              value={advId}
-              onChange={(e) => {
-                setAdvId(e.target.value);
-                setEditado(null);
-              }}
-            >
-              {advogados.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.nome}{a.oab ? ` — OAB ${a.oab}` : ""}
-                </option>
-              ))}
-            </select>
+        {advogados.length >= 2 && (
+          <FormField label="Signatários *" htmlFor="contrato-signatarios">
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {advogados.map((a) => {
+                const checked = advIds.includes(a.id);
+                const disabled = advIds.length === 1 && checked;
+                return (
+                  <label
+                    key={a.id}
+                    style={{ display: "flex", alignItems: "center", gap: 8, cursor: disabled ? "not-allowed" : "pointer" }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      disabled={disabled}
+                      onChange={(e) => toggleAdv(a.id, e.target.checked)}
+                    />
+                    {a.nome}{a.oab ? ` — OAB ${a.oab}` : ""}
+                  </label>
+                );
+              })}
+            </div>
           </FormField>
         )}
 

@@ -6,8 +6,7 @@ describe("montarContrato", () => {
     clienteNome: "João da Silva",
     clienteCpf: "529.982.247-25",
     clienteEndereco: "Rua A, 100, Pelotas/RS",
-    advogadoNome: "Dra. Ana Souza",
-    advogadoOab: "OAB/RS 123.456",
+    signatarios: [{ nome: "Dra. Ana Souza", oab: "OAB/RS 123.456" }],
     objeto: "Defesa em ação trabalhista",
     valor: "R$ 3.600,00",
     foro: "Pelotas/RS",
@@ -32,10 +31,25 @@ describe("montarContrato", () => {
   });
 
   it("placeholders quando faltam dados", () => {
-    const txt = montarContrato({ advogadoNome: "Dr. X", dataHoje: "2026-06-05" });
+    const txt = montarContrato({ signatarios: [{ nome: "Dr. X" }], dataHoje: "2026-06-05" });
     expect(txt).toContain("[NOME DO CLIENTE]");
     expect(txt).toContain("[CPF DO CLIENTE]");
     expect(txt).toContain("[Comarca/UF]");
+  });
+
+  it("múltiplos signatários — texto plural e blocos separados", () => {
+    const txt = montarContrato({
+      ...base,
+      signatarios: [
+        { nome: "Dra. Ana Souza", oab: "OAB/RS 123.456" },
+        { nome: "Dr. Carlos Lima", oab: "OAB/RS 654.321" },
+      ],
+    });
+    expect(txt).toContain("os advogados");
+    expect(txt).toContain("denominados CONTRATADOS");
+    expect(txt).toContain("CONTRATADOS o valor");
+    expect(txt).toContain("Dra. Ana Souza, OAB/RS 123.456 e Dr. Carlos Lima, OAB/RS 654.321");
+    expect(txt).toContain("Dr. Carlos Lima — OAB/RS 654.321");
   });
 
   it("inclui disclaimer de revisão jurídica", () => {
