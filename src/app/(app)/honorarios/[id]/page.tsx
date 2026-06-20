@@ -15,6 +15,8 @@ import { tipoLabel } from "@/lib/domain/honorario-constants";
 import { ParcelaActions } from "../ParcelaActions";
 import { LembreteButton } from "../LembreteButton";
 import { DeleteHonorarioButton } from "./DeleteHonorarioButton";
+import { SucumbenciaisSection } from "./SucumbenciaisSection";
+import type { SucumbencialRow } from "./SucumbenciaisSection";
 
 export const metadata: Metadata = {
   title: "Honorário — Comarca Honorários",
@@ -28,16 +30,23 @@ export default async function HonorarioDetailPage({
   const { id } = await params;
   const supabase = await createClient();
 
-  const [{ data: hon }, { data: userData }] = await Promise.all([
-    supabase
-      .from("honorarios")
-      .select(
-        "id, tipo, processo, area, tribunal, parte_contraria, valor_total, valor_mensal, valor_causa, percentual_exito, valor_entrada, chave_pix, link_publico_token, parceiro_percentual, parceiro:parceiro_id(nome), clientes:cliente_id(nome, whatsapp), parcelas(id, numero, valor, vencimento, status_registrado, data_pagamento)",
-      )
-      .eq("id", id)
-      .maybeSingle(),
-    supabase.auth.getUser(),
-  ]);
+  const [{ data: hon }, { data: userData }, { data: sucumbenciaisRaw }, { data: advogados }] =
+    await Promise.all([
+      supabase
+        .from("honorarios")
+        .select(
+          "id, tipo, processo, area, tribunal, parte_contraria, valor_total, valor_mensal, valor_causa, percentual_exito, valor_entrada, chave_pix, link_publico_token, parceiro_percentual, parceiro:parceiro_id(nome), clientes:cliente_id(nome, whatsapp), parcelas(id, numero, valor, vencimento, status_registrado, data_pagamento)",
+        )
+        .eq("id", id)
+        .maybeSingle(),
+      supabase.auth.getUser(),
+      supabase
+        .from("sucumbenciais")
+        .select("id, valor, doc_adversario, status, data_recebimento, divisao_parceiro_pct, divisao_parceiro_id")
+        .eq("honorario_id", id)
+        .order("created_at", { ascending: false }),
+      supabase.from("advogados").select("id, nome").order("nome"),
+    ]);
 
   if (!hon) notFound();
 
@@ -63,6 +72,20 @@ export default async function HonorarioDetailPage({
     advogadoNome = profile?.nome ?? advogadoNome;
     pixPadrao = profile?.chave_pix ?? null;
   }
+
+  const advogadosMap = Object.fromEntries((advogados ?? []).map((a) => [a.id, a.nome]));
+  const sucumbenciais: SucumbencialRow[] = (sucumbenciaisRaw ?? []).map((s) => ({
+    id: s.id,
+    valor: s.valor,
+    doc_adversario: s.doc_adversario,
+    status: s.status as SucumbencialRow["status"],
+    data_recebimento: s.data_recebimento ?? null,
+    divisao_parceiro_pct: s.divisao_parceiro_pct ?? null,
+    parceiro:
+      s.divisao_parceiro_id && advogadosMap[s.divisao_parceiro_id]
+        ? { nome: advogadosMap[s.divisao_parceiro_id] }
+        : null,
+  }));
 
   const totalParcelas = parcelas.length;
   const honBase = {
@@ -168,6 +191,12 @@ export default async function HonorarioDetailPage({
           </table>
         </Card>
       )}
+
+      <SucumbenciaisSection
+        honorarioId={hon.id}
+        sucumbenciais={sucumbenciais}
+        advogados={advogados ?? []}
+      />
 
       <div style={{ display: "flex", gap: 12, marginTop: 24, flexWrap: "wrap" }}>
         <a href={`/honorarios/${hon.id}/editar`} className="btn btn-secondary">
