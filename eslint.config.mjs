@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Fonte Arial em base64 (auto-gerada, ~2MB) — não faz sentido lintar.
+    "src/lib/fonts/arial.ts",
   ]),
 ]);
 
