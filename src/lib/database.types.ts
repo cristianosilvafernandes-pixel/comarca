@@ -70,6 +70,7 @@ export interface Database {
           user_id: string;
           nome: string;
           oab: string | null;
+          foto_url: string | null;
           ativo: boolean;
           created_at: string;
         };
@@ -78,6 +79,7 @@ export interface Database {
           user_id?: string;
           nome: string;
           oab?: string | null;
+          foto_url?: string | null;
           ativo?: boolean;
           created_at?: string;
         };

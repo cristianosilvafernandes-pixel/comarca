@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { initials } from "@/lib/utils/initials";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -20,7 +21,7 @@ export default async function EquipePage({
   const supabase = await createClient();
   const { data } = await supabase
     .from("advogados")
-    .select("id, nome, oab, ativo")
+    .select("id, nome, oab, ativo, foto_url")
     .order("nome");
   const advogados = data ?? [];
 
@@ -55,7 +56,18 @@ export default async function EquipePage({
           {advogados.map((adv) => (
             <div key={adv.id} className="card" style={{ padding: "16px 20px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                <div className="client-initials-avatar">{initials(adv.nome)}</div>
+                {adv.foto_url ? (
+                  <Image
+                    src={adv.foto_url}
+                    alt={adv.nome}
+                    width={44}
+                    height={44}
+                    style={{ objectFit: "cover", borderRadius: "9999px", flexShrink: 0 }}
+                    unoptimized
+                  />
+                ) : (
+                  <div className="client-initials-avatar">{initials(adv.nome)}</div>
+                )}
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600 }}>{adv.nome}</div>
                   {adv.oab && (
