@@ -13,7 +13,7 @@ export const AREAS = [
 ] as const;
 
 /** Tribunais (opções de formulário). */
-export const TRIBUNAIS = ["TJRS", "TJSP", "TJRJ", "TRF4", "TST", "STJ", "Outro"] as const;
+export const TRIBUNAIS = ["TJRS", "TJSP", "TJRJ", "TRF4", "TRT4", "TST", "STJ", "Outro"] as const;
 
 /** Rótulo pt-BR do tipo de honorário. */
 export const TIPO_LABEL: Record<HonorarioTipo, string> = {

@@ -52,6 +52,7 @@ export default function LandingPage() {
             <a href="#faq" className="nav-link">FAQ</a>
           </nav>
           <div className="header-cta">
+            <Link href="/login" className="btn btn-secondary">Entrar</Link>
             <Link href={CTA} className="btn btn-primary">Testar grátis</Link>
           </div>
         </div>

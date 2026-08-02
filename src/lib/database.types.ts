@@ -21,7 +21,7 @@ export type Area =
   | "Tributário"
   | "Consumidor"
   | "Outro";
-export type Tribunal = "TJRS" | "TJSP" | "TJRJ" | "TRF4" | "TST" | "STJ" | "Outro";
+export type Tribunal = "TJRS" | "TJSP" | "TJRJ" | "TRF4" | "TRT4" | "TST" | "STJ" | "Outro";
 export type StatusRegistrado = "em_aberto" | "pago" | "pago_verificacao";
 export type OrigemPagamento = "contratual" | "sucumbencial";
 export type StatusSucumbencial = "aguardando" | "recebido";

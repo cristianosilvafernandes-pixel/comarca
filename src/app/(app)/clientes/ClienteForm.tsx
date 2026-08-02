@@ -21,7 +21,7 @@ export function ClienteForm({
   const [state, formAction, pending] = useActionState<ClienteState, FormData>(saveCliente, undefined);
 
   const [cpf, setCpf] = useState(cliente?.cpf ? maskCPF(cliente.cpf) : "");
-  const [whatsapp, setWhatsapp] = useState(cliente?.whatsapp ? maskPhone(cliente.whatsapp) : "");
+  const [whatsapp, setWhatsapp] = useState(cliente?.whatsapp ? maskPhone(cliente.whatsapp.replace(/^\+?55/, "")) : "");
 
   return (
     <form action={formAction} className="card" style={{ maxWidth: 560 }}>
