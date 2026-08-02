@@ -17,6 +17,8 @@ export interface LembreteCtx {
   pixPadrao: string | null;
   advogadoNome: string;
   advogadoOab: string | null;
+  /** ID do advogado filtrado — ativa cálculo de proporção por divisão. */
+  advId?: string | null;
 }
 
 interface HonBase {
@@ -65,11 +67,22 @@ export interface HonorarioFull extends HonBase {
   id: string;
   tipo: string;
   cliente_id: string;
+  membro_id: string | null;
+  parceiro_id: string | null;
+  parceiro_percentual: number | null;
   parcelas: (ParcelaBase & {
     id: string;
     status_registrado: StatusReg;
     data_pagamento: string | null;
   })[];
+}
+
+/** Fração do valor que pertence ao advogado filtrado. 1 = valor cheio. */
+function proporcaoAdv(h: HonorarioFull, advId: string | null): number {
+  if (!advId || !h.parceiro_id || h.parceiro_percentual == null) return 1;
+  if (h.parceiro_id === advId) return h.parceiro_percentual / 100;
+  if (h.membro_id === advId) return (100 - h.parceiro_percentual) / 100;
+  return 1;
 }
 
 export interface FeeItem {
@@ -94,8 +107,10 @@ export interface FeeItem {
 
 /** Achata honorários → itens de parcela com lembrete + status efetivo. */
 export function montarItens(honorarios: HonorarioFull[], ctx: LembreteCtx): FeeItem[] {
+  const advId = ctx.advId ?? null;
   const itens: FeeItem[] = [];
   for (const h of honorarios) {
+    const frac = proporcaoAdv(h, advId);
     const total = h.parcelas.length;
     for (const p of h.parcelas) {
       const { mensagem, waUrl } = lembreteDeParcela(h, p, total, ctx);
@@ -110,7 +125,7 @@ export function montarItens(honorarios: HonorarioFull[], ctx: LembreteCtx): FeeI
         tribunal: h.tribunal,
         numero: p.numero,
         total,
-        valor: p.valor,
+        valor: p.valor * frac,
         vencimento: p.vencimento,
         statusReg: p.status_registrado,
         dataPagamento: p.data_pagamento,

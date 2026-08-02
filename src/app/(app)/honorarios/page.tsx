@@ -40,10 +40,11 @@ export default async function HonorariosPage({
   } = await supabase.auth.getUser();
 
   let honQuery = supabase.from("honorarios").select(
-    "id, tipo, cliente_id, processo, area, tribunal, chave_pix, link_publico_token, clientes:cliente_id(nome, whatsapp), parcelas(id, numero, valor, vencimento, status_registrado, data_pagamento)",
+    "id, tipo, cliente_id, membro_id, parceiro_id, parceiro_percentual, processo, area, tribunal, chave_pix, link_publico_token, clientes:cliente_id(nome, whatsapp), parcelas(id, numero, valor, vencimento, status_registrado, data_pagamento)",
   );
   if (advIds.length > 0) {
-    honQuery = honQuery.in("membro_id", advIds);
+    const ids = advIds.join(",");
+    honQuery = honQuery.or(`membro_id.in.(${ids}),parceiro_id.in.(${ids})`);
   }
   if (clienteId) {
     honQuery = honQuery.eq("cliente_id", clienteId);
@@ -61,11 +62,14 @@ export default async function HonorariosPage({
   const advogadoNome = profile?.nome ?? "Advogado";
   const url = await resolveBaseUrl();
 
+  const advId = advIds.length === 1 ? advIds[0] : null;
+
   const todos = montarItens(honorarios, {
     baseUrl: url,
     pixPadrao: profile?.chave_pix ?? null,
     advogadoNome,
     advogadoOab: null,
+    advId,
   });
   todos.sort((a, b) => a.vencimento.localeCompare(b.vencimento));
 

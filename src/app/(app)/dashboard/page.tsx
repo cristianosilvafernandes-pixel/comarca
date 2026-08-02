@@ -46,10 +46,11 @@ export default async function DashboardPage({
   let honQuery = supabase
     .from("honorarios")
     .select(
-      "id, tipo, cliente_id, processo, area, tribunal, chave_pix, link_publico_token, clientes:cliente_id(nome, whatsapp), parcelas(id, numero, valor, vencimento, status_registrado, data_pagamento)",
+      "id, tipo, cliente_id, membro_id, parceiro_id, parceiro_percentual, processo, area, tribunal, chave_pix, link_publico_token, clientes:cliente_id(nome, whatsapp), parcelas(id, numero, valor, vencimento, status_registrado, data_pagamento)",
     );
   if (advIds.length > 0) {
-    honQuery = honQuery.in("membro_id", advIds);
+    const ids = advIds.join(",");
+    honQuery = honQuery.or(`membro_id.in.(${ids}),parceiro_id.in.(${ids})`);
   }
 
   const [{ data: honData }, { data: profile }, { data: advogados }] = await Promise.all([
@@ -64,11 +65,14 @@ export default async function DashboardPage({
   const advogadoNome = profile?.nome ?? "Escritório";
   const url = await resolveBaseUrl();
 
+  const advId = advIds.length === 1 ? advIds[0] : null;
+
   const itensTodos = montarItens(honorarios, {
     baseUrl: url,
     pixPadrao: profile?.chave_pix ?? null,
     advogadoNome,
     advogadoOab: null,
+    advId,
   });
 
   // Period filter

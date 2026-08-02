@@ -78,8 +78,11 @@ export function DivisaoAdvogado({
             />
           </FormField>
 
-          <p style={{ fontSize: 13, fontWeight: 600, margin: 0 }}>
+          <p style={{ fontSize: 13, fontWeight: 600, margin: "0 0 8px" }}>
             Titular: {100 - p}% · {nomeParceiro}: {p}%
+          </p>
+          <p style={{ fontSize: 12, color: "var(--text-muted)", margin: 0, lineHeight: 1.5 }}>
+            💡 Ao filtrar por advogado no painel, cada um verá apenas o valor proporcional à sua parte — não o total do honorário.
           </p>
         </>
       )}
