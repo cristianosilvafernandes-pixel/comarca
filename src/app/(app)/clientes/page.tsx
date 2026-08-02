@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { maskCPF } from "@/lib/utils/cpf";
+import { maskCNPJ } from "@/lib/utils/doc";
 import { maskPhone } from "@/lib/utils/phone";
 import { formatCurrency } from "@/lib/utils/format";
 import { resolveStatus } from "@/lib/utils/status";
@@ -37,7 +38,10 @@ type Honorario = {
 type Cliente = {
   id: string;
   nome: string;
-  cpf: string;
+  tipo_pessoa: "PF" | "PJ";
+  cpf: string | null;
+  cnpj: string | null;
+  responsavel_legal: string | null;
   whatsapp: string;
   email: string | null;
   honorarios: Honorario[];
@@ -91,7 +95,7 @@ export default async function ClientesPage({
       let q = supabase
         .from("clientes")
         .select(
-          "id, nome, cpf, whatsapp, email, honorarios(id, processo, area, parcelas(valor, vencimento, status_registrado))",
+          "id, nome, tipo_pessoa, cpf, cnpj, responsavel_legal, whatsapp, email, honorarios(id, processo, area, parcelas(valor, vencimento, status_registrado))",
         )
         .order("nome");
       if (advIds.length > 0) q = q.in("membro_id", advIds);
@@ -158,7 +162,10 @@ export default async function ClientesPage({
                   <div>
                     <div className="cliente-nome">{c.nome}</div>
                     <div className="cliente-meta">
-                      CPF: {maskCPF(c.cpf)} · WhatsApp: {fone}
+                      {c.tipo_pessoa === "PJ"
+                        ? <>CNPJ: {maskCNPJ(c.cnpj ?? "")}{c.responsavel_legal ? ` · Resp.: ${c.responsavel_legal}` : ""}</>
+                        : <>CPF: {maskCPF(c.cpf ?? "")}</>
+                      } · WhatsApp: {fone}
                     </div>
                   </div>
                 </div>

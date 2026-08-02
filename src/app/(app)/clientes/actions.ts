@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isValidCPF, onlyDigits } from "@/lib/utils/cpf";
+import { isValidCNPJ } from "@/lib/utils/doc";
 import { normalizeWhatsApp } from "@/lib/utils/phone";
 
 export type ClienteState = { error?: string } | undefined;
@@ -12,22 +13,38 @@ export type ClienteState = { error?: string } | undefined;
 export async function saveCliente(_prev: ClienteState, formData: FormData): Promise<ClienteState> {
   const id = String(formData.get("id") ?? "").trim();
   const nome = String(formData.get("nome") ?? "").trim();
-  const cpfRaw = String(formData.get("cpf") ?? "");
+  const tipoPessoa = String(formData.get("tipo_pessoa") ?? "PF") as "PF" | "PJ";
   const whatsappRaw = String(formData.get("whatsapp") ?? "");
   const email = String(formData.get("email") ?? "").trim();
   const endereco = String(formData.get("endereco") ?? "").trim();
+  const membro_id = String(formData.get("membro_id") ?? "").trim() || null;
 
   if (nome.length < 2) return { error: "Informe o nome do cliente." };
-  if (!isValidCPF(cpfRaw)) return { error: "CPF inválido." };
+
   const whatsapp = normalizeWhatsApp(whatsappRaw);
   if (!whatsapp) return { error: "WhatsApp inválido. Use DDD + número." };
 
-  const membro_id = String(formData.get("membro_id") ?? "").trim() || null;
+  let cpf: string | null = null;
+  let cnpj: string | null = null;
+  const responsavel_legal = String(formData.get("responsavel_legal") ?? "").trim() || null;
+
+  if (tipoPessoa === "PF") {
+    const cpfRaw = String(formData.get("cpf") ?? "");
+    if (!isValidCPF(cpfRaw)) return { error: "CPF inválido." };
+    cpf = onlyDigits(cpfRaw);
+  } else {
+    const cnpjRaw = String(formData.get("cnpj") ?? "");
+    if (!isValidCNPJ(cnpjRaw)) return { error: "CNPJ inválido." };
+    cnpj = onlyDigits(cnpjRaw);
+  }
 
   const supabase = await createClient();
   const payload = {
     nome,
-    cpf: onlyDigits(cpfRaw),
+    tipo_pessoa: tipoPessoa,
+    cpf,
+    cnpj,
+    responsavel_legal,
     whatsapp,
     email: email || null,
     endereco: endereco || null,
@@ -39,7 +56,6 @@ export async function saveCliente(_prev: ClienteState, formData: FormData): Prom
     : await supabase.from("clientes").insert(payload);
 
   if (error) {
-    // 23514 = check_violation (limite de plano via trigger)
     if (error.code === "23514" || error.message.includes("Limite de clientes")) {
       return { error: "Limite de clientes do seu plano atingido. Faça upgrade para adicionar mais." };
     }
@@ -60,7 +76,6 @@ export async function deleteCliente(formData: FormData): Promise<void> {
   const { error } = await supabase.from("clientes").delete().eq("id", id);
 
   if (error) {
-    // 23503 = foreign_key_violation (cliente tem honorários)
     if (error.code === "23503") {
       redirect("/clientes?error=tem_honorarios");
     }

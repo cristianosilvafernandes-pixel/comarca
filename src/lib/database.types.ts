@@ -97,7 +97,10 @@ export interface Database {
           id: string;
           advogado_id: string;
           nome: string;
-          cpf: string;
+          tipo_pessoa: "PF" | "PJ";
+          cpf: string | null;
+          cnpj: string | null;
+          responsavel_legal: string | null;
           whatsapp: string;
           email: string | null;
           endereco: string | null;
@@ -109,7 +112,10 @@ export interface Database {
           id?: string;
           advogado_id?: string;
           nome: string;
-          cpf: string;
+          tipo_pessoa?: "PF" | "PJ";
+          cpf?: string | null;
+          cnpj?: string | null;
+          responsavel_legal?: string | null;
           whatsapp: string;
           email?: string | null;
           endereco?: string | null;
