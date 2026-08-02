@@ -17,11 +17,12 @@ export const metadata: Metadata = {
 export default async function RelatorioIRPage({
   searchParams,
 }: {
-  searchParams: Promise<{ ano?: string; adv?: string }>;
+  searchParams: Promise<{ ano?: string; mes?: string; adv?: string }>;
 }) {
   const sp = await searchParams;
   const advRaw = sp.adv || "";
   const advIds = parseAdv(advRaw);
+  const mes = sp.mes ? Number(sp.mes) : 0;
 
   const supabase = await createClient();
   const [parcelasContrato, sucumbenciais, { data: advogados }] = await Promise.all([
@@ -37,27 +38,28 @@ export default async function RelatorioIRPage({
   ).sort((a, b) => b - a);
 
   const ano = sp.ano ? Number(sp.ano) : anosDisponiveis[0];
-  const rel = agregarRelatorioIR(parcelas, ano);
+  const rel = agregarRelatorioIR(parcelas, ano, mes > 0 ? mes : undefined);
   const temLancamentos = rel.totalGeral > 0;
 
   const advParam = advRaw ? `&adv=${encodeURIComponent(advRaw)}` : "";
+  const mesParam = mes > 0 ? `&mes=${mes}` : "";
 
   return (
     <div>
       <PageHeader
         title="Relatório de Rendimentos (IR)"
         action={
-          <a className="btn btn-primary" href={`/relatorio-ir/csv?ano=${ano}${advParam}`}>
-            ⬇ Exportar CSV
+          <a className="btn btn-primary" href={`/relatorio-ir/xlsx?ano=${ano}${mesParam}${advParam}`}>
+            ⬇ Exportar Excel
           </a>
         }
       />
 
       <AdvogadoFilter advogados={advogados ?? []} selected={advIds} />
 
-      <Card style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <label style={{ marginBottom: 0 }}>Ano de apuração:</label>
-        <YearSelect anos={anosDisponiveis} ano={ano} adv={advRaw || undefined} />
+      <Card style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+        <label style={{ marginBottom: 0 }}>Período:</label>
+        <YearSelect anos={anosDisponiveis} ano={ano} mes={mes} adv={advRaw || undefined} />
       </Card>
 
       {!temLancamentos ? (

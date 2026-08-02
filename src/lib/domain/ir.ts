@@ -81,11 +81,17 @@ export function anoApuracao(p: ParcelaIR): number {
 }
 
 /**
- * Agrega parcelas PAGAS no ano em 4 grupos + totais.
+ * Agrega parcelas PAGAS no ano (e mês opcional) em 4 grupos + totais.
  * O chamador passa apenas parcelas com status_registrado = 'pago'.
  */
-export function agregarRelatorioIR(parcelas: ParcelaIR[], ano: number): RelatorioIR {
-  const doAno = parcelas.filter((p) => anoApuracao(p) === ano);
+export function agregarRelatorioIR(parcelas: ParcelaIR[], ano: number, mes?: number): RelatorioIR {
+  let doAno = parcelas.filter((p) => anoApuracao(p) === ano);
+  if (mes != null) {
+    doAno = doAno.filter((p) => {
+      const ref = p.dataPagamento ?? p.vencimento;
+      return Number(ref.slice(5, 7)) === mes;
+    });
+  }
 
   const grupos: GrupoIR[] = CATEGORIAS_IR.map((categoria) => ({ categoria, linhas: [], total: 0 }));
   const byCategoria = new Map(grupos.map((g) => [g.categoria, g]));
