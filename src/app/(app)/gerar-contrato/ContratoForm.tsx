@@ -10,7 +10,7 @@ import { montarUrlWaMe } from "@/lib/domain/lembrete";
 interface ClienteOpt {
   id: string;
   nome: string;
-  cpf: string;
+  cpf: string | null;
   endereco: string | null;
   whatsapp: string;
 }
