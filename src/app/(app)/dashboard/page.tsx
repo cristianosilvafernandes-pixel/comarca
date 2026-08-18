@@ -145,30 +145,30 @@ export default async function DashboardPage({
 
       {/* Summary cards */}
       <div className="summary-grid">
-        <div className="summary-card">
+        <Link href={qs("pendente")} className="summary-card" style={{ textDecoration: "none", cursor: "pointer" }}>
           <div className="sum-icon-circle"></div>
           <div className="summary-info">
             <span className="val">{formatCurrency(resumo.pendentes)}</span>
             <span className="label">Pendentes</span>
             <span className="desc">{resumo.nPend} lembretes pendentes</span>
           </div>
-        </div>
-        <div className="summary-card summary-card-danger">
+        </Link>
+        <Link href={qs("atrasado")} className="summary-card summary-card-danger" style={{ textDecoration: "none", cursor: "pointer" }}>
           <div className="sum-icon-circle sum-icon-danger"></div>
           <div className="summary-info">
             <span className="val">{formatCurrency(resumo.atrasados)}</span>
             <span className="label">Atrasados</span>
             <span className="desc">{resumo.nAtr} honorários atrasados</span>
           </div>
-        </div>
-        <div className="summary-card summary-card-success">
+        </Link>
+        <Link href={qs("pago")} className="summary-card summary-card-success" style={{ textDecoration: "none", cursor: "pointer" }}>
           <div className="sum-icon-circle sum-icon-success">✓</div>
           <div className="summary-info">
             <span className="val">{formatCurrency(resumo.confirmados)}</span>
             <span className="label">Confirmados</span>
             <span className="desc">{resumo.nConf} confirmados</span>
           </div>
-        </div>
+        </Link>
       </div>
 
       {/* Filters */}
