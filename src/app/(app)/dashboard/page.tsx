@@ -133,7 +133,6 @@ export default async function DashboardPage({
 
   return (
     <div>
-      <p style={{ textAlign: "center", fontWeight: 600 }}>Cristiano</p>
       <PageHeader
         title="Painel"
         action={
