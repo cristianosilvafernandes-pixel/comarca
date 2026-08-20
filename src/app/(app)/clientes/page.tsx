@@ -112,7 +112,7 @@ export default async function ClientesPage({
       <PageHeader
         title="Clientes"
         action={
-          <Link href="/clientes/novo" className="btn btn-blue">
+          <Link href="/clientes/novo" className="btn btn-primary">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -144,7 +144,7 @@ export default async function ClientesPage({
           title="Nenhum cliente cadastrado"
           description="Cadastre seu primeiro cliente para criar honorários."
           action={
-            <Link href="/clientes/novo" className="btn btn-blue">
+            <Link href="/clientes/novo" className="btn btn-primary">
               Cadastrar cliente
             </Link>
           }
@@ -195,7 +195,7 @@ export default async function ClientesPage({
                   <Link href={`/honorarios?cliente=${c.id}`} className="btn btn-secondary">
                     Ver honorários
                   </Link>
-                  <Link href={`/honorarios/novo?cliente=${c.id}`} className="btn btn-blue">
+                  <Link href={`/honorarios/novo?cliente=${c.id}`} className="btn btn-primary">
                     Novo honorário
                   </Link>
                   <Link href={`/clientes/${c.id}/editar`} className="btn btn-secondary">
