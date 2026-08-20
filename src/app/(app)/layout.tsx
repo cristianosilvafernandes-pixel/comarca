@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { AppHeader } from "@/components/AppHeader";
 import { Sidebar } from "@/components/Sidebar";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { createClient } from "@/lib/supabase/server";
 import "./app.css";
 
@@ -15,7 +16,6 @@ export default async function AppLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Defesa em profundidade — o proxy já protege, mas o layout confirma.
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase
@@ -33,6 +33,7 @@ export default async function AppLayout({
         <Sidebar />
         <main className="main-content">{children}</main>
       </div>
+      <MobileBottomNav />
     </div>
   );
 }

@@ -18,36 +18,38 @@ export function AppHeader({ nome, logoUrl }: { nome: string; logoUrl?: string | 
           Comarca
         </a>
 
-        <div className="user-profile">
-          <a
-            href="/perfil"
-            title="Meu perfil"
-            style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", color: "inherit" }}
-          >
-            <div className="user-text">
-              <div className="name">{nome}</div>
-              </div>
+        {/* Mobile: só logo do escritório */}
+        <div className="header-logo-mobile">
+          <a href="/perfil" title="Perfil do escritório" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
             {logoUrl ? (
-              <div className="avatar" aria-hidden="true" style={{ padding: 0, overflow: "hidden", background: "transparent" }}>
-                <Image
-                  src={logoUrl}
-                  alt="Logo do escritório"
-                  width={36}
-                  height={36}
-                  style={{ objectFit: "contain", width: "100%", height: "100%" }}
-                  unoptimized
-                />
+              <div className="avatar" style={{ padding: 0, overflow: "hidden", background: "transparent" }}>
+                <Image src={logoUrl} alt="Logo do escritório" width={36} height={36}
+                  style={{ objectFit: "contain", width: "100%", height: "100%" }} unoptimized />
               </div>
             ) : (
-              <div className="avatar" aria-hidden="true">
-                {initials(nome)}
+              <div className="avatar">{initials(nome)}</div>
+            )}
+          </a>
+        </div>
+
+        {/* Desktop: nome + logo + sair */}
+        <div className="user-profile header-desktop-only">
+          <a href="/perfil" title="Meu perfil"
+            style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", color: "inherit" }}>
+            <div className="user-text">
+              <div className="name">{nome}</div>
+            </div>
+            {logoUrl ? (
+              <div className="avatar" style={{ padding: 0, overflow: "hidden", background: "transparent" }}>
+                <Image src={logoUrl} alt="Logo do escritório" width={36} height={36}
+                  style={{ objectFit: "contain", width: "100%", height: "100%" }} unoptimized />
               </div>
+            ) : (
+              <div className="avatar">{initials(nome)}</div>
             )}
           </a>
           <form action={signOut}>
-            <button type="submit" className="btn btn-secondary" title="Sair">
-              Sair
-            </button>
+            <button type="submit" className="btn btn-secondary" title="Sair">Sair</button>
           </form>
         </div>
       </div>
