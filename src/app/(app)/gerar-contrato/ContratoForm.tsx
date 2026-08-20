@@ -39,7 +39,7 @@ interface HonorarioOpt {
   clientes: {
     id: string;
     nome: string;
-    cpf: string;
+    cpf: string | null;
     endereco: string | null;
     email: string | null;
     whatsapp: string;
