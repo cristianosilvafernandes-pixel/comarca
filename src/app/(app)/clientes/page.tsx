@@ -97,6 +97,7 @@ export default async function ClientesPage({
         .select(
           "id, nome, tipo_pessoa, cpf, cnpj, responsavel_legal, whatsapp, email, honorarios(id, processo, area, parcelas(valor, vencimento, status_registrado))",
         )
+        .not("honorarios", "is", null)
         .order("nome");
       if (advIds.length > 0) q = q.in("membro_id", advIds);
       return q;
