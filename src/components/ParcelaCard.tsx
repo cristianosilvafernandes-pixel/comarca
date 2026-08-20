@@ -29,6 +29,7 @@ export function ParcelaCard({ item }: { item: FeeItem }) {
       <div className="fee-card-actions">
         <LembreteButton
           parcelaId={it.parcelaId}
+          clienteNome={it.cliente}
           mensagem={it.mensagem}
           waUrl={it.waUrl}
           label="Enviar lembrete"

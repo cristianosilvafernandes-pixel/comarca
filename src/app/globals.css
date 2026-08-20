@@ -32,6 +32,8 @@
   --warning-soft: #ffefcf;
   --warning-deep: #ab570a;
   --violet: #7928ca;
+  --violet-soft: #d8ccf1;
+  --violet-deep: #4c2889;
   --cyan: #50e3c2;
   --pink: #ff0080;
 
@@ -359,8 +361,6 @@ a { color: inherit; text-decoration: none; }
 .btn-danger { background-color: var(--error); color: var(--on-primary); }
 .btn-danger:hover { background-color: var(--error-deep); }
 .btn:disabled { background-color: var(--canvas-soft-2); color: var(--mute); cursor: not-allowed; border-color: var(--hairline); }
-.btn-blue { background-color: var(--link); color: var(--on-primary); }
-.btn-blue:hover { background-color: var(--link-deep); }
 
 .btn-icon {
   display: inline-flex;
@@ -483,7 +483,13 @@ textarea { min-height: 80px; resize: vertical; padding-top: 10px; }
   display: flex;
   align-items: center;
   gap: 16px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
+a.summary-card:hover { box-shadow: var(--shadow-3); transform: translateY(-1px); }
+.summary-card-active { box-shadow: var(--shadow-3), inset 0 0 0 2px var(--link); }
 
 .summary-icon {
   font-size: 24px;
@@ -872,7 +878,7 @@ textarea { min-height: 80px; resize: vertical; padding-top: 10px; }
 .badge-atrasado { background-color: var(--error-soft); color: var(--error-deep); }
 .badge-pendente { background-color: var(--canvas-soft-2); color: var(--body); }
 .badge-pago_verificacao { background-color: var(--link-bg-soft); color: var(--link-deep); }
-.badge-aguardando_exito { background-color: var(--violet-soft, #d8ccf1); color: var(--violet); }
+.badge-aguardando_exito { background-color: var(--violet-soft); color: var(--violet-deep); }
 
 /* ADVOGADO SUMMARY CARDS */
 .adv-cards-row {

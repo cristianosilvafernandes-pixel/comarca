@@ -21,12 +21,20 @@ const FAQS = [
     a: "Não. Zero taxa. Você recebe 100% na sua conta, direto do cliente.",
   },
   {
+    q: "Comarca gera o contrato de prestação de serviços?",
+    a: "Sim. Você seleciona o honorário e o Comarca monta o contrato em PDF com seus dados, OAB, logo e cláusulas. Você baixa ou envia direto no WhatsApp.",
+  },
+  {
+    q: "Ajuda na hora do imposto de renda?",
+    a: "Sim. Cada honorário é categorizado (contratual, êxito, sucumbencial, recorrente) e você exporta tudo em CSV na hora da declaração.",
+  },
+  {
     q: "Preciso cadastrar conta bancária ou enviar documentos?",
     a: "Não. Só nome, email, WhatsApp e sua chave PIX.",
   },
   {
     q: "E se eu já uso planilha ou agenda?",
-    a: "Planilha não mostra o que vence nem monta a cobrança. Comarca destaca cada parcela a vencer e já deixa a mensagem pronta — você decide se envia ou não.",
+    a: "Planilha não monta contrato, não mostra o que vence nem prepara a cobrança. Comarca destaca cada parcela a vencer e já deixa a mensagem pronta — você decide se envia ou não.",
   },
   {
     q: "O Comarca acessa minha conta bancária?",
@@ -47,13 +55,14 @@ export default function LandingPage() {
             Comarca
           </a>
           <nav className="nav-desktop">
+            <a href="#recursos" className="nav-link">Recursos</a>
             <a href="#como-funciona" className="nav-link">Como funciona</a>
             <a href="#precos" className="nav-link">Preços</a>
             <a href="#faq" className="nav-link">FAQ</a>
           </nav>
           <div className="header-cta">
             <Link href="/login" className="btn btn-secondary">Entrar</Link>
-            <Link href={CTA} className="btn btn-primary">Testar grátis</Link>
+            <Link href={CTA} className="btn btn-primary">Começar grátis</Link>
           </div>
         </div>
       </header>
@@ -62,33 +71,33 @@ export default function LandingPage() {
       <section className="hero-section">
         <div className="container hero-grid">
           <div className="hero-content">
-            <h1 className="hero-headline">Nunca mais perca um honorário esquecido.</h1>
+            <h1 className="hero-headline">Do contrato ao recebimento, num só lugar.</h1>
             <p className="hero-subheadline">
-              Advogado não perde honorário por falta de cliente. Perde por falta de cobrança. Comarca
-              organiza tudo por cliente e processo, mostra o que vence e deixa a mensagem pronta — você
-              envia pelo WhatsApp em um toque. Sem taxas, você recebe 100% na sua conta.
+              Comarca cuida do honorário do começo ao fim: gera o contrato em PDF, cobra pelo WhatsApp,
+              recebe via PIX, divide entre os sócios e organiza tudo para o seu imposto de renda. Sem
+              taxas — você recebe 100% na sua conta.
             </p>
 
             <ul className="hero-bullets">
               <li className="bullet-item">
                 <Check />
-                <span><strong>Painel destaca o que vence</strong> — você vê de relance cada parcela a cobrar</span>
+                <span><strong>Contrato pronto em PDF</strong> — com sua OAB e logo, enviado no WhatsApp em um toque</span>
               </li>
               <li className="bullet-item">
                 <Check />
-                <span><strong>Controle por cliente e processo</strong> — dashboard jurídico, não planilha genérica</span>
+                <span><strong>Cobrança que o cliente paga</strong> — lembrete no WhatsApp + página com QR Code PIX</span>
               </li>
               <li className="bullet-item">
                 <Check />
-                <span><strong>Mensagem pré-formatada editável</strong> — tom profissional, sem parecer cobrança agressiva</span>
+                <span><strong>IR sem dor de cabeça</strong> — honorários categorizados e exportáveis na declaração</span>
               </li>
             </ul>
 
             <div className="hero-actions">
               <Link href={CTA} className="btn btn-primary" style={{ padding: "16px 32px", fontSize: 18 }}>
-                Testar 7 dias grátis — sem cartão
+                Comece grátis — sem cartão
               </Link>
-              <span className="hero-cta-info">Cadastre 3 clientes e veja como funciona. Zero risco.</span>
+              <span className="hero-cta-info">Cadastre seus honorários e veja o ciclo completo. Zero risco.</span>
             </div>
           </div>
 
@@ -127,17 +136,17 @@ export default function LandingPage() {
       <section className="dor-section">
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">Por que advogados perdem honorários</h2>
+            <h2 className="section-title">Por que advogados perdem tempo e dinheiro</h2>
           </div>
 
           <div className="dor-grid">
             {[
               "Esqueceu de cobrar a segunda parcela",
               'Cliente "esqueceu" e você ficou sem jeito de lembrar',
-              "Estava focado em audiência e deixou vencer",
-              "Usa planilha que ninguém olha",
+              "Contrato montado às pressas no Word, cada um de um jeito",
+              "Honorário dividido com o sócio e ninguém sabe quanto cabe a quem",
               "Honorários parcelados que ninguém acompanha — a parcela 2 e 3 simplesmente somem",
-              "Honorário de êxito que fica meses sem cobrança — você ganhou a causa mas não recebeu",
+              "Na hora do IR, cata pagamento em extrato, e-mail e conversa de WhatsApp",
             ].map((titulo) => (
               <div className="dor-card" key={titulo}>
                 <svg className="dor-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -152,7 +161,7 @@ export default function LandingPage() {
 
           <div className="dor-highlight-box">
             Mais de 60% dos advogados autônomos no Brasil enfrentam dificuldades sérias com gestão
-            financeira. A maioria perde dinheiro não por falta de cliente — mas por falta de cobrança.
+            financeira. A maioria perde dinheiro não por falta de cliente — mas por falta de controle.
           </div>
 
           <div className="impact-bar">
@@ -169,10 +178,10 @@ export default function LandingPage() {
           </div>
           <div className="como-grid">
             {[
-              ["01", "Cadastre o cliente e o honorário", "Cliente, processo, valor, parcelas. Tudo configurado em apenas 30 segundos."],
-              ["02", "Veja o que está vencendo", "O painel destaca as parcelas que vencem nos próximos dias, com todos os dados do processo cadastrado."],
-              ["03", "Envie cobrança ao cliente", "Um toque abre a mensagem pré-formatada editável. Tom educado e profissional, sem parecer cobrador."],
-              ["04", "Marque como pago", "Seu cliente realizou o pagamento? Um único clique e o registro sai da lista de pendentes."],
+              ["01", "Cadastre cliente e honorário", "Cliente, processo, valor, parcelas ou êxito. Tudo configurado em apenas 30 segundos."],
+              ["02", "Gere o contrato em PDF", "Comarca monta o contrato com seus dados, OAB e logo. Você baixa ou envia direto no WhatsApp."],
+              ["03", "Cobre pelo WhatsApp", "Um toque abre a mensagem pré-formatada com link de pagamento PIX. Tom educado, sem parecer cobrador."],
+              ["04", "Receba e marque pago", "O cliente paga no PIX e confirma na página. Um clique e o registro sai da lista de pendentes."],
             ].map(([num, title, desc]) => (
               <div className="como-step" key={num}>
                 <div className="como-num">{num}</div>
@@ -180,6 +189,47 @@ export default function LandingPage() {
                 <p className="como-desc">{desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 5. RECURSOS DO CICLO */}
+      <section id="recursos" className="controle-section">
+        <div className="container">
+          <div className="section-header">
+            <h2 className="section-title">Tudo o que o honorário precisa, do início ao fim.</h2>
+          </div>
+          <div className="controle-grid">
+            <div className="controle-card">
+              <span className="controle-icon">📄</span>
+              <h3 className="controle-card-title">Contrato em PDF</h3>
+              <p className="controle-card-text">Gera o contrato de prestação com seus dados, OAB, logo e cláusulas. Baixa ou envia pelo WhatsApp em um clique.</p>
+            </div>
+            <div className="controle-card">
+              <span className="controle-icon">🔔</span>
+              <h3 className="controle-card-title">Cobrança no WhatsApp</h3>
+              <p className="controle-card-text">Mensagem pré-formatada e editável, com processo, parcela e PIX. Você revisa e envia — sem parecer cobrança agressiva.</p>
+            </div>
+            <div className="controle-card">
+              <span className="controle-icon">💸</span>
+              <h3 className="controle-card-title">Página de pagamento PIX</h3>
+              <p className="controle-card-text">O cliente abre um link, vê o QR Code e o copia-e-cola, paga e confirma. Você recebe 100%, sem intermediário.</p>
+            </div>
+            <div className="controle-card">
+              <span className="controle-icon">⚖️</span>
+              <h3 className="controle-card-title">Êxito e sucumbência</h3>
+              <p className="controle-card-text">Cadastre o percentual de êxito e o honorário sucumbencial. Comarca mantém cada um no radar até você receber.</p>
+            </div>
+            <div className="controle-card">
+              <span className="controle-icon">👥</span>
+              <h3 className="controle-card-title">Equipe e divisão</h3>
+              <p className="controle-card-text">Vários advogados no escritório? Defina a divisão de cada honorário e acompanhe quanto cabe a cada um.</p>
+            </div>
+            <div className="controle-card">
+              <span className="controle-icon">📊</span>
+              <h3 className="controle-card-title">Relatório de IR</h3>
+              <p className="controle-card-text">Honorários categorizados — contratual, êxito, sucumbencial e recorrente — e exportáveis em CSV na declaração.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -192,11 +242,11 @@ export default function LandingPage() {
           </div>
           <div className="cadastro-content">
             <p className="cadastro-text">
-              Tem procuração, contrato ou declaração do cliente em PDF ou Word? Comarca lê o documento e
+              Tem procuração, contrato ou documento do cliente em PDF ou foto? Comarca lê o documento e
               preenche os dados automaticamente. Sem digitar nome, CPF, endereço, telefone.
             </p>
             <ul className="cadastro-bullets hero-bullets">
-              <li className="bullet-item"><Check /><span>Importa PDF ou DOC do cliente — sistema extrai os dados</span></li>
+              <li className="bullet-item"><Check /><span>Importa PDF ou foto do documento — sistema extrai os dados</span></li>
               <li className="bullet-item"><Check /><span>Campos preenchidos automaticamente em segundos</span></li>
               <li className="bullet-item"><Check /><span>Você só confere e salva</span></li>
             </ul>
@@ -207,7 +257,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 5. DIFERENCIAL */}
+      {/* 6. DIFERENCIAL */}
       <section className="diferencial-section">
         <div className="container">
           <div className="section-header">
@@ -224,9 +274,9 @@ export default function LandingPage() {
               </thead>
               <tbody>
                 <tr><td><strong>Organização</strong></td><td>Lista de clientes</td><td className="highlight">Cliente + processo + área</td></tr>
-                <tr><td><strong>Dashboard</strong></td><td>Cobranças pendentes</td><td className="highlight">Por cliente, processo e tribunal</td></tr>
-                <tr><td><strong>Mensagem</strong></td><td>&quot;Lembrete de pagamento&quot;</td><td className="highlight">&quot;Honorário proc. 0032847-21 (Trabalhista - TJRS)&quot;</td></tr>
-                <tr><td><strong>Preço</strong></td><td>A partir de R$15/mês (qualquer negócio)</td><td className="highlight">A partir de R$19/mês (só advogados)</td></tr>
+                <tr><td><strong>Contrato</strong></td><td>Você monta no Word</td><td className="highlight">Gerado em PDF com sua OAB e logo</td></tr>
+                <tr><td><strong>Cobrança</strong></td><td>&quot;Lembrete de pagamento&quot;</td><td className="highlight">Processo + parcela + link de pagamento PIX</td></tr>
+                <tr><td><strong>Imposto de renda</strong></td><td>Por sua conta</td><td className="highlight">Honorários categorizados + CSV</td></tr>
                 <tr><td><strong>Quem usa</strong></td><td>Personal, dentista, psicólogo</td><td className="highlight">Só advogados</td></tr>
               </tbody>
             </table>
@@ -241,7 +291,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 6. PROVA SOCIAL */}
+      {/* 7. PROVA SOCIAL */}
       <section className="prova-social-section">
         <div className="container">
           <div className="testimonial-card">
@@ -261,37 +311,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* CONTROLE */}
-      <section className="controle-section">
-        <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">Comarca controla o que você esquece.</h2>
-          </div>
-          <div className="controle-grid">
-            <div className="controle-card">
-              <span className="controle-icon">📋</span>
-              <h3 className="controle-card-title">Parcelas no radar</h3>
-              <p className="controle-card-text">Honorário parcelado? Comarca acompanha cada vencimento. Tudo num painel, sem planilha.</p>
-            </div>
-            <div className="controle-card">
-              <span className="controle-icon">⚖️</span>
-              <h3 className="controle-card-title">Honorário de êxito</h3>
-              <p className="controle-card-text">Cadastre o processo e o percentual combinado. Comarca mantém no radar para você cobrar na hora certa.</p>
-            </div>
-            <div className="controle-card">
-              <span className="controle-icon">📊</span>
-              <h3 className="controle-card-title">Inadimplência zerada</h3>
-              <p className="controle-card-text">Cliente lembrado 2 dias antes paga no prazo. Sem lembrete, ele esquece. Simples assim.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 7. PREÇOS */}
+      {/* 8. PREÇOS */}
       <section id="precos" className="precos-section">
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">Preços simples e transparentes</h2>
+            <h2 className="section-title">Comece grátis. Planos pagos em breve.</h2>
           </div>
           <div className="precos-grid">
             <div className="preco-card">
@@ -308,7 +332,7 @@ export default function LandingPage() {
             </div>
 
             <div className="preco-card featured">
-              <div className="preco-badge">Mais popular</div>
+              <div className="preco-badge">Recomendado</div>
               <div className="preco-header">
                 <h3 className="preco-title">Essencial</h3>
                 <div className="preco-value">R$19<span className="preco-period">/mês</span></div>
@@ -318,7 +342,7 @@ export default function LandingPage() {
                 <li className="preco-feature-item"><Check size={18} />20 honorários ativos</li>
                 <li className="preco-feature-item"><Check size={18} />50 lembretes/mês</li>
               </ul>
-              <Link href={CTA} className="btn btn-primary btn-block">Testar 7 dias grátis</Link>
+              <Link href={CTA} className="btn btn-primary btn-block">Começar grátis</Link>
             </div>
 
             <div className="preco-card">
@@ -331,17 +355,17 @@ export default function LandingPage() {
                 <li className="preco-feature-item"><Check size={18} />Honorários ilimitados</li>
                 <li className="preco-feature-item"><Check size={18} />Lembretes ilimitados</li>
               </ul>
-              <Link href={CTA} className="btn btn-outline btn-block">Testar 7 dias grátis</Link>
+              <Link href={CTA} className="btn btn-outline btn-block">Começar grátis</Link>
             </div>
           </div>
           <div className="precos-footer">
-            Sem taxa de transação. Sem intermediário. Você recebe 100% na sua conta.<br />
-            Cancela quando quiser. Sem fidelidade.
+            Pagamento em breve — por enquanto, comece sem cartão e teste com seus próprios clientes.<br />
+            Sem taxa de transação, sem intermediário: você recebe 100% na sua conta. Cancela quando quiser.
           </div>
         </div>
       </section>
 
-      {/* 8. FAQ */}
+      {/* 9. FAQ */}
       <section id="faq" className="faq-section">
         <div className="container">
           <div className="section-header">
@@ -363,19 +387,19 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 9. CTA FINAL */}
+      {/* 10. CTA FINAL */}
       <section className="cta-final-section">
         <div className="container">
           <h2 className="cta-final-title">Teste com seus próprios clientes.</h2>
-          <p className="cta-final-sub">Cadastre 3 honorários reais. Receba os lembretes. Veja se funciona pra você.</p>
+          <p className="cta-final-sub">Cadastre um honorário real. Gere o contrato, cobre e receba. Veja se funciona pra você.</p>
           <Link href={CTA} className="btn btn-white" style={{ padding: "16px 32px", fontSize: 18, fontWeight: 600 }}>
             Criar conta grátis
           </Link>
-          <p className="cta-final-info">7 dias grátis. Sem cartão. Cancela quando quiser.</p>
+          <p className="cta-final-info">Sem cartão. Cancela quando quiser.</p>
         </div>
       </section>
 
-      {/* 10. FOOTER */}
+      {/* 11. FOOTER */}
       <footer className="site-footer">
         <div className="container">
           <div className="footer-grid">
@@ -384,7 +408,7 @@ export default function LandingPage() {
                 <Logo size={24} />
                 Comarca
               </a>
-              <p className="footer-tagline">Controle e cobrança de honorários para advogados.</p>
+              <p className="footer-tagline">Do contrato ao recebimento: gestão de honorários para advogados.</p>
             </div>
             <div className="footer-meta-col">
               <span className="footer-right-text">Feito por advogados, para advogados.</span>

@@ -47,7 +47,7 @@ export function PerfilForm({ nome, cnpj, telefone, endereco, site, chavePix, for
               alt="Logo do escritório"
               width={80}
               height={80}
-              style={{ objectFit: "contain", borderRadius: 8, border: "1px solid var(--border)" }}
+              style={{ objectFit: "contain", borderRadius: "var(--radius-md)", border: "1px solid var(--hairline)" }}
               unoptimized
             />
           ) : (
@@ -55,8 +55,8 @@ export function PerfilForm({ nome, cnpj, telefone, endereco, site, chavePix, for
               style={{
                 width: 80,
                 height: 80,
-                borderRadius: 8,
-                border: "2px dashed var(--border)",
+                borderRadius: "var(--radius-md)",
+                border: "2px dashed var(--hairline)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",

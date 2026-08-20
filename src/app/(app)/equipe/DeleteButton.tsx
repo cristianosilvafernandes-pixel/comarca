@@ -8,15 +8,14 @@ export function DeleteButton({ id }: { id: string }) {
       <input type="hidden" name="id" value={id} />
       <button
         type="submit"
-        className="btn btn-secondary"
-        style={{ color: "var(--error)" }}
+        className="btn btn-danger"
         onClick={(e) => {
           if (!confirm("Remover este advogado? Honorários vinculados ficam sem responsável.")) {
             e.preventDefault();
           }
         }}
       >
-        🗑 Remover
+        Excluir advogado
       </button>
     </form>
   );

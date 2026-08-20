@@ -51,16 +51,20 @@ export function PublicActions({ token, numeroParcela, chavePix, copiaCola, podeC
 
   return (
     <div style={{ marginTop: 12 }}>
-      <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
-        <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={() => copiar(chavePix, "Chave PIX")}>
-          📋 Copiar chave
-        </button>
-        {copiaCola && (
-          <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={() => copiar(copiaCola, "Código PIX")}>
-            📋 Copiar código PIX
-          </button>
-        )}
-      </div>
+      {(chavePix || copiaCola) && (
+        <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
+          {chavePix && (
+            <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={() => copiar(chavePix, "Chave PIX")}>
+              📋 Copiar chave
+            </button>
+          )}
+          {copiaCola && (
+            <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={() => copiar(copiaCola, "Código PIX")}>
+              📋 Copiar código PIX
+            </button>
+          )}
+        </div>
+      )}
 
       {podeConfirmar && (
         <div className={styles.actions} style={{ marginTop: 16 }}>

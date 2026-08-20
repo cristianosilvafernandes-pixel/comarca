@@ -11,11 +11,20 @@ import { AREAS, TRIBUNAIS } from "@/lib/domain/honorario-constants";
 import type { HonorarioTipo } from "@/lib/database.types";
 
 const TIPOS: { value: HonorarioTipo; label: string; desc: string }[] = [
-  { value: "fixo_parcelado", label: "Fixo parcelado", desc: "Valor total dividido em parcelas" },
-  { value: "recorrente", label: "Recorrente", desc: "Mensalidade fixa" },
-  { value: "ad_exitum", label: "Ad êxitum", desc: "% sobre o resultado, cobrado no fim" },
-  { value: "fixo_exitum", label: "Fixo + êxito", desc: "Entrada + percentual no encerramento" },
+  { value: "fixo_parcelado", label: "Valor fixo (à vista ou parcelado)", desc: "Contrato fechado, à vista ou dividido em parcelas." },
+  { value: "ad_exitum", label: "Percentual ad exitum", desc: "Recebe apenas no sucesso/sentença final." },
+  { value: "recorrente", label: "Recorrente mensal", desc: "Mensalidade regular (assessoria contínua)." },
+  { value: "fixo_exitum", label: "Fixo + Êxito", desc: "Entrada fixa agora + percentual sobre o resultado final." },
 ];
+
+const PARCELAS_OPTIONS = [
+  { value: 1, label: "1x (À vista)" },
+  ...Array.from({ length: 11 }, (_, i) => ({ value: i + 2, label: `${i + 2}x` })),
+];
+
+function formatBRL(v: number) {
+  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
 
 export function HonorarioForm({
   clientes,
@@ -30,6 +39,19 @@ export function HonorarioForm({
   const [state, formAction, pending] = useActionState<HonorarioState, FormData>(createHonorario, undefined);
   const [tipo, setTipo] = useState<HonorarioTipo>("fixo_parcelado");
   const [numParcelas, setNumParcelas] = useState(1);
+  const [valorTotal, setValorTotal] = useState("");
+  const [valorMensal, setValorMensal] = useState("");
+  const [valorEntrada, setValorEntrada] = useState("");
+
+  const aVista = numParcelas === 1;
+
+  const valorPorParcela = (() => {
+    if (tipo === "fixo_parcelado") {
+      const v = parseFloat(valorTotal.replace(",", "."));
+      if (v > 0 && numParcelas > 0) return v / numParcelas;
+    }
+    return null;
+  })();
 
   return (
     <form action={formAction} className="card" style={{ maxWidth: 640 }}>
@@ -47,13 +69,9 @@ export function HonorarioForm({
               : ""
           }
         >
-          <option value="" disabled>
-            Selecione…
-          </option>
+          <option value="" disabled>Selecione…</option>
           {clientes.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.nome}
-            </option>
+            <option key={c.id} value={c.id}>{c.nome}</option>
           ))}
         </select>
       </FormField>
@@ -69,32 +87,12 @@ export function HonorarioForm({
         </FormField>
       )}
 
-      <FormField label="Tipo de honorário *" htmlFor="tipo">
-        <select
-          id="tipo"
-          name="tipo"
-          className="form-control"
-          value={tipo}
-          onChange={(e) => setTipo(e.target.value as HonorarioTipo)}
-        >
-          {TIPOS.map((t) => (
-            <option key={t.value} value={t.value}>
-              {t.label} — {t.desc}
-            </option>
-          ))}
-        </select>
-      </FormField>
-
       <div className="row">
         <div className="col-6">
           <FormField label="Área" htmlFor="area">
             <select id="area" name="area" className="form-control" defaultValue="">
               <option value="">—</option>
-              {AREAS.map((a) => (
-                <option key={a} value={a}>
-                  {a}
-                </option>
-              ))}
+              {AREAS.map((a) => <option key={a} value={a}>{a}</option>)}
             </select>
           </FormField>
         </div>
@@ -102,11 +100,7 @@ export function HonorarioForm({
           <FormField label="Tribunal" htmlFor="tribunal">
             <select id="tribunal" name="tribunal" className="form-control" defaultValue="">
               <option value="">—</option>
-              {TRIBUNAIS.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
+              {TRIBUNAIS.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
           </FormField>
         </div>
@@ -114,72 +108,146 @@ export function HonorarioForm({
 
       <div className="row">
         <div className="col-6">
-          <FormField label="Processo" htmlFor="processo">
-            <input id="processo" name="processo" className="form-control" placeholder="Nº ou descrição" />
+          <FormField label="Número do Processo (opcional)" htmlFor="processo">
+            <input id="processo" name="processo" className="form-control" placeholder="0000000-00.0000.8.21.0000" />
           </FormField>
         </div>
         <div className="col-6">
-          <FormField label="Parte contrária" htmlFor="parte_contraria">
-            <input id="parte_contraria" name="parte_contraria" className="form-control" />
+          <FormField label="Parte Contrária (opcional)" htmlFor="parte_contraria">
+            <input id="parte_contraria" name="parte_contraria" className="form-control" placeholder="Ex: Manserv S.A." />
           </FormField>
+        </div>
+      </div>
+
+      {/* Tipo de honorário — radio cards */}
+      <div style={{ marginBottom: 16 }}>
+        <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 8 }}>
+          Tipo de Honorário *
+        </label>
+        <input type="hidden" name="tipo" value={tipo} />
+        <div className="radio-group">
+          {TIPOS.map((t) => (
+            <label
+              key={t.value}
+              className={`radio-option${tipo === t.value ? " selected" : ""}`}
+              style={{ cursor: "pointer" }}
+            >
+              <input
+                type="radio"
+                name="_tipo_ui"
+                value={t.value}
+                checked={tipo === t.value}
+                onChange={() => { setTipo(t.value); setNumParcelas(1); }}
+              />
+              <span>
+                <span style={{ display: "block", fontWeight: 500, fontSize: 14 }}>{t.label}</span>
+                <span style={{ display: "block", fontSize: 12, color: "var(--mute)", marginTop: 2 }}>{t.desc}</span>
+              </span>
+            </label>
+          ))}
         </div>
       </div>
 
       {/* Campos condicionais por tipo */}
       {tipo === "fixo_parcelado" && (
         <fieldset className="tipo-fields">
+          <FormField label="Valor Total *" htmlFor="valor_total">
+            <input
+              id="valor_total"
+              name="valor_total"
+              type="number"
+              step="0.01"
+              min="0"
+              className="form-control"
+              required
+              value={valorTotal}
+              onChange={(e) => setValorTotal(e.target.value)}
+              placeholder="R$ 0,00"
+            />
+          </FormField>
+
           <div className="row">
             <div className="col-6">
-              <FormField label="Valor total (R$) *" htmlFor="valor_total">
-                <input id="valor_total" name="valor_total" type="number" step="0.01" min="0" className="form-control" required />
-              </FormField>
-            </div>
-            <div className="col-6">
-              <FormField label="Frequência" htmlFor="frequencia">
-                <select id="frequencia" name="frequencia" className="form-control" defaultValue="Mensal">
-                  <option>Mensal</option>
-                  <option>Quinzenal</option>
-                  <option>Única</option>
-                </select>
-              </FormField>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-6">
-              <FormField label="Nº de parcelas (1–12)" htmlFor="num_parcelas">
-                <input
+              <FormField label="Parcelas *" htmlFor="num_parcelas">
+                <select
                   id="num_parcelas"
                   name="num_parcelas"
-                  type="number"
-                  min="1"
-                  max="12"
                   className="form-control"
                   value={numParcelas}
                   onChange={(e) => setNumParcelas(Number(e.target.value))}
-                />
+                >
+                  {PARCELAS_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
               </FormField>
             </div>
             <div className="col-6">
-              <FormField label="1º vencimento" htmlFor="data_primeira">
-                <input id="data_primeira" name="data_primeira" type="date" className="form-control" />
+              <FormField label="Frequência *" htmlFor="frequencia">
+                {aVista ? (
+                  <>
+                    <input type="hidden" name="frequencia" value="Única" />
+                    <select id="frequencia" className="form-control" value="Única" disabled>
+                      <option>Única</option>
+                    </select>
+                  </>
+                ) : (
+                  <select id="frequencia" name="frequencia" className="form-control" defaultValue="Mensal">
+                    <option>Mensal</option>
+                    <option>Quinzenal</option>
+                  </select>
+                )}
               </FormField>
             </div>
           </div>
-          {numParcelas === 1 && (
-            <div className="checkbox-group" style={{ marginBottom: 16 }}>
+
+          {aVista && (
+            <div className="checkbox-group" style={{ marginBottom: 12 }}>
               <input id="ja_pago_hoje" name="ja_pago_hoje" type="checkbox" />
-              <label htmlFor="ja_pago_hoje" style={{ margin: 0 }}>
-                Marcar como já pago hoje
+              <label htmlFor="ja_pago_hoje" style={{ margin: 0, fontSize: 14 }}>
+                Marcar como já pago (pagamento realizado hoje)
               </label>
             </div>
           )}
+
+          {valorPorParcela !== null && (
+            <div style={{
+              background: "var(--canvas-soft)",
+              border: "1px solid var(--hairline)",
+              borderRadius: "var(--radius-sm)",
+              padding: "12px 16px",
+              marginBottom: 16,
+            }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: "var(--mute)", letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: 4 }}>
+                Valor calculado por parcela:
+              </div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: "var(--ink)" }}>
+                {formatBRL(valorPorParcela)}
+              </div>
+            </div>
+          )}
+
+          <FormField label="Data da 1ª Parcela *" htmlFor="data_primeira">
+            <input id="data_primeira" name="data_primeira" type="date" className="form-control" required />
+          </FormField>
         </fieldset>
       )}
 
       {tipo === "recorrente" && (
         <fieldset className="tipo-fields">
           <FormField label="Valor mensal (R$) *" htmlFor="valor_mensal">
-            <input id="valor_mensal" name="valor_mensal" type="number" step="0.01" min="0" className="form-control" required />
+            <input
+              id="valor_mensal"
+              name="valor_mensal"
+              type="number"
+              step="0.01"
+              min="0"
+              className="form-control"
+              required
+              value={valorMensal}
+              onChange={(e) => setValorMensal(e.target.value)}
+              placeholder="R$ 0,00"
+            />
           </FormField>
           <div className="row">
             <div className="col-6">
@@ -210,7 +278,7 @@ export function HonorarioForm({
               </FormField>
             </div>
           </div>
-          <p style={{ fontSize: 12 }}>Sem parcelas por data — a cobrança de êxito é lançada após a sentença.</p>
+          <p style={{ fontSize: 12, color: "var(--mute)" }}>Sem parcelas por data — a cobrança de êxito é lançada após a sentença.</p>
         </fieldset>
       )}
 
@@ -219,7 +287,18 @@ export function HonorarioForm({
           <div className="row">
             <div className="col-6">
               <FormField label="Entrada (R$) *" htmlFor="valor_entrada">
-                <input id="valor_entrada" name="valor_entrada" type="number" step="0.01" min="0" className="form-control" required />
+                <input
+                  id="valor_entrada"
+                  name="valor_entrada"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  className="form-control"
+                  required
+                  value={valorEntrada}
+                  onChange={(e) => setValorEntrada(e.target.value)}
+                  placeholder="R$ 0,00"
+                />
               </FormField>
             </div>
             <div className="col-6">

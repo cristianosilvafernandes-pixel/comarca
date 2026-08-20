@@ -132,7 +132,7 @@ export default async function HonorariosPage({
             Filtrando por cliente: <strong>{clienteNomeFiltro ?? "—"}</strong>
           </span>
           <Link href="/honorarios" className="btn btn-secondary" style={{ fontSize: 14, padding: "4px 12px" }}>
-            ✕ Limpar filtro
+            Limpar filtro
           </Link>
         </div>
       )}
