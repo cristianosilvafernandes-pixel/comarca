@@ -90,17 +90,27 @@ export default async function ClientesPage({
   const advIds = parseAdv(sp.adv);
   const supabase = await createClient();
 
-  const [clientesResult, advogadosResult] = await Promise.all([
+  const [clientesResult, advogadosResult, honorariosResult] = await Promise.all([
     supabase
       .from("clientes")
-      .select(
-        "id, nome, tipo_pessoa, cpf, cnpj, responsavel_legal, whatsapp, email, honorarios(id, processo, area, parcelas(valor, vencimento, status_registrado))",
-      )
+      .select("id, nome, tipo_pessoa, cpf, cnpj, responsavel_legal, whatsapp, email")
       .order("nome"),
     supabase.from("advogados").select("id, nome").eq("ativo", true).order("nome"),
+    supabase.from("honorarios").select("id, cliente_id, processo, area, parcelas(valor, vencimento, status_registrado)"),
   ]);
 
-  const clientes = (clientesResult.data ?? []) as unknown as Cliente[];
+  const honorariosMap = new Map<string, any[]>();
+  (honorariosResult.data ?? []).forEach((h: any) => {
+    if (!honorariosMap.has(h.cliente_id)) honorariosMap.set(h.cliente_id, []);
+    honorariosMap.get(h.cliente_id)!.push(h);
+  });
+
+  const clientesComHonorarios = (clientesResult.data ?? []).map((c: any) => ({
+    ...c,
+    honorarios: honorariosMap.get(c.id) ?? [],
+  }));
+
+  const clientes = clientesComHonorarios as unknown as Cliente[];
   const advogados = advogadosResult.data ?? [];
 
   return (
