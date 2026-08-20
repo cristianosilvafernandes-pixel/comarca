@@ -90,28 +90,13 @@ export default async function ClientesPage({
   const advIds = parseAdv(sp.adv);
   const supabase = await createClient();
 
-  let honorariosIds: string[] = [];
-  const { data: honData } = await supabase
-    .from("honorarios")
-    .select("cliente_id")
-    .not("cliente_id", "is", null);
-
-  if (honData) {
-    honorariosIds = [...new Set(honData.map((h: any) => h.cliente_id))];
-  }
-
   const [clientesResult, advogadosResult] = await Promise.all([
-    (() => {
-      let q = supabase
-        .from("clientes")
-        .select(
-          "id, nome, tipo_pessoa, cpf, cnpj, responsavel_legal, whatsapp, email, honorarios(id, processo, area, parcelas(valor, vencimento, status_registrado))",
-        )
-        .in("id", honorariosIds.length > 0 ? honorariosIds : ["00000000-0000-0000-0000-000000000000"])
-        .order("nome");
-      if (advIds.length > 0) q = q.in("membro_id", advIds);
-      return q;
-    })(),
+    supabase
+      .from("clientes")
+      .select(
+        "id, nome, tipo_pessoa, cpf, cnpj, responsavel_legal, whatsapp, email, honorarios(id, processo, area, parcelas(valor, vencimento, status_registrado))",
+      )
+      .order("nome"),
     supabase.from("advogados").select("id, nome").eq("ativo", true).order("nome"),
   ]);
 
